@@ -338,6 +338,10 @@ hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是
     当且仅当该属性的writable为true时，value才能被赋值运算符改变。默认为 false。
     * value  
     该属性对应的值。可以是任何有效的 JavaScript 值（数值，对象，函数等）。默认为 undefined。
+    * get  
+   当访问该属性时，该方法会被执行，默认为 undefined。
+    * set  
+    当属性值修改时，触发执行该方法，该方法将接受唯一参数，即该属性新的参数值。默认为 undefined
 
 ## call，apply，bind区别
 用法：  
