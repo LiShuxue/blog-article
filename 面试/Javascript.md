@@ -326,22 +326,28 @@ hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是
 * instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。
 
 ## Object.defineProperty(obj, prop, descriptor)
-会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。
+会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
 1. obj  要在其上定义属性的对象。
 2. prop  要定义或修改的属性的名称。
-3. descriptor  将被定义或修改的属性描述符。
-    * configurable  
-    当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变，同时该属性也能从对应的对象上被删除。默认为 false。
-    * enumerable  
-    当且仅当该属性的enumerable为true时，该属性才能够出现在对象的枚举属性中。默认为 false。
+3. descriptor  将被定义或修改的属性描述符。属性描述符有两种主要形式：数据描述符和存取描述符。描述符必须是这两种形式之一，不能同时是两者。
+
+    数据描述符
     * writable  
     当且仅当该属性的writable为true时，value才能被赋值运算符改变。默认为 false。
     * value  
     该属性对应的值。可以是任何有效的 JavaScript 值（数值，对象，函数等）。默认为 undefined。
+
+    存取描述符
     * get  
    当访问该属性时，该方法会被执行，默认为 undefined。
     * set  
-    当属性值修改时，触发执行该方法，该方法将接受唯一参数，即该属性新的参数值。默认为 undefined
+    当属性值修改时，触发执行该方法，该方法将接受唯一参数，即该属性新的参数值。默认为 undefined  
+
+    数据描述符和存取描述符均具有以下可选键值
+    * configurable  
+    当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变(也就是可以被重新defineProperty)，同时该属性也能从对应的对象上被删除。默认为 false。
+    * enumerable  
+    当且仅当该属性的enumerable为true时，该属性才能够出现在对象的枚举属性中。默认为 false。
 
 ## call，apply，bind区别
 用法：  

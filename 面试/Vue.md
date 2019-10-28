@@ -337,22 +337,28 @@ Vue 采用数据劫持结合发布—订阅模式的方法，通过 Object.defin
 实现一个订阅器 Dep：订阅器采用 发布-订阅 设计模式，用来收集订阅者 Watcher，对监听器 Observer 和 订阅者 Watcher 进行统一管理。
 
 ## Object.defineProperty(obj, prop, descriptor)
-会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。
+会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
 1. obj  要在其上定义属性的对象。
 2. prop  要定义或修改的属性的名称。
-3. descriptor  将被定义或修改的属性描述符。
-    * configurable  
-    当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变，同时该属性也能从对应的对象上被删除。默认为 false。
-    * enumerable  
-    当且仅当该属性的enumerable为true时，该属性才能够出现在对象的枚举属性中。默认为 false。
+3. descriptor  将被定义或修改的属性描述符。属性描述符有两种主要形式：数据描述符和存取描述符。描述符必须是这两种形式之一，不能同时是两者。
+
+    数据描述符
     * writable  
     当且仅当该属性的writable为true时，value才能被赋值运算符改变。默认为 false。
     * value  
     该属性对应的值。可以是任何有效的 JavaScript 值（数值，对象，函数等）。默认为 undefined。
+
+    存取描述符
     * get  
    当访问该属性时，该方法会被执行，默认为 undefined。
     * set  
-    当属性值修改时，触发执行该方法，该方法将接受唯一参数，即该属性新的参数值。默认为 undefined
+    当属性值修改时，触发执行该方法，该方法将接受唯一参数，即该属性新的参数值。默认为 undefined  
+
+    数据描述符和存取描述符均具有以下可选键值
+    * configurable  
+    当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变(也就是可以被重新defineProperty)，同时该属性也能从对应的对象上被删除。默认为 false。
+    * enumerable  
+    当且仅当该属性的enumerable为true时，该属性才能够出现在对象的枚举属性中。默认为 false。
 
 ## Proxy与Object.defineProperty的优劣势对比
 Proxy 的优势如下:
