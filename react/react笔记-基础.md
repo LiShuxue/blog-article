@@ -103,6 +103,7 @@ Greeting.propTypes = {
   name: PropTypes.string
 };
 ```
+也可以用在无状态组件上
 
 ### state
 每个组件中都包含state，state 与 props 类似，但是 state 是私有的，只在当前组件中有效。
@@ -222,7 +223,8 @@ class Test extends React.Component {
 ```
 
 ### 事件传参
-有时候我们调用事件处理函数的时候，需要传递一些参数进去，这个时候需要用到上面的第三和第四种写法。
+有时候我们调用事件处理函数的时候，需要传递一些参数进去，这个时候需要用到上面的第三和第四种写法。  
+只能用这两种方法，因为这个大括号里面只能是一个函数的引用，而不是函数的调用。
 ```jsx
 <button onClick={(e) => this.deleteRow(id, e)}>Delete Row</button>
 
