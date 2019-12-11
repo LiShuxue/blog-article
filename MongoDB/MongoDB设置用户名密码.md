@@ -8,6 +8,13 @@
 
 还好我之前就留了一手，每周一自动备份数据库到本地。所以我及时恢复了数据库，才没有导致太大损失。
 
+> 数据库备份  
+> ```mongodump -h localhost:27017 -d db001 -o /root/db-backup```  
+> 数据库恢复  
+> ```mongorestore -h localhost:27017 -d db001 /root/db-backup/db001```   
+> 按日期压缩数据库备份文件   
+> ```zip -r db001-`date +%Y-%m-%d-%H-%M-%S`.zip db001``` 
+
 ## 问题原因
 经过搜索，发现MongoDB默认是不需要认证就可以访问的，再加上我为了可以远程访问服务器的数据库，设置了`bind_ip=0.0.0.0`，也就是可以被网上的任何ip访问到。
 
