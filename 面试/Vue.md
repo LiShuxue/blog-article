@@ -60,7 +60,7 @@ created、beforeMount、mounted 中都可以，因为此时data已经创建。�
 computed和watch都起到监听/依赖一个数据，并执行相应操作
 
 1. computed：常用于比较消耗性能的计算场景，具有缓存性，只有它依赖的属性值变化后，下一次获取的computed值才会重新计算
-2. 常用于某些数据的监听，无缓存性，页面重新渲染时值不变化也会执行。
+2. watch：常用于某些数据的监听，无缓存性，页面重新渲染时值不变化也会执行。
 
 ## 常用指令有哪些
 `v-if v-else v-for v-show v-modal`
@@ -252,6 +252,12 @@ directives: {
 
 上面的hookOptions用来定义指令的行为。有bind, inserted, update, componentUpdated, unbind 共5个hook函数。
 
+bind：只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置。  
+inserted：被绑定元素插入父节点时调用 (仅保证父节点存在，但不一定已被插入文档中)。  
+update：所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前。指令的值可能发生了改变，也可能没有。但是你可以通过比较更新前后的值来忽略不必要的模板更新 (详细的钩子函数参数见下)。  
+componentUpdated：指令所在组件的 VNode 及其子 VNode 全部更新后调用。  
+unbind：只调用一次，指令与元素解绑时调用。  
+
 ## 自定义过滤器
 过滤器，可被用于一些常见的文本格式化。过滤器可以用在两个地方：双花括号插值和 v-bind 表达式中。被添加在 JavaScript 表达式的尾部，由“管道”符号指示：
 ```html
@@ -293,7 +299,7 @@ router.beforeEach((to, from, next) => {
 to.matched能够拿到父级的组件的路由对象，用to.matched则只需要给较高一级的路由添加requiresAuth即可，其下的所有子路由不必添加。
 
 ## 路由动态加载与动态删除
-动态添加用: router.addRoutes([...])
+动态添加: router.addRoutes([...])  
 动态删除：
 1. 刷新页面
 2. 替换 router.matcher 为一个新的matcher
@@ -323,14 +329,27 @@ const resetRoute = () => {
 }
 ```
 
-## Vue的运行流程
+## Vue的运行流程，new Vue都做了什么
+1. initLifecycle(vm) 初始化生命周期
+2. initEvents(vm) 初始化事件中心
+3. initRender(vm) 初始化渲染
+4. callHook(vm, 'beforeCreate') 触发beforeCreate生命周期
+5. initInjections(vm) 初始化别处注入过来的inject对象
+6. initState(vm) 初始化state， props, computed, watcher
+7. initProvide(vm) 初始化给别处提供的Provide对象
+8. callHook(vm, 'created') 触发created生命周期
+9. vm.$mount()   
+    1. compile 将el或者template编译成render方法
+    2. render 通过执行 createElement 方法生成虚拟DOM节点
+    3. vnode  // create diff patch
+    4. patch 将虚拟DOM树插入到真实的DOM中
 
 ## Vue响应式原理(数据绑定原理)
-Vue 采用数据劫持结合发布—订阅模式的方法，通过 Object.defineProperty() 来劫持各个属性的 setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
+Vue 采用数据劫持结合发布—订阅模式的方法，通过 Object.defineProperty() 来劫持各个属性的 setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。模板编译的时候，生成对应的Watcher，调用setter进行依赖收集。
 
-实现一个监听器 Observer：对数据对象进行遍历，包括子属性对象的属性，利用 Object.defineProperty() 对属性都加上 setter 和 getter。这样的话，给这个对象的某个值赋值，就会触发 setter，那么就能监听到了数据变化。
+实现一个监听器 Observer：对数据对象进行遍历，包括子属性对象的属性，利用 Object.defineProperty() 对属性都加上 setter 和 getter。调用getter的时候，进行依赖收集，将Watcher存起来。如果给某个值赋值，就会触发 setter，然后循环调用该数据的watter去执行更新回调。
 
-实现一个解析器 Compile：解析 Vue 模板指令，将模板中的变量都替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知，调用更新函数进行数据更新。
+实现一个解析器 Compile：解析 Vue 模板指令，将模板中的变量都替换成数据，然后初始化渲染页面视图，并将每个变量对应的节点绑定更新函数，生成Watcher,调用对应的getter方法来添加监听数据的订阅者，即依赖收集。
 
 实现一个订阅者 Watcher：Watcher 订阅者是 Observer 和 Compile 之间通信的桥梁 ，主要的任务是订阅 Observer 中的属性值变化的消息，当收到属性值变化的消息时，触发解析器 Compile 中对应的更新函数。
 
@@ -372,14 +391,28 @@ Object.defineProperty 的优势如下:
 兼容性好，支持 IE9，而 Proxy 的存在浏览器兼容性问题,而且无法用 polyfill 磨平，因此 Vue 的作者才声明需要等到下个大版本( 3.0 )才能用 Proxy 重写。
 
 ## watch实现原理
+initWatch的过程中其实就是实例化new Watcher完成观察者的依赖收集的过程。  
+参考Vue响应式原理。
 
 ## computed实现原理
+除了依赖收集，他还有个动态计算的过程，只有依赖的数据发生变化，他才重新计算。  
+参考Vue响应式原理。
 
 ## EventBus的实现原理
+其实就是发布订阅模式的事件调度中心的实现。
+1. 有一个对象或者Map，来存储事件，以及对应的处理函数。
+2. 一个on方法，来监听某事件，然后将对应的处理函数push进去。
+3. 一个off方法，来删除某事件的监听。
+4. 一个trigger方法， 来触发某事件的处理函数。
+
+参考发布订阅模式的实现。
 
 ## 虚拟DOM（Virtual Dom）原理
 虚拟 DOM 的实现原理主要包括以下 3 部分：
-1. 用 JavaScript 对象模拟真实 DOM 树，对真实 DOM 进行抽象；
+1. 用 JavaScript 对象模拟真实 DOM 树，对真实 DOM 进行抽象；一般虚拟DOM都有以下几个属性。
+    * 节点名称 tagName
+    * 节点属性 props 对象
+    * 子节点 children 数组
 2. diff 算法 — 比较两棵虚拟 DOM 树的差异；
 3. pach 算法 — 将两个虚拟 DOM 对象的差异应用到真正的 DOM 树。
 
@@ -486,8 +519,6 @@ methods: {
     ])
 }
 ```
-
-## vuex原理
 
 ## vue项目优化
 ### 代码层面的优化
