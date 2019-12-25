@@ -408,6 +408,17 @@ render() {
 }
 ```
 
+## Component 和 PureComponent
+React.PureComponent 与 React.Component 几乎完全相同，但 React.PureComponent 通过props和state的浅对比来实现 shouldComponentUpate()。
+> 如果定义了 shouldComponentUpdate()，无论组件是否是 PureComponent，它都会执行shouldComponentUpdate结果来判断是否 update。如果组件未实现 shouldComponentUpdate() ，则会判断该组件是否是 PureComponent，如果是的话，会对新旧 props、state 进行 shallowEqual 比较，一旦新旧不一致，会触发 update。
+
+在PureComponent中，如果包含比较复杂的数据结构，可能会因深层的数据不一致而产生错误的否定判断。从而shouldComponentUpdate结果返回false，界面得不到更新。
+
+继承PureComponent之后的注意事项：
+1. 如果你在`render`方法中创建一个新的函数，对象或者是数组那么你的做法（可能）是错误的。因为这些只比较引用。
+2. 事件传参的时候不要用箭头函数，他会导致每次父组件`render`方法被调用时，一个新的函数被创建。应该这样用：`<Com  onClick={this.handleClick} param={param} />`
+
+
 ## 在 Create React App 中使用 TypeScript
 
 ```

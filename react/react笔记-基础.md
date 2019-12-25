@@ -225,7 +225,7 @@ class Test extends React.Component {
 ### 事件传参
 有时候我们调用事件处理函数的时候，需要传递一些参数进去，这个时候需要用到上面的第三和第四种写法。  
 只能用这两种方法，因为这个大括号里面只能是一个函数的引用，而不是函数的调用。
-```jsx
+```html
 <button onClick={(e) => this.deleteRow(id, e)}>Delete Row</button>
 
 <button onClick={this.deleteRow.bind(this, id)}>Delete Row</button>
@@ -301,16 +301,20 @@ function NumberList(props) {
 3. 元素value改变时，要赋值给state中的value，通过setState
 4. 通过e.target.value获取元素的value
 
-```
-<input
-    type="text"
-    value={this.state.value}
-    onChange={(e) => {
-        this.setState({
-            value: e.target.value.toUpperCase()
-        })
-    }}
-/>
+```jsx
+render() {
+    return (
+        <input
+            type="text"
+            value={this.state.value}
+            onChange={(e) => {
+                this.setState({
+                    value: e.target.value.toUpperCase()
+                })
+            }}
+        />
+    );
+}
 ```
 
 也是双向绑定的实现
