@@ -81,12 +81,13 @@ props可以传状态，值，函数，组件等等。
 
 如果你没给 prop 赋值，它的默认值是 true.
 
+通过配置特定的 defaultProps 属性来定义 props 的默认值：
 ```jsx
-const element = <Welcome name="test">
-function Welcome(props) {
-    return <h1>Hello, {props.name}</h1>
-}
+Greeting.defaultProps = {
+  name: 'Stranger'
+};
 ```
+
 对组件的 props 上进行类型检查，你只需配置特定的 propTypes 属性
 ```jsx
 import PropTypes from 'prop-types';
@@ -129,6 +130,11 @@ this.setState((state, props) => {
     test: this.state.test + this.props.name
 })
 ```
+
+setState 其实是异步的 —— 不要指望在调用 setState 之后，this.state 会立即映射为新的值。如果你需要基于当前的 state 来计算出新的值，那你应该传递一个函数，而不是一个对象
+
+### state 和 props 的区别
+props（“properties” 的缩写）和 state 都是普通的 JavaScript 对象。它们都是用来保存信息的，这些信息可以控制组件的渲染输出，而它们的一个重要的不同点就是：props 是传递给组件的（类似于函数的形参），而 state 是在组件内被组件自己管理的（类似于在一个函数内声明的变量）。
 
 ### 常用生命周期
 #### 挂载阶段：
