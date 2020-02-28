@@ -209,9 +209,16 @@ Jest本身提供了很多的匹配器，但是用来判断DOM的场景不是很�
 ### 创建快照，验证快照 
 `.toMatchSnapshot()` 是一个匹配器，可以用来验证快照是否一致，但是也可以创建快照，当最开始没有快照的时候。
 
-但是我们怎么样创建一个UI组件的快照呢，我们知道React会将JSX转化成一个js对象，即虚拟DOM节点，包含type, props，children等。我们可以用这个虚拟DOM对象创建快照。
-
-这时我们就需要借助`react-test-renderer`这个库，他提供了一个create方法，我们可以传递一个React组件，返回一个渲染器。再通过toJSON方法把组件渲染成js对象（虚拟DOM），这个对象就包含render tree的信息。
+可以对任何可序列化的对象创建快照。
+1. 使用asFragment
+```js
+test('should render Header component correctly', () => {
+  const { asFragment } = render(<Header />);
+  expect(asFragment()).toMatchSnapshot();
+});
+```
+2. 使用`react-test-renderer`这个库  
+他提供了一个create方法，我们可以传递一个React组件，返回一个渲染器。再通过toJSON方法把组件渲染成js对象（虚拟DOM），这个对象就包含render tree的信息。
 ```js
 import renderer from 'react-test-renderer';
 
@@ -222,7 +229,6 @@ it('renders app correctly', () => {
   expect(dom).toMatchSnapshot();
 });
 ```
-toMatchSnapshot会根据这个虚拟DOM的信息创建一个快照文件，包含DOM节点的层级关系。
 
 第一次运行测试文件的时候，会创建快照。第二次运行的时候，会比较是否与之前保存的快照文件一致。如果不匹配，则测试将失败。可能是意外的更改导致的，或者是参考快照需要根据最新的渲染去更新。
 
