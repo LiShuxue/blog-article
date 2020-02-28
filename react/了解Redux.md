@@ -50,6 +50,8 @@ FSA，即Flux Standard Action，一个用户友好的Flux action对象标准
 
 ### Reducer
 描述 action 如何改变 state ，就是一个函数，接收 action 和旧的 state 对象，改变state的值，并返回新的state。
+
+这个state并不是所有的state对象，而是需要修改的这个state，这个state可以传入一个默认值，即为这个state的初始值。
 ```js
 function reducer(state = [], action) {
   switch (action.type) {
@@ -96,7 +98,10 @@ function reducer2(state, action) {
 // ---
 import { combineReducers } from 'redux'
 const reducer = comebineReducer({ reducer1, reducer2 });
+const store = createStore(reducer, preloadedState);
 ```
+> 注意使用comineReducer后，如果传入preloadedState，preloadedState中的key必须与combineReducers中传入的对象的key一样。  
+如果不传入这个值，所有state的初始值将使用在reducer中定义的默认值。
 
 ---
 
