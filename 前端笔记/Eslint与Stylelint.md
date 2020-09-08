@@ -37,7 +37,7 @@ babel-eslint: 解析Flow或者一些高级的实验性的语法
 
 ## Parser Options
 指定需要lint的源代码的语法，如ES7, JSX等
-```JS
+```js
 "parserOptions": {
   "ecmaVersion": 9, // 使用的ES版本，ES9 = ES2018
   "sourceType": "module", // 是否使用了模块语法，import/export

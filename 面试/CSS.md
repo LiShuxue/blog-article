@@ -47,7 +47,7 @@
 浮动：float: left或者float: right. 脱离文档流，不能撑开父元素。  
 清除浮动：
 * 在父元素使用伪类：  
-    ```
+    ```css
     .parent::after {  
         content: '';  
         display: block;  

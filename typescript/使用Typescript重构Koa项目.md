@@ -189,7 +189,7 @@ const Blog: Model<IBlog, {}> = model<IBlog>('Blog', blogSchema);
 * 编译项目
 
 在项目根目录执行 `tsc` , 它会默认寻找根目录的 `tsconfig.json` , 根据这个配置去编译文件 
-```
+```sh
 tsc
 ```
 
@@ -198,6 +198,6 @@ tsc
 编译完成之后，会把编译出来的js文件输出到指定目录，如dist，这是在 `tsconfig.json` 配置的。
 
 之后我们只需要运行编译好的js文件即可。
-```
+```sh
 node dist/server.js
 ```

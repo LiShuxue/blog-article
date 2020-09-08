@@ -431,7 +431,7 @@ handleClick(e) {
 ## 静态类型检查
 
 在 Create React App 中使用 TypeScript
-```
+```sh
 npx create-react-app my-app --typescript
 ```
 
