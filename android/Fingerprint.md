@@ -203,10 +203,6 @@ protected void onPause() {
 这个怎么实现呢？这个就需要用到我们之前提到的KeyStore、密钥、加密相关的内容了。
 
 ```java
-private KeyStore keyStore;
-private KeyGenerator keyGenerator;
-private Cipher cipher;
-
 ...
 initSecureInstance();
 initKey();
@@ -277,11 +273,7 @@ private boolean initCipher() {
         keyStore.load(null);
         SecretKey key = (SecretKey) keyStore.getKey("mySecretKey", null);
         /**
-            * 1. 用户添加了新的指纹
-            * 2. 用户删除了所有的指纹
-            * 3. 用户关闭了屏幕锁
-            * 4. 用户改变了屏幕锁的方式
-            *
+            * 1. 用户添加了新的指纹 2. 用户删除了所有的指纹 3. 用户关闭了屏幕锁 4. 用户改变了屏幕锁的方式
             * 上述情况下，key都会失效，cipher.init都会抛出异常 KeyPermanentlyInvalidatedException。我们以此判断用户是否需要重新验证。
             */
         cipher.init(Cipher.ENCRYPT_MODE, key);
