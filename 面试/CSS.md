@@ -8,6 +8,10 @@
 块元素：独占一行，可以设置宽高，padding, margin, 如果不设置宽度，那么宽度将默认变为父级的100%  
 行元素和块元素都可以设置border  
 
+## margin: 0px 10px 10px 分别代表哪几个
+四个值：上右下左
+三个值：中间的值代表右左
+
 ## display: block, inline, inline-block的区别
 * display: block; 将一个行元素设置为块元素，独占一行，并且可以给他设置宽, 高, padding, margin
 * display: inline; 将一个块元素改变为行元素，不会独占一行，并且不能设置宽高，不能设置垂直方向上的padding和margin

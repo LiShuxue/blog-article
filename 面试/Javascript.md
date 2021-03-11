@@ -328,7 +328,53 @@ hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是
 
 ## typeof, instanceof
 * typeof 用于判断变量或对象的类型
+```js
+typeof 1  // "number"
+typeof '1' // "string"
+typeof true  //"boolean"
+typeof new Boolean(false)  // "object"
+typeof null // "object"
+typeof undefined // "undefined"
+typeof {} // "object"
+typeof []  // "object"
+typeof Object // "function"
+typeof Array // "function"
+typeof Function // "function"
+```
 * instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。
+```js
+class Father {}
+class Son extends Father{}
+var fa = new Father()
+var so = new Son()
+
+fa instanceof Father  // true
+so instanceof Son    // true
+so instanceof Father  // true
+
+fa.__proto === Father.prototype
+so.__proto === Son.prototype
+so.__proto__.__proto__ === Father.prototype
+Son.__proto__ === Father
+Father.__proto__ === Function.prototype
+Function.__proto__ === Function.prototype
+Object.__proto__ === Function.prototype
+
+Son.prototype.__proto__ === Father.prototype
+Father.prototype.__proto__ === Object.prototype
+Function.prototype.__proto__ === Object.prototype
+Object.prototype.__proto__ === null
+
+fa.constructor === Father
+so.constructor === Son
+Son.constructor === Function
+Father.constructor === Function
+Function.constructor === Function
+Object.constructor === Function
+
+Function instanceof Object // true
+Object instanceof Function  //true
+```
 
 ## Object.defineProperty(obj, prop, descriptor)
 会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
