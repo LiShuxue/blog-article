@@ -5,6 +5,20 @@
 
 ## data- 属性
 data-属性其实就是一个自定义的属性，用于一些自定义数据，所有html元素上都可以加，该属性值也能被JavaScript调用。  
+```html
+<li id="getId" data-id="122" data-vice-id="11">获取id</li>
+```
+```js
+const getId = document.getElementById('getId');
+
+// 取值
+console.log(getId.getAttribute("data-id")); // 122
+console.log(getId.dataset.id); // 112
+
+// 赋值
+getId.setAttribute("data-id","48");
+getId.dataset.id = "113";
+```
 data-属性不应该包含任何大写字母，并且在data-后必须最少拥有一个字符，属性值可以是任意字符串。
 
 ## HTML 语义化
@@ -18,6 +32,11 @@ data-属性不应该包含任何大写字母，并且在data-后必须最少拥�
 * 本地存储localStorage sessionStorage
 * 语义化标签 header footer article section aside nav
 * 多线程 web worker
+
+## a标签禁止跳转
+```html
+<a href="https://www.baidu.com" onclick="return false">test</a>
+```
 
 ## meta标签作用是什么，有哪些属性
 meta标签用来描述HTML文档的属性信息。主要用于SEO，或者控制网页的一些显示。主要分为三种类型：  

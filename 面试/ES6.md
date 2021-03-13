@@ -332,40 +332,60 @@ console.log(9);
 11. Promise实例有then方法，可以接收fulfilled或者rejected的回调
 
 ```js
-class myPromise {  //第一点
-    constructor(executor) {  //第二点
-        this.status = 'pending' //第六点
-        this.value = undefined //第七点
+class MyPromise{
+    constructor(excutor) {
+        this.status = 'pending';
+        this.value = undefined;
+        this.reason = undefined;
+        // 存放成功的回调
+        this.onResolvedCallbacks = [];
+        // 存放失败的回调
+        this.onRejectedCallbacks= [];
 
-        // 第五点
         let resolve = (value) => {
-            if (this.status === 'pending') { //第8点
-                this.status = 'fulfilled'
-                this.value = value
+            if (this.status === 'pending') {
+                this.status = 'fullfilled';
+                this.value = value;
+                // 依次将对应的函数执行
+                this.onResolvedCallbacks.forEach(fn => fn());
             }
         }
+
         let reject = (reason) => {
-            if (this.status === 'pending') { //第9点
-                this.status = 'rejected'
-                this.value = reason
+            if (this.status === 'pending') {
+                this.status = 'rejected';
+                this.reason = reason;
+                this.onRejectedCallbacks.forEach(fn => fn());
             }
         }
+
         try {
-            executor(resolve, reject) //第三点、第四点
-        } catch (e) {
-            reject(e) //第十点
+            excutor(resolve, reject)
+        } catch(e){
+            reject(e)
         }
     }
 
-    // 第十一点
-    then(onFulfilled, onRejected) {
-        if(this.status === 'fulfilled') {
-            onFulfilled(this.value)
+    then(successcallback, errorcallback) {
+        if (this.status === 'fullfilled') {
+            successcallback(this.value)
         }
-        if(this.status === 'rejected') {
-            onRejected(this.value)
+        if (this.status === 'rejected') {
+            errorcallback(this.reason)
+        }
+        if (this.status === 'pending') {
+            // 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行
+            this.onResolvedCallbacks.push(() => {
+                successcallback(this.value)
+            });
+            this.onRejectedCallbacks.push(()=> {
+                errorcallback(this.reason);
+            })
         }
     }
+    catch(errorcallback) {
+        return this.then(null, errorcallback);
+    } 
 }
 ```
 
@@ -469,8 +489,21 @@ async/await的注意事项：
 
 ### 继承
 通过extends关键字实现继承。  
-子类必须在constructor方法中调用super方法。  
-在子类的构造函数中，只有调用super之后，才可以使用this关键字，否则会报错。  
+
+子类必须在constructor方法中调用super方法。只有调用super之后，才可以使用this关键字，否则会报错。  
+```js
+class Father{
+    constructor(){
+        this.name = 'father'
+    }
+} 
+class Son extends Father {
+    constructor() {
+        super();
+        this.name = 'son'
+    }
+}
+```
 
 ### class中的原型链
 同时存在两条继承链：
@@ -489,11 +522,3 @@ B.prototype.__proto__ === A.prototype // true
 a.__proto__ === A.prototype // true
 b.__proto__ === B.prototype // true
 ```
-
-##  typescript 中 interface 与 type 声明类型的区别
-interface 和 type 很像，很多场景，两者都能使用。但也有细微的差别：
-* 类型：对象、函数两者都适用，但是 type 可以用于基础类型、联合类型、元祖。
-* 同名合并：interface 支持，type 不支持。
-* 计算属性：type 支持, interface 不支持。
-
-总的来说，公共的用 interface 实现，不能用 interface 实现的再用 type 实现。主要是一个项目最好保持一致。

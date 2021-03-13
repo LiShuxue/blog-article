@@ -32,9 +32,9 @@ output 属性告诉 webpack 在哪个文件夹输出它所创建的 bundles，�
 * filename：main chunk的名字，根据入口文件打包后的输出文件的名字
   * `[name]`: 用entry name， 默认name就是main
   * `[id]`: 内部生成的chunk id
-  * `[hash]`: 每次webpack build，都会有一个唯一的hash。对于热加载，每次修改任何一个文件，都会重新build，hash都会不一致。如果指定了长度，如`[hash:8]` ，那么它只会获取哈希值的前 8 位
-  * `[chunkhash]`: chunk表示一个文件，每一个输出的文件都是一个chunk，由入口文件和其依赖所构成。根据每个chunk内容所生成的hash
-  * `[contenthash]`: 由文件内容产生的hash值，内容不同产生的contenthash值也不一样
+  * `[hash]`: 每次webpack build，都会有一个唯一的hash。对于热加载，每次修改任何一个文件，都会重新build，hash都会不一致。如果指定了长度，如`[hash:8]` ，那么它只会获取哈希值的前 8 位。devServer建议用hash
+  * `[chunkhash]`: chunk表示一个文件，每一个输出的文件都是一个chunk，由入口文件和其依赖所构成。根据每个chunk或者叫每个入口文件，所对应的hash，打包后可能一系列文件的hash是一样的，他们属于同一个chunk
+  * `[contenthash]`: 由原始文件内容产生的hash值，内容不同产生的contenthash值也不一样，打包后每个文件都是单独的hash值。
 * chunkFilename：子chunk的名字。按需加载，动态导入的文件会被打包成单独的chunk
 * publicPath：用来指定你的app运行在哪个路径，如根路径 “ / ” 或者子路径 “ /subpath/ ”
 

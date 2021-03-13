@@ -74,7 +74,6 @@ ES6新增对象：
 4. Proxy
 5. Reflect
 6. Promise
-7. Generator
 
 ## 闭包
 一个函数包含另一个函数，并且被包含的函数使用了父函数中的变量。内部函数即为闭包。  
@@ -141,7 +140,7 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
 执行上下文也分为两个阶段(ES6规范)：
 1. 创建阶段
     * 决定 this 的指向
-    * 创建词法环境(LexicalEnvironment)  
+    * 创建词法环境(LexicalEnvironment) (也就是作用域) 
         1. 函数声明
         2. 变量声明
         3. 确立作用域和作用域链
@@ -179,16 +178,54 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
 * 箭头函数中this指向所在上下文
 
 从原理上来说，在创建可执行上下文的时候，根据代码的执行条件，来判断分别进行默认绑定、隐式绑定、显示绑定等。
+```js
+var x = 0;
+var obj = {
+    x: 10,
+    bar() {
+        var x = 20;
+        console.log(this.x);
+    }
+}
+
+obj.bar() // 10
+var foo = obj.bar;
+foo() // 0
+obj.bar.call(window) // 0
+obj.bar.call(obj) // 10
+foo.call(obj) // 10
+```
+
+## 什么是作用域链，什么是原型链，它们的区别
+* 作用域是针对变量的，先在自己的作用域上下文寻找， 找不到再去父级作用域寻找，形成作用域链。
+* 原型链是针对对象属性或者方法的， 当我们从一个对象上寻找某个属性或者方法时， 先在本身寻找， 没有的话就去父类的原型上找。父类原型找不到，再去父类的父类的原型找。形成原型链。
 
 ## 原型，原型链，构造函数
 <b>原型：</b>即prototype属性，只有函数才有，用来存放所有实例对象需要共享的属性和方法。那些不需要共享的属性和方法，就放在构造函数里面。  
 <b>构造函数：</b>用来创建实例。通过new关键字可以创建实例。命名通常首字母大写。  
 <b>原型链：</b>即__proto__属性，任何对象都有这个属性。  
-1. 类的实例的__proto__指向本类的.prototype
-2. 类的prototype的__proto__都指向父类的prototype
-3. 类的__proto__指向父类，如果没有父类，指向Function.prototype。ES5中用function创建的类，__proto__都指向Function.prototype。
+
+结论：
+1. 对象的__proto__属性指向父类的prototype属性，没有父类则指向Object.prototype
+2. 类的__proto__属性指向父类，如果没有父类指向Function.prototype。ES5中用function创建的类，__proto__都指向Function.prototype。
+
+4. 对象的.constructor指向本类
+5. 类的.constructor指向Function
+7. 类的prototype.constructor默认指向自己
+
+6. 类的prototype是父类的实例， 所以instanceof 父类是true，没有父类时instanceof Object是true
+
+6.7 也证明在自己写继承的时候， 要些这两行代码。
+```js
+Son.prototype = new Father();
+Son.prototype.constructor = Son;
+```
 
 当我们访问一个对象的属性或方法时，如果这个对象内部不存在这个属性，那么他就会去他的__proto__里找这个属性，也就是去父类的protorype上找，父类的prototype上如果没有，这个prototype又会去找他的__proto__，这个__proto__又会有自己的__proto__，于是就这样 一直找下去，也就是我们平时所说的原型链的概念。
+
+一张图总结：
+![proto](http://cdn.lishuxue.site/blog/image/面试/proto.png)
+
 ```js
 class GrandPa {
     constructor() {
@@ -214,21 +251,15 @@ var ss = new Son();
 
 // 先看构造函数.constructor，构造函数一定是指向某一个函数的
 console.log(ss.constructor === Son) // true
+
 console.log(Son.constructor === Function) // true
 console.log(Father.constructor === Function) // true
 console.log(GrandPa.constructor === Function) // true
 console.log(Function.constructor === Function) // true 函数的构造还是函数
-
-// 再看原型.prototype，只有函数才有原型对象
-console.log(Son.prototype instanceof Father) // true   Son的原型是Father类的实例
-console.log(Father.prototype instanceof GrandPa) // true  Father的原型是GrandPa类的实例
-console.log(GrandPa.prototype instanceof Object) // true  GrandPa的原型是Object的实例
-
 // 再看原型的构造函数
 console.log(Son.prototype.constructor === Son) // true
 console.log(Father.prototype.constructor === Father) // true
 console.log(GrandPa.prototype.constructor === GrandPa) // true
-console.log(ss.constructor === Son.prototype.constructor) // true
 
 // 再看__proto__属性
 console.log(ss.__proto__ === Son.prototype) // true
@@ -240,6 +271,11 @@ console.log(Son.prototype.__proto__ === Father.prototype) // true
 console.log(Father.prototype.__proto__ === GrandPa.prototype) // true
 console.log(GrandPa.prototype.__proto__ === Object.prototype) //true
 console.log(Object.prototype.__proto__ === null) // true
+
+// 再看原型.prototype，只有函数才有原型对象
+console.log(Son.prototype instanceof Father) // true   Son的原型是Father类的实例
+console.log(Father.prototype instanceof GrandPa) // true  Father的原型是GrandPa类的实例
+console.log(GrandPa.prototype instanceof Object) // true  GrandPa的原型是Object的实例
 ```
 
 ## ES5继承
@@ -270,21 +306,15 @@ var ss = new Son();
 
 // 先看构造函数.constructor，构造函数一定是指向某一个函数的
 console.log(ss.constructor === Son) // true
+
 console.log(Son.constructor === Function) // true
 console.log(Father.constructor === Function) // true
 console.log(GrandPa.constructor === Function) // true
 console.log(Function.constructor === Function) // true 函数的构造还是函数
-
-// 再看原型.prototype，只有函数才有原型对象
-console.log(Son.prototype instanceof Father) // true   Son的原型是Father类的实例
-console.log(Father.prototype instanceof GrandPa) // true  Father的原型是GrandPa类的实例
-console.log(GrandPa.prototype instanceof Object) // true  GrandPa的原型是Object的实例
-
 // 再看原型的构造函数
 console.log(Son.prototype.constructor === Son) // true
 console.log(Father.prototype.constructor === Father) // true
 console.log(GrandPa.prototype.constructor === GrandPa) // true
-console.log(ss.constructor === Son.prototype.constructor) // true
 
 // 再看__proto__属性
 console.log(ss.__proto__ === Son.prototype) // true
@@ -296,6 +326,11 @@ console.log(Son.prototype.__proto__ === Father.prototype) // true
 console.log(Father.prototype.__proto__ === GrandPa.prototype) // true 
 console.log(GrandPa.prototype.__proto__ === Object.prototype) //true
 console.log(Object.prototype.__proto__ === null) // true
+
+// 再看原型.prototype，只有函数才有原型对象
+console.log(Son.prototype instanceof Father) // true   Son的原型是Father类的实例
+console.log(Father.prototype instanceof GrandPa) // true  Father的原型是GrandPa类的实例
+console.log(GrandPa.prototype instanceof Object) // true  GrandPa的原型是Object的实例
 ```
 
 ## new 操作符做了什么？怎么模拟new ？
@@ -305,7 +340,7 @@ console.log(Object.prototype.__proto__ === null) // true
     `obj.__proto__ = Constructor.prototype`
 3. 将函数的this绑定到这个空对象上  
     `var result = Constructor.apply(obj, arguments)`
-4. 判断函数的返回值类型，如果是值类型，返回obj。如果是引用类型，就返回这个引用类型的对象。  
+4. 判断构造函数的返回值类型，如果没有返回值或者返回值是值类型，返回obj这个新创建的实例（相当于this）。如果返回值时是引用类型比如return {x: 'a'}，就返回这个引用类型的对象。  
     `return result instanceof Object ? result : obj`
 
 <b>模拟实现new</b>
@@ -326,8 +361,8 @@ function new2(Constructor, ...args) {
 ## obj.hasOwnProperty(prop)
 hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性，忽略那些从原型链上继承到的属性。
 
-## typeof, instanceof
-* typeof 用于判断变量或对象的类型
+## typeof, instanceof, Object.prototype.toString.call()
+* typeof 用于判断变量或对象的类型，判断不出来对象数组
 ```js
 typeof 1  // "number"
 typeof '1' // "string"
@@ -341,6 +376,20 @@ typeof Object // "function"
 typeof Array // "function"
 typeof Function // "function"
 ```
+* Object.prototype.toString.call()，可以判断对象数组
+```js
+Object.prototype.toString.call(1)   // "[object Number]"
+Object.prototype.toString.call('1') // "[object String]"
+Object.prototype.toString.call(true) // "[object Boolean]"
+Object.prototype.toString.call(new Boolean(false)) // "[object Boolean]"
+Object.prototype.toString.call(null) // "[object Null]"
+Object.prototype.toString.call(undefined) // "[object Undefined]"
+Object.prototype.toString.call([])  // "[object Array]"
+Object.prototype.toString.call({})  // "[object Object]"
+Object.prototype.toString.call(Function) // "[object Function]"
+Object.prototype.toString.call(Array) // "[object Function]"
+Object.prototype.toString.call(Object) // "[object Function]"
+```
 * instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。
 ```js
 class Father {}
@@ -352,8 +401,8 @@ fa instanceof Father  // true
 so instanceof Son    // true
 so instanceof Father  // true
 
-fa.__proto === Father.prototype
-so.__proto === Son.prototype
+fa.__proto__ === Father.prototype
+so.__proto__ === Son.prototype
 so.__proto__.__proto__ === Father.prototype
 Son.__proto__ === Father
 Father.__proto__ === Function.prototype
@@ -374,7 +423,18 @@ Object.constructor === Function
 
 Function instanceof Object // true
 Object instanceof Function  //true
+
+Array.__proto__ === Function.prototype
+Array.prototype.__proto__ === Object.prototype
+Function.prototype.__proto__ === Object.prototype
 ```
+结论：
+1. 对象的__proto__属性指向父类的prototype属性，没有父类则指向Object.prototype
+2. 函数或者构造函数的__proto__属性指向父类的prototype属性，即Function.prototype
+3. 根据第一条， .prototype其实也是对象，所以 xx.prototype.__proto__ 指向指向父类的prototype属性或者Object.prototype
+4. 对象的构造函数.constructor指向父类，没有父类指向Object
+5. 函数或者构造函数的.constructor指向Function
+
 
 ## Object.defineProperty(obj, prop, descriptor)
 会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
@@ -464,9 +524,10 @@ Function.prototype.bind2 = function(context, ...args) {
 function throttle(method, delay) {
     let startTime = Date.now();
     return function() {
+        let context = this, args = arguments;
         let currentTime = Date.now();
-        if (currentTime - startTime >= delay) {
-            method.apply(this, arguments);
+        if (currentTime - startTime >= delay) { // 靠两次运行的时间戳对比
+            method.apply(context, args);
             startTime = currentTime;
         }
     }
@@ -483,7 +544,7 @@ function debounce(method, delay) {
     return function() {
         let context = this, args = arguments;
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(function() { // 靠setTimout等待一定的时间执行
             method.apply(context, args)
         }, delay);
     }
@@ -715,7 +776,7 @@ utilModule.getName() // "test"
 ```
 
 2. <b>CommonJS </b>  
-Nodejs的模块规范
+Nodejs的模块规范, 用module.exports定义当前模块对外输出的接口（不推荐直接用exports），用require加载模块。
 ```js
 // module.js
 var name = 'testModule';
