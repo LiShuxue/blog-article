@@ -89,7 +89,7 @@ webpack是基于入口的。webpack会自动地递归解析入口所需要加载
 * rollup适用于基础库的打包，如vue、react
 * parcel适用于简单的实验性项目，他可以满足低门槛的快速看到效果
 
-## 分别介绍bundle，chunk，module是什么
+## 分别介绍module, chunk, bundle是什么
 * module: 简单来说，你通过import语句引入的代码块，都叫module。css，图片等也都叫module
 * chunk: 是webpack根据功能拆分出来的，包含三种情况：
     * 你的项目入口（entry）chunk，也就是main chunk，一般这个chunk包含了你大部分的代码。

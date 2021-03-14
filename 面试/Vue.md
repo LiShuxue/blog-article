@@ -78,6 +78,11 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
 <p v-bind:class="[isActive ? className1 : className2]">通过数组语法绑定class</p>
 ```
 
+## 动态组件
+```js
+<component v-bind:is="currentTabComponent"></component>
+```
+
 ## 直接给一个数组项赋值，Vue 能检测到变化吗？怎么解决？
 不能检测到以下变化：  
 当你利用索引直接设置一个数组项时，例如：`vm.items[indexOfItem] = newValue`  
@@ -219,7 +224,8 @@ v-for优先级高于v-if，这意味着 v-if 将分别重复运行于每个 v-fo
 现在有这样的一种情况，mounted的时候test的值会被循环执行++1000次。 每次++时，都会根据响应式触发setter->Dep->Watcher->update->run。 如果这时候没有异步更新视图，那么每次++都会直接操作DOM更新视图，这是非常消耗性能的。 所以Vue实现了一个queue队列，在下一个tick（或者是当前tick的微任务阶段）统一执行queue中Watcher的run。同时，拥有相同id的Watcher不会被重复加入到该queue中去，所以不会执行1000次Watcher的run。最终更新视图只会直接将test对的DOM的0变成1000。 保证更新视图操作DOM的动作是在当前栈执行完以后下一个tick（或者是当前tick的微任务阶段）的时候调用，大大优化了性能。
 
 ## Vue 框架怎么实现对象和数组的监听？
-通过遍历数组和递归遍历对象，从而达到利用 Object.defineProperty() 也能对对象和数组（部分方法的操作）进行监听
+* 通过递归遍历对象，利用 Object.defineProperty() 也能对对象进行监听
+* 通过重写数组的方法， push, pop....实现对数组的监听。
 
 ## v-model 的原理
 v-modal只是一个语法糖，相当于执行了两步：  
@@ -355,6 +361,74 @@ Vue 采用数据劫持结合发布—订阅模式的方法，通过 Object.defin
 
 实现一个订阅器 Dep：订阅器采用 发布-订阅 设计模式，用来收集订阅者 Watcher，对监听器 Observer 和 订阅者 Watcher 进行统一管理。
 
+```js
+class Vue {
+    constructor(options) {
+        this.data = options.data
+        this.walkData(this.data)
+        this.compile()
+    }
+
+    walkData(data) {
+        Object.keys(data).forEach(key => {
+            let val= data[key];
+            let sub = new Subject();
+            Object.defineProperty(data, key, {
+                set(value){
+                    val = value;
+                    sub.notify();
+                },
+                get(value){
+                    sub.collect(); // 最开始collect的时候， 因为Subject.target是null， 所以并没有依赖，只有编译页面的时候， 才将依赖收集上来
+                    return value;
+                }
+            })
+        })
+    }
+
+    compile() {
+        new Observer();
+    }
+}
+
+class Subject {
+    constructor() {
+        this.subs = [];
+    }
+    addSub(sub) {
+        this.subs.push(sub)
+    }
+    notify() {
+        this.subs.forEach(sub => {
+            sub.update();
+        })
+    }
+    collect() {
+        // 依赖收集
+        if (Subject.target) {
+            Subject.target.add(this)
+        } 
+    }
+}
+Subject.target = null;
+
+class Observer {
+    constructor() {
+        this.init()
+    }
+    init(){
+        Subject.target = this;
+        // 调用get， 完成依赖收集
+    }
+    update() {
+
+    }
+    add(sub){
+        sub.addSub(this)
+    }
+}
+```
+
 ## Object.defineProperty(obj, prop, descriptor)
 会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
 1. obj  要在其上定义属性的对象。
@@ -405,7 +479,28 @@ initWatch的过程中其实就是实例化new Watcher完成观察者的依赖收
 3. 一个off方法，来删除某事件的监听。
 4. 一个trigger方法， 来触发某事件的处理函数。
 
-参考发布订阅模式的实现。
+```js
+class EventBus {
+    constructor() {
+        this.map = new Map();
+    }
+    on(topic, callback) {
+        if (this.map.get(topic)) {
+            this.map.get(topic).push(callback)
+        } else {
+            this.map.set(topic, [callback])
+        }   
+    }
+    off(topic) {
+        this.map.delete(topic)
+    }
+    trigger(topic){
+        if (this.map.get(topic)){
+            this.map.get(topic).forEach(fn => fn())
+        } 
+    }
+}
+```
 
 ## 虚拟DOM（Virtual Dom）原理
 虚拟 DOM 的实现原理主要包括以下 3 部分：
@@ -418,13 +513,18 @@ initWatch的过程中其实就是实例化new Watcher完成观察者的依赖收
 
 ## vue-router实现原理
 前端路由：  
-路由模块的本质 就是建立起url和页面之间的映射关系，在单页面应用程序中，url变化时，只更新某个指定的容器中内容。
+路由模块的本质 就是建立起url和页面之间的映射关系，在单页面应用程序中，动态替换DOM内容并同步修改url地址。
 
-hash模式：  
-使用 URL 的 hash 来模拟一个完整的 URL，只改变hash#后的部分。通过监听hashchange事件，监测hash值变化，实现更新页面部分内容
+### hash模式：  
+使用 URL 的 hash 来模拟一个完整的 URL，只改变hash#后的部分。通过监听hashchange事件，监测hash值变化，实现更新页面部分内容。
 
-history模式：
-利用HTML5 API, pushState 和 replaceState，通过这两个 API 可以改变 url 地址且不会发送请求，同时还有popstate 事件。
+### history模式：
+利用HTML5 History API, pushState 和 replaceState，通过这两个 API 可以改变 url 地址且不会发送请求，同时还有popstate事件。
+
+### hash模式和history模式的区别
+* 一般使用场景没啥区别，他们俩也都可以使用浏览器的前进后退按钮。
+* hisotry 模式需要配置服务器， 负责刷新页面可能会导致404
+* hash 模式带#号，一般不能用来做分享的url，因为有的app里面url是不允许带有#号的
 
 ## vuex state、getter、mutation、action、module
 state对象可以包含本应用全部的状态。在组件中通过this.$store.state来访问 

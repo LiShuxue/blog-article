@@ -150,6 +150,9 @@ rules: [
 }
 ```
 
+## externals: 
+引入第三方库， 但是不希望这个库被webpack打包。
+
 ## plugins
 loader 被用于转换某些类型的模块，而plugin可以用于以多种方式自定义webpack构建过程，从打包优化和压缩，一直到重新定义环境中的变量。
 
@@ -259,3 +262,67 @@ CSS变化会热更新，js变化会触发浏览器刷新。
 tree shaking 是一个术语，通常用于描述移除 JavaScript 上下文中的未引用代码(dead-code)。它依赖于 ES2015 模块语法的 静态结构 特性，例如 import 和 export。这个术语和概念实际上是由 ES2015 模块打包工具 rollup 普及起来的。
 
 可以通过这个来优化代码，详细配置：https://webpack.docschina.org/guides/tree-shaking/
+
+## webpack 简单配置
+
+```js
+const webpackConfig = function(isDev) {
+    return {
+        mode: isDev ? 'development' : 'production',
+        devtool: isDev ? 'cheap-module-source-map' : 'source-map',
+        devServer: {
+
+        },
+        entry: {
+            main: 'index.js'
+        },
+        output: {
+            path: 'xx/xx/dist',
+            publicPath:
+            filename:
+            chunkFilename:
+        },
+        optimization: {
+            minimize: !isDev,
+            minimizer: [],
+            splitChunks: {
+
+            }
+        },
+        resolve: {
+            modules: [],
+            extensions: []
+            alias: {
+
+            }
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.(js|jsx|ts|tsx)$/,
+                    loader: "babel-loader",
+                    exclude: /node_modules/,
+                    include: path.resolve(__dirname, "../src")
+                }
+            ]
+        },
+        externals: {
+            // 引入第三方库， 但是不希望这个库被webpack打包。
+        },
+        plugins: [
+            new CopyWebpackPlugin({...}),
+            new CompressionWebpackPlugin({...})
+        ],
+        node: {
+            module: 'empty',
+            dgram: 'empty',
+            dns: 'mock',
+            fs: 'empty',
+            http2: 'empty',
+            net: 'empty',
+            tls: 'empty',
+            child_process: 'empty',
+        },
+    }
+}
+```

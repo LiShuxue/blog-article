@@ -69,11 +69,14 @@ viewport分为三种：
 href 主要在 link和 a 等元素上使用，用于在当前文档和引用资源之间确立联系，让当前标签能够链接到目标地址上。   
 src 主要在 img、script、iframe 等元素上使用，引入一个资源，并将该元素的内容整体替换。如果不写src，script会不存在脚本代码，img会显示x，iframe会显示空白页。
 
-## 链接预取 prefetch
-链接预取是一种浏览器机制，其利用浏览器空闲时间来下载或预取用户在不久的将来可能访问的文档。网页向浏览器提供一组预取提示，并在浏览器完成当前页面的加载后开始静默地拉取指定的文档并将其存储在缓存中。当用户访问其中一个预取文档时，便可以快速的从浏览器缓存中得到。
+## prefetch, preload
+prefetch（这段资源将会在未来某个导航或者功能要用到，但是本资源的下载顺序权重比较低，prefetch通常用于加速下一次导航）
+
+preload（preload将会把资源得下载顺序权重提高，使得关键数据提前下载好，优化页面打开速度）
+
 ```html
 <link href="css/chunk-fc0b.93f4bd1e.css" rel="prefetch">
-<link href="js/chunk-1308.c09665a1.js" rel="prefetch">
+<link href="js/chunk-1308.c09665a1.js" rel="preload">
 ```
 
 ## 图片预加载，懒加载

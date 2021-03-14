@@ -180,3 +180,77 @@ jsx将html和js混在一起编写，需要通过babel和webpack编译来转化�
 * key不要用index
 * useMemo, useCallback
 
+## 组件插槽
+使用props.children
+
+## 组件生命周期
+### 挂载阶段
+constructor()   
+static getDerivedStateFromProps()   
+render()   
+componentDidMount()
+### 更新阶段
+static getDerivedStateFromProps()   
+shouldComponentUpdate()   
+render()   
+getSnapshotBeforeUpdate()   
+componentDidUpdate()  
+### 卸载
+componentWillUnmount()
+### 错误处理 
+static getDerivedStateFromError()   
+componentDidCatch()
+
+## 代码分割, 组件懒加载
+import()， React.lazy()
+
+## 怎么开发错误边界组件
+如果一个 class 组件中定义了 static getDerivedStateFromError() 或 componentDidCatch() 这两个生命周期方法中的任意一个（或两个）时，那么它就变成一个错误边界组件。
+
+## 如何创建，使用Context
+### 创建
+```jsx
+const initValue = {a: 'test'}
+const MyContext = React.createContext(a)
+```
+### 使用
+```jsx
+// 父组件中
+<MyContext.Provider value={initValue}>
+  <Son />
+</MyContext.Provider>
+
+// 后代组件中， hook写法
+const initValue = useContext(MyContext);
+
+// Class组件中使用
+Son.contextType = MyContext // 先挂载在类上
+this.context // 组件中就可以使用
+```
+
+## render prop
+render prop组件， 将渲染逻辑改成方法传入， 而不是写死， 可以做到动态渲染。
+```jsx
+// 创建 render prop组件
+render() {
+  return(
+    <div>
+      {this.props.render(this.state)}
+    </div>
+  )
+}
+
+// 使用
+<MyComponent render={(data) => {
+  <h1>Hello {data}</h1>
+}} />
+```
+
+## 使用 PropTypes 进行类型检查
+```js
+Component.propTypes = {
+  name: PropTypes.string
+};
+```
+
+
