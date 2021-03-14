@@ -78,7 +78,7 @@ transform：变换。平移translate，缩放scale，旋转rotate
 translate：transform的一个值。  
 animation：动画。可以定义keyframe的名字，动画时间，速度曲线，延迟执行，播放次数，轮流反向播放。  
 `animation: myKeyframe 4s infinite;`  
-@keyframes定义具体的动画细节。  
+@keyframes定义具体的动画细节。注意keyframes， 加s  
 ```css
 @keyframes myKeyframe
 {
@@ -95,10 +95,7 @@ animation：动画。可以定义keyframe的名字，动画时间，速度曲线
 * transition只有开始和结束状态，而animation可以定义很多中间状态
 * transition需要有触发条件，如hover或者js事件，而animation写了之后会自动播放
 
-## 为什么有时候人们用translate来改变位置而不是定位
-改变transform或opacity不会触发浏览器重排或重绘，只会触发复合（compositions）。而改变绝对定位会触发重排，进而触发重绘和复合。
-
-## link标签和import标签的区别
+## link标签和@import的区别
 * 两者都是引入外部css文件
 * link是html标签，@import是css语法
 * link除了css，还可以引用其他资源文件。
@@ -121,6 +118,33 @@ flex-shrink: 1; /* 空间不足时如何缩小，0不缩小 */
 flex-basis: 100px; /* 项目的初始长度。若不设置伸缩性，则为固定大小 */
 align-self: flex-start; /* 自己单独的对齐方式，可覆盖align-items属性 */
 ```
+
+## grid布局
+父元素：
+```css
+display: grid; /* 创建一个网格容器 */
+grid-template-columns: 200px 100px 200px; /* 声明了三列，宽度分别为 200px 100px 200px */
+grid-gap: 5px; /* 声明行间距和列间距 */
+grid-template-rows: 50px 50px 50px; /* 声明了三行，行高分别为 50px 50px 50px  */
+grid-auto-flow: row; /* row或者column， 默认row， "先行后列"，即先填满第一行，再开始放入第二行 */
+/* 上面的布局是一个九宫格 */
+justify-items: start | end | center | stretch; 单元格水平方向的对齐方式
+align-items: start | end | center | stretch; 单元格垂直方向的对齐方式
+justify-content: start | end | center | stretch | space-around | space-between | space-evenly;  是整个内容区域在容器里面的水平位置（左中右）
+align-content 属性是整个内容区域的垂直位置（上中下）
+```
+grid-row-gap 属性、grid-column-gap 属性分别设置行间距和列间距。grid-gap 属性是两者的简写形式。
+
+假如有多余的网格，那么它的行高和列宽可以根据 grid-auto-columns 属性和 grid-auto-rows 属性设置。
+
+子元素：
+
+grid-column-start 属性、grid-column-end 属性、grid-row-start 属性以及grid-row-end 属性，可以指定网格项目所在的四个边框，分别定位在哪根网格线，从而指定项目的位置。
+
+justify-self 属性、align-self 属性
+
+justify-self 属性设置单元格内容的水平位置（左中右），跟 justify-items 属性的用法完全一致，但只作用于单个项目   
+align-self 属性设置单元格内容的垂直位置（上中下），跟align-items属性的用法完全一致，也是只作用于单个项目
 
 ## 隐藏页面元素 
 * opacity=0：不会影响页面布局，还可以触发点击事件
@@ -387,6 +411,14 @@ Normalize.css是一种CSS reset的替代方案。它是一个很小的CSS文件�
 
 ### 怎么比较
 两个元素比较先后顺序的时候，先看是否在同一个层叠上下文，如果是，按层叠顺序比较。如果不是，看他们的父元素层叠上下文的顺序。如果比较到后面，层叠顺序相等， 按照HTML出现的先后来判断，后出现的在上面。
+
+## 为什么有时候人们用translate来改变位置而不是定位
+改变transform或opacity不会触发浏览器重排或重绘，只会触发复合（compositions）。而改变绝对定位会触发重排，进而触发重绘和复合。
+
+## 渲染层，复合层，层叠上下文
+* 渲染层，是页面普通的文档流。绝对定位，相对定位，浮动定位虽然脱离文档流，但它仍然属于默认渲染层，共用同一个绘图上下文对象。普通文档流是由多个渲染层合成的。
+* 复合层，某些特殊条件的渲染层，会被浏览器自动提升为复合层。拥有单独的绘图上下文，被GPU渲染，硬件加速。
+* 层叠上下文，就是多个渲染层的一个堆叠关系。
 
 ## Sass语法
 1. 声明变量 `$`
