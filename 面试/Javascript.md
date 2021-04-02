@@ -514,6 +514,59 @@ Function.prototype.bind2 = function(context, ...args) {
 
 扩展运算符和Object.assign()都是只复制最外面一层，所以根属性是深拷贝，里面的对象依然是浅拷贝
 
+## 实现深拷贝
+```js
+var a = {
+    a: {b: 'b'},
+    c: () => {},
+    d: [1,2],
+    e: undefined,
+    f: 1,
+}
+a.g = a;
+a.h = new Date();
+```
+1. 简易版： JSON.parse(JSON.stringify(obj));
+    * 无法解决循环引用问题，会报错。 比如上面的 a.g = a.
+    * 无法复制值为undefined的
+    * 无法复制函数
+    * 无法复制一些特殊的对象，如 RegExp, Date, Set, Map等
+
+2. 面试版：
+    * 判断是函数，重新生成函数
+    * 判断是对象，如果循环引用，跳出循环并返回本身。否则递归调用自身。
+    * 判断是数组，遍历数组的每一项，如果是对象，递归调用自身， 否则直接返回
+    * 其他的值类型，直接复制
+    ```js
+    function deepClone(obj) {
+        let newobj = {};
+        for(let key in obj) {
+            let value = obj[key];
+            if (Object.prototype.toString.call(value) === '[object Function]') {
+                newobj[key] = new Function("return " + value.toString())() 
+            } else if (Object.prototype.toString.call(value) === '[object Object]') {
+                if (value === obj) { // 循环引用
+                    newobj[key] = obj;
+                    continue;
+                } else {
+                    newobj[key] = deepClone(value);
+                }
+            } else if (Object.prototype.toString.call(value) === '[object Array]') {
+                newobj[key] = value.map(item => {
+                    if (typeof item === 'object') { // 判断数组子元素
+                        return deepClone(item);
+                    } else {
+                        return item
+                    }
+                })
+            } else {
+                newobj[key] = value;
+            }  
+        }
+        return newobj;
+    }
+    ```
+
 ## 节流（throttle），防抖（debounce）
 * 节流：频繁操作的时候，如果超过了设定的时间，就执行一次处理函数。周期性的执行。节流会稀释函数的执行频率。
 * 防抖：频繁操作的时候，如果两次的间隔时间超过了设定的时间，就执行一次处理函数，如果时间没到的时候，就把timer清除。只执行最后一次。需要一个定时器。

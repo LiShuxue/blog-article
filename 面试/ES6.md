@@ -473,6 +473,9 @@ async/await的注意事项：
 7. await命令只能用在async函数之中，如果用在普通函数，就会报错。
 8. async 函数可以保留运行堆栈。
 
+## await能不能被return
+https://stackoverflow.com/questions/38708550/difference-between-return-await-promise-and-return-promise
+
 ## Class与继承
 ### class的用法
 1. class声明类

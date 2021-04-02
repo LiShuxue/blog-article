@@ -1,7 +1,7 @@
 ## vue3都做了哪些改变
 1. 重构响应式系统，使用Proxy替换Object.defineProperty，使用Proxy优势：
 2. 新增Composition API，更好的逻辑复用和代码组织
-3. 重构 Virtual DOM
+3. 模板编译优化， slot优化，diff算法优化
 4. 代码结构调整，更便于Tree shaking，使得体积更小
 5. 使用Typescript替换Flow
 

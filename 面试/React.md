@@ -246,6 +246,8 @@ render() {
 }} />
 ```
 
+## render prop 和 HOC 的区别， 使用场景
+
 ## 使用 PropTypes 进行类型检查
 ```js
 Component.propTypes = {

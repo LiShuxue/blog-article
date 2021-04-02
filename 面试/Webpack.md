@@ -111,3 +111,5 @@ webpack是基于入口的。webpack会自动地递归解析入口所需要加载
 4. tree shaking
 5. 提取公共代码
 6. 代码分割， 避免太大
+
+## tree shaking 原理

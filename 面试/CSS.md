@@ -117,6 +117,7 @@ flex-grow: 0; /* 有剩余空间时放大系数，0不放大 */
 flex-shrink: 1; /* 空间不足时如何缩小，0不缩小 */
 flex-basis: 100px; /* 项目的初始长度。若不设置伸缩性，则为固定大小 */
 align-self: flex-start; /* 自己单独的对齐方式，可覆盖align-items属性 */
+flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。
 ```
 
 ## grid布局
