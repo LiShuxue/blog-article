@@ -736,6 +736,18 @@ window.addEventListener('scroll', debounce(handle, 1000));
 ## 数组去重
 用Set, `let newArr = [..new Set(arr)]`
 
+如果是对象，用reduce
+```js
+let temArr = [];
+const uniqueList = totalList.reduce((prev, next) => {
+    if (!temArr.includes(next.id)) {
+        temArr.push(next.id);
+        prev.push(next);
+    }
+    return prev;
+}, []);
+```
+
 ## 数组合并
 concat, [...a, ...b]扩展运算符
 
