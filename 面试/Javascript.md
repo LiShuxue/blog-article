@@ -751,6 +751,16 @@ const uniqueList = totalList.reduce((prev, next) => {
 ## 数组合并
 concat, [...a, ...b]扩展运算符
 
+## 数组循环中删除元素
+```js
+for (let i=0; i<arr.length; i++) {
+    if (arr[i] === target) {
+        arr.splice(i, 1);
+        i = i -1; // 一定要给下标重新赋值
+    }
+}
+```
+
 ## 函数内部 arguments 变量有哪些特性,有哪些属性,如何将它转换为数组
 arguments对象是所有（非箭头）函数中都可用的局部变量。可以使用arguments[i]引用函数的参数，也可以修改函数参数。修改的只是函数的形参，并不会影响实参。  
 `arguments.callee` 指向当前执行的函数。  
