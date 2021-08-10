@@ -20,6 +20,13 @@ ssh-keygen
 $ ssh -T git@github.com
 ```
 
-## 4. 修改已有仓库的 url 为 ssh://git@github.com:xx/xxx.git
+## 4. 修改已有仓库的 url
+```shell
+# 1. 查看当前的url
+git remote -v
+
+# 2. 修改url
+git remote set-url origin git@github.com:LiShuxue/xxx.git
+```
 
 ## 5. 或者一开始 clone 项目的时候就用 SSH 的方式克隆

@@ -31,4 +31,5 @@ git config --global --unset http.proxy
 
 ```
 在项目下打开.git/config文件，将里面的项目的URL，https://改为git:// 。即使用git协议
+或者，使用SSH协议，url为 git@github.com:LiShuxue/xxx.git 也应该可以解决（未尝试）
 ```
