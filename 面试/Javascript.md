@@ -16,6 +16,9 @@ Object.is(NaN, 0/0) // true
 number, boolean, string, null, undefined, Symbol  
 Object, Array, Function
 
+## javascript自带的数据结构
+Object, Array, Set, Map, WeakSet, WeakMap
+
 ## null和undefined有什么区别
 null表示空对象  
 undefined表示未初始化的变量
