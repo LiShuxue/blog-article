@@ -23,6 +23,11 @@ Object, Array, Set, Map, WeakSet, WeakMap
 null表示空对象  
 undefined表示未初始化的变量
 
+## Object 和 Map 有什么区别
+* Object 键（key）的类型只能是字符串，数字或者 Symbol；而 Map 可以是任何类型。
+* Map 中的元素会保持其插入时的顺序；而 Object 则不会完全保持插入时的顺序。
+* Map 是可迭代对象，所以其中的键值对是可以通过 for of 循环或 .foreach() 方法来迭代的；而普通的对象键值对则默认是不可迭代的，只能通过 for in 循环来访问。
+
 ## 基本数据类型和引用类型存储在哪里
 基本数据类型：变量标识符和变量的值存放于栈内存  
 引用类型：变量标识符和指向堆内存中该对象的指针存放于栈，具体的对象存放于堆
@@ -365,7 +370,7 @@ function new2(Constructor, ...args) {
 hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性，忽略那些从原型链上继承到的属性。
 
 ## typeof, instanceof, Object.prototype.toString.call()
-* typeof 用于判断变量或对象的类型，判断不出来对象数组
+* typeof 可以用于判断基本数据类型和函数，判断不出来null对象数组
 ```js
 typeof 1  // "number"
 typeof '1' // "string"
@@ -379,7 +384,7 @@ typeof Object // "function"
 typeof Array // "function"
 typeof Function // "function"
 ```
-* Object.prototype.toString.call()，可以判断对象数组
+* Object.prototype.toString.call()，可以精确判断所有类型
 ```js
 Object.prototype.toString.call(1)   // "[object Number]"
 Object.prototype.toString.call('1') // "[object String]"
@@ -393,51 +398,16 @@ Object.prototype.toString.call(Function) // "[object Function]"
 Object.prototype.toString.call(Array) // "[object Function]"
 Object.prototype.toString.call(Object) // "[object Function]"
 ```
-* instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。
+* instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。所以主要是用来检测对象和数组，无法准确判断Function
 ```js
-class Father {}
-class Son extends Father{}
-var fa = new Father()
-var so = new Son()
-
-fa instanceof Father  // true
-so instanceof Son    // true
-so instanceof Father  // true
-
-fa.__proto__ === Father.prototype
-so.__proto__ === Son.prototype
-so.__proto__.__proto__ === Father.prototype
-Son.__proto__ === Father
-Father.__proto__ === Function.prototype
-Function.__proto__ === Function.prototype
-Object.__proto__ === Function.prototype
-
-Son.prototype.__proto__ === Father.prototype
-Father.prototype.__proto__ === Object.prototype
-Function.prototype.__proto__ === Object.prototype
-Object.prototype.__proto__ === null
-
-fa.constructor === Father
-so.constructor === Son
-Son.constructor === Function
-Father.constructor === Function
-Function.constructor === Function
-Object.constructor === Function
-
-Function instanceof Object // true
-Object instanceof Function  //true
-
-Array.__proto__ === Function.prototype
-Array.prototype.__proto__ === Object.prototype
-Function.prototype.__proto__ === Object.prototype
+console.log([] instanceof Array); // true
+console.log({} instanceof Object); // true
+console.log(/\d/ instanceof RegExp); // true
+console.log(function(){} instanceof Object); // true
+console.log(function(){} instanceof Function);// true
+console.log('' instanceof String); // false
+console.log(1 instanceof Number); // false
 ```
-结论：
-1. 对象的__proto__属性指向父类的prototype属性，没有父类则指向Object.prototype
-2. 函数或者构造函数的__proto__属性指向父类的prototype属性，即Function.prototype
-3. 根据第一条， .prototype其实也是对象，所以 xx.prototype.__proto__ 指向指向父类的prototype属性或者Object.prototype
-4. 对象的构造函数.constructor指向父类，没有父类指向Object
-5. 函数或者构造函数的.constructor指向Function
-
 
 ## Object.defineProperty(obj, prop, descriptor)
 会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
