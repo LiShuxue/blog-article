@@ -70,14 +70,19 @@ href 主要在 link和 a 等元素上使用，用于在当前文档和引用资�
 src 主要在 img、script、iframe 等元素上使用，引入一个资源，并将该元素的内容整体替换。如果不写src，script会不存在脚本代码，img会显示x，iframe会显示空白页。
 
 ## prefetch, preload
-prefetch（这段资源将会在未来某个导航或者功能要用到，但是本资源的下载顺序权重比较低，prefetch通常用于加速下一次导航）
-
-preload（preload将会把资源得下载顺序权重提高，使得关键数据提前下载好，优化页面打开速度）
-
+preload 立即下载该资源并缓存起来，但不执行。只有遇见这个js的时候，才开始执行，无需重新下载。
 ```html
-<link href="css/chunk-fc0b.93f4bd1e.css" rel="prefetch">
 <link href="js/chunk-1308.c09665a1.js" rel="preload">
 ```
+
+prefetch 空闲时间下载该资源并缓存。
+```html
+<link href="js/chunk-1308.c09665a1.js" rel="prefetch">
+```
+
+如果prefetch还没下载完之前，浏览器发现script标签也引用了同样的资源，浏览器会再次发起请求，所以不要在当前页面马上就要用的资源上用prefetch，要用preload。
+
+优化当前加载的页面，用preload， 提升下次将打开的页面速度， 用prefetch。
 
 ## 图片预加载，懒加载
 预加载：在网页全部加载之前，提前加载图片，当用户需要查看时可直接从本地缓存中渲染。以提供给用户更好的体验，减少等待的时间  
