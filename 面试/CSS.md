@@ -156,7 +156,7 @@ align-self 属性设置单元格内容的垂直位置（上中下），跟align-
 1. id选择器
 2. 元素选择器
 3. class选择器
-4. 属性选择器 `[src] | [src="./img/test.jpg"] | [src~="./img"]`
+4. 属性选择器 `.div[data-v-60c8fc3f] | img[src] | img[src="./img/test.jpg"] | img[src~="./img"]`
 5. 相邻(兄弟)元素选择器，用 ‘+’
 6. 子元素选择器，用 ‘>’
 7. 后代元素选择器， 用空格 ‘ ’
@@ -274,9 +274,8 @@ ul li .red { ... } 的权重表示 {A=0, B=0, C=1, D=2}, 即 {0, 0, 1, 2}
 4. 空元素自己的上外边距会和自己的下外边距合并
 
 解决方案：  
-1. position: absolute;
-2. display: inline-block;
-3. 变为BFC。但overflow:hidden不能解决相邻元素外边距重叠问题。
+1. 变为BFC。但overflow:hidden不能解决相邻元素外边距重叠问题。
+2. 使用padding或者border取代margin间距效果
 
 ## 什么是BFC? 如何产生BFC? BFC作用
 BFC:  
@@ -373,9 +372,39 @@ Normalize.css是一种CSS reset的替代方案。它是一个很小的CSS文件�
 * 一般化的样式
 
 ## 如何实现左侧宽度固定，右侧宽度自适应的布局
-1. 固定宽度区浮动，自适应区设置margin
-2. 固定宽度区使用绝对定位，自适应区设置margin
-3. flex布局，固定宽度区用width或者flex-basis, 自适应区flex-grow=1
+1. 固定宽度区浮动或者使用绝对定位，自适应区设置margin和剩余的宽度
+```css
+.left{
+    float: left; 
+    /* position: absolute; 或者绝对定位 */
+    width: 100px;
+    height: 100px;
+    background: red;
+}
+.right{
+    margin-left: 100px;
+    width: calc(100% - 100px);
+    height: 100px;
+    background: green;
+}
+```
+2. flex布局，固定宽度区用width或者flex-basis, 自适应区flex-grow=1, flex-shrink=1, flex-basis:auto
+```css
+.parent{
+    display: flex;
+    flex-direction: row;
+}
+.left{
+    flex-basis: 100px;
+    height: 100px;
+    background: red;
+}
+.right{
+    flex: 1 1 auto;
+    height: 100px;
+    background: green;
+}
+```
 
 ## z-index
 
