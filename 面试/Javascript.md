@@ -227,15 +227,15 @@ V8 同时采用了解释执行和编译执行这两种方式，这种混合使�
 
 结论：
 1. 对象的__proto__属性指向父类的prototype属性，没有父类则指向Object.prototype
-2. 类的__proto__属性指向父类，如果没有父类指向Function.prototype。ES5中用function创建的类，__proto__都指向Function.prototype。
-
-4. 对象的.constructor指向本类
-5. 类的.constructor指向Function
-7. 类的prototype.constructor默认指向自己
-
+2. 类的__proto__属性指向父类，如果没有父类指向Function.prototype。ES5中用function创建的类，__proto__都指向Function.prototype。  
+---
+3. 对象的.constructor指向本类
+4. 类的.constructor指向Function
+5. 类的prototype.constructor默认指向自己
+---
 6. 类的prototype是父类的实例， 所以instanceof 父类是true，没有父类时instanceof Object是true
 
-6.7 也证明在自己写继承的时候， 要些这两行代码。
+5.6 也证明在自己写继承的时候， 要些这两行代码。
 ```js
 Son.prototype = new Father();
 Son.prototype.constructor = Son;
@@ -243,8 +243,8 @@ Son.prototype.constructor = Son;
 
 当我们访问一个对象的属性或方法时，如果这个对象内部不存在这个属性，那么他就会去他的__proto__里找这个属性，也就是去父类的protorype上找，父类的prototype上如果没有，这个prototype又会去找他的__proto__，这个__proto__又会有自己的__proto__，于是就这样 一直找下去，也就是我们平时所说的原型链的概念。
 
-一张图总结：
-![proto](http://cdn.lishuxue.site/blog/image/面试/proto.png)
+一张图总结：主要是每个部分都要明白 __proto__ 和 constructor的指向
+![proto](https://cdn.lishuxue.site/blog/image/面试/proto2.png)
 
 ```js
 class GrandPa {
@@ -518,36 +518,44 @@ a.h = new Date();
     * 无法复制一些特殊的对象，如 RegExp, Date, Set, Map等
 
 2. 面试版：
-    * 判断是函数，重新生成函数
+    * 先判断目标类型，如果是对象，循环每一个key，如果是数组，递归每一个元素。
     * 判断是对象，如果循环引用，跳出循环并返回本身。否则递归调用自身。
     * 判断是数组，遍历数组的每一项，如果是对象，递归调用自身， 否则直接返回
+    * 判断是函数，重新生成函数
     * 其他的值类型，直接复制
     ```js
     function deepClone(obj) {
-        let newobj = {};
-        for(let key in obj) {
-            let value = obj[key];
-            if (Object.prototype.toString.call(value) === '[object Function]') {
-                newobj[key] = new Function("return " + value.toString())() 
-            } else if (Object.prototype.toString.call(value) === '[object Object]') {
-                if (value === obj) { // 循环引用
-                    newobj[key] = obj;
-                    continue;
-                } else {
-                    newobj[key] = deepClone(value);
-                }
-            } else if (Object.prototype.toString.call(value) === '[object Array]') {
-                newobj[key] = value.map(item => {
-                    if (typeof item === 'object') { // 判断数组子元素
-                        return deepClone(item);
+        let newobj;
+        if (Object.prototype.toString.call(obj) === '[object Object]') { // 先判断目标类型
+            newobj = {};
+            for(let key in obj) {
+                let value = obj[key];
+                if (Object.prototype.toString.call(value) === '[object Object]') {
+                    if (value === obj) { // 循环引用
+                        newobj[key] = obj;
+                        continue;
                     } else {
-                        return item
+                        newobj[key] = deepClone(value); // 递归本身
                     }
-                })
-            } else {
-                newobj[key] = value;
-            }  
+                } else if (Object.prototype.toString.call(value) === '[object Array]') {
+                    newobj[key] = value.map(item => {
+                        return deepClone(item); // 递归数组元素
+                    })
+                } else if (Object.prototype.toString.call(value) === '[object Function]') {
+                    newobj[key] = function() { return value.call(this, ...arguments) } // 重新构建函数
+                } else {
+                    newobj[key] = value;
+                }  
+            }
+        } else if (Object.prototype.toString.call(obj) === '[object Array]') {
+            newobj = [];
+            for (let i = 0; i < obj.length; i++) {
+                newobj.push(deepClone(obj[i])) // 递归数组的元素
+            }
+        } else {
+            newobj = obj;
         }
+        
         return newobj;
     }
     ```
