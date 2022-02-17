@@ -244,7 +244,7 @@ Son.prototype.constructor = Son;
 当我们访问一个对象的属性或方法时，如果这个对象内部不存在这个属性，那么他就会去他的__proto__里找这个属性，也就是去父类的protorype上找，父类的prototype上如果没有，这个prototype又会去找他的__proto__，这个__proto__又会有自己的__proto__，于是就这样 一直找下去，也就是我们平时所说的原型链的概念。
 
 一张图总结：主要是每个部分都要明白 __proto__ 和 constructor的指向
-![proto](https://cdn.lishuxue.site/blog/image/面试/proto2.png)
+![proto](https://cdn.lishuxue.site/blog/image/面试/proto3.png)
 
 ```js
 class GrandPa {

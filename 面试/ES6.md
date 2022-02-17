@@ -331,6 +331,8 @@ console.log(9);
 10. 如果excutor出错，直接变为rejected状态。
 11. Promise实例有then方法，可以接收fulfilled或者rejected的回调
 
+### 总结就是，一个 class 类， 有个constructor，参数是excutor，构造函数中执行这个excutor，excutor接受参数resolve， reject，用try catch包裹执行。同时有5个实例属性，status,value, reason, successCallbacks, errorCallbacks。两个实例方法， then, catch。then里面判断状态，执行或者放入数组，catch中调用then
+
 ```js
 class MyPromise{
     constructor(excutor) {
@@ -473,8 +475,11 @@ async/await的注意事项：
 7. await命令只能用在async函数之中，如果用在普通函数，就会报错。
 8. async 函数可以保留运行堆栈。
 
-## await能不能被return
+## await能不能被return，return await promise 和 return promise的区别
 https://stackoverflow.com/questions/38708550/difference-between-return-await-promise-and-return-promise
+
+1. 大体上没啥区别，效果一样
+2. 一般await用try catch包裹，如果两个都用try catch包裹，如果promise reject，return await promise会走到catch， return promise不会。
 
 ## Class与继承
 ### class的用法
