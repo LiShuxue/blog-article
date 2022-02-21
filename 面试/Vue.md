@@ -10,7 +10,7 @@ keep-alive 组件激活时 activated，keep-alive 组件停用时 deactivated
 在 mounted 中就已经完成了
 
 ## 每个生命周期适合哪些场景？
-* beforecreate : 可以在这加个loading事件，在加载实例时触发，在created时进行移除。
+* beforecreate : 此时data和method都还没初始化，可以在这加个loading事件，在加载实例时触发，在created时进行移除。
 * created : 初始化完成时的事件写在这里，需要异步请求数据的方法可以在此时执行，完成数据的初始化。
 * mounted : 当需要操作dom的时候执行
 * updated : 当数据更新要做统一业务处理的时候
@@ -109,17 +109,20 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
     <input :value=val @input="$emit('update', $event.target.value)"/>
 
     // after
-    // 父组件中
+    // 父组件中，省略了写监听函数
     <child :val.sync="name">
     // 子组件中
     <input :value=val @input="$emit('update:val', $event.target.value)"/>
     ```
-2. ref 与 $parent / $children 父子通信  
-    * 使用 this.$parent 查找当前组件的父组件实例。
-    * 使用 this.$children 查找当前组件的直接子组件，可以遍历全部子组件，需要注意 $children 并不保证顺序，也不是响应式的。
-    * 使用 this.$refs 查找命名子组件。
-    * 使用 this.$root 查找根组件，并可以配合$children遍历全部组件。
+2. 使用vuex 父子，兄弟，隔代都可以用
 3. EventBus 父子，兄弟，隔代都可以用
+    ```js
+    const EventBus = new Vue()
+    EventBus.$emit("aMsg", '来自A页面的消息');
+    EventBus.$on("aMsg", (msg) => {
+        this.msg = msg;
+    });
+    ```
 4. provide/inject 隔代通信   
     祖先组件中通过 provide 来提供变量，然后在子孙组件中通过 inject 来注入变量  
     ```js 
@@ -131,15 +134,17 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
     inject: ['test']
     ```
 5. $attrs/$listeners 隔代通信
-    * $attrs：包含了父作用域中不被 prop 所识别 (且获取) 的特性绑定 ( class 和 style 除外 )。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定 ( class 和 style 除外 )，并且可以通过 v-bind="$attrs" 传入内部组件。通常配合 inheritAttrs 选项一起使用。子组件加了inheritAttrs:false，DOM上就不会继承未声明的props。
+    * $attrs：当子组件的props中没有声明父组件传下来的prop属性时，那么父组件传下来的prop属性会被保存在子组件的$attrs属性上( class 和 style 除外 )。  
+    子组件加了inheritAttrs:false，DOM上就不会继承未声明的props。
         ```js
         // 父
         <child :foo="foo" :coo="coo"></child>
-        // 子
-        inheritAttrs:false
+
+        // 子，继承了所有属性并传给下一代
         <p>attrs:{{$attrs}}</p>
         <grandChild v-bind="$attrs"></grandChild>
-        // 孙子
+
+        // 孙子，只声明了coo，并设置inheritAttrs: false表示不继承
         props:["coo"],
         inheritAttrs:false
         <p>coo:{{coo}}</p>
@@ -151,15 +156,22 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
         parentTestMethod(value){
             console.log(value)
         }
-        // 子
+
+        // 子，相当于也监听了事件
         <grandChild v-on="$listeners"></grandChild>
+
         // 孙子
         <button @click="test">我要发射火箭</button>
         test(){
             this.$emit("parentTest",'test');
         }  
         ```
-6. 使用vuex 父子，兄弟，隔代都可以用
+6. ref 与 $parent / $children 父子通信  
+    * 使用 this.$parent 查找当前组件的父组件实例。
+    * 使用 this.$children 查找当前组件的直接子组件，可以遍历全部子组件，需要注意 $children 并不保证顺序，也不是响应式的。
+    * 使用 this.$refs 查找命名子组件。
+    * 使用 this.$root 查找根组件，并可以配合$children遍历全部组件。
+
 
 ## 路由跳转
 1. 声明式，`<router-link to='home'>` router-link标签会渲染为`<a>`标签
@@ -230,13 +242,20 @@ v-for优先级高于v-if，这意味着 v-if 将分别重复运行于每个 v-fo
 ## v-model 的原理
 v-modal只是一个语法糖，相当于执行了两步：  
 1. 将组件的value绑定为一个值
-2. 当组件的原生change事件发生时，将新的值赋给绑定的这个值。所以组件的value会发生变化。
+2. 组件内部数据的变化，触发input事件更新。
 ```html
-<input type="text" v-model="msg">
-
-<input v-bind:value="msg" v-on:input="msg=$event.target.value"/>
+<child v-model="msg">
+// 相当于
+<child :value="msg" @input="msg=$event.target.value"/>
+watch: {
+    value(val) {
+        this.innerValue = val
+    }
+    innerValue(val) {
+        this.emit('input', val)
+    }
+}
 ```
-input 元素本身有个 oninput 事件，这是 HTML5 新增加的，类似     onchange ，每当输入框内容发生变化，就会触发 oninput。
 
 ## keep-alive
 `<keep-alive>` 是 Vue 内置的一个组件，可以使被包含的组件保留状态，避免重新渲染。  
@@ -252,7 +271,17 @@ input 元素本身有个 oninput 事件，这是 HTML5 新增加的，类似    
 在组件的directives选项中进行声明。
 ```js
 directives: {
-    test: hookOptions
+    test: {
+        bind() {
+
+        },
+        inserted() {
+
+        },
+        update() {
+            
+        }
+    }
 }
 ```
 
@@ -273,7 +302,12 @@ unbind：只调用一次，指令与元素解绑时调用。
 <!-- 在 `v-bind` 中 -->
 <div v-bind:id="rawId | formatId"></div>
 ```
-全局过滤器： `Vue.filter('test', value => { ... })`
+全局过滤器： 
+
+```
+Vue.filter('test', value => { ... })
+```
+
 局部过滤器，定义在组件的filters选项中。
 ```js
 filters: {
@@ -282,11 +316,13 @@ filters: {
 ```
 
 ## nextTick()
-nextTick一般用在，当我们想对视图更新后的DOM进行操作。  
+nextTick一般用在，当我们想在更新数据后，获取被更新的DOM进行操作。  
 因为数据更新时，并不会立即更新 DOM。如果在更新数据之后的代码执行DOM操作，有可能达不到预想效果。
 ```js
 this.msg = 'hello'
+// 此时dom还没有更新
 this.$nextTick(()=>{
+    // 此时dom已经更新
     console.log(this.$refs.msg.innerHTML)
 })
 ```
@@ -503,11 +539,36 @@ class EventBus {
 ```
 
 ## 虚拟DOM（Virtual Dom）原理
+虚拟dom只是一层对真实DOM树的抽象，对这颗抽象树进行创建节点,删除节点以及修改节点的操作， 经过diff算法得出一些需要修改的最小单位,再更新视图，减少了dom操作，提高了性能。
+
 虚拟 DOM 的实现原理主要包括以下 3 部分：
 1. 用 JavaScript 对象模拟真实 DOM 树，对真实 DOM 进行抽象；一般虚拟DOM都有以下几个属性。
-    * 节点名称 tagName
+    * 节点名称 tag
     * 节点属性 props 对象
     * 子节点 children 数组
+    ```js
+    <div id="app">
+        <p class="text">hello world!!!</p>
+    </div>
+    // 转化为虚拟dom
+    {
+        tag: 'div',
+        props: {
+            id: 'app'
+        },
+        children: [
+            {
+                tag: 'p',
+                props: {
+                    className: 'text'
+                },
+                chidren: [
+                    'hello world!!!'
+                ]
+            }
+        ]
+    }
+    ```
 2. diff 算法 — 比较两棵虚拟 DOM 树的差异；
 3. pach 算法 — 将两个虚拟 DOM 对象的差异应用到真正的 DOM 树。
 
