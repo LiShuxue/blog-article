@@ -1,6 +1,6 @@
 ## 什么是虚拟DOM
 
-虚拟dom就是一个普通的javascript对象，一般包含type，props，children三个属性。
+虚拟dom就是一个普通的javascript对象，一般包含tag，props，children三个属性。
 ```html
 <div id="app">
   <p class="text">hello world!!!</p>
@@ -9,13 +9,13 @@
 转化成虚拟dom
 ```js
 {
-  type: 'div',
+  tag: 'div',
   props: {
     id: 'app'
   },
   children: [
     {
-      type: 'p',
+      tag: 'p',
       props: {
         className: 'text'
       }
@@ -32,9 +32,13 @@
 
 将虚拟DOM树转换成真实DOM树的最少操作的过程 称为 调和 。
 
-## diff 原理
+## react diff 工作原理
+diff算法的作用是计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面。
+
+传统diff算法
+通过循环递归对节点进行依次对比，算法复杂度达到 O(n^3)。为了解决这个问题，React中定义了三种策略，在对比时，根据策略只需遍历一次树就可以完成对比，将复杂度降到了O(n)
 ### diff 策略
-1. tree diff: web ui中DOM节点跨层级的移动操作特别少，可以忽略不计。
+1. tree diff: 在两个树对比时，只会比较同一层级的节点，会忽略掉跨层级的操作。
 2. component diff: 拥有相同类的两个组件将会生成相似的树形结构， 拥有不同类的两个组件会生成不同的树形结构。
 3. element diff: 对于同一层级的一组节点，可以通过唯一id来区分。
 ### tree diff
@@ -63,13 +67,37 @@ key是react元素或组件的唯一标识，用于diff的时候，追踪元素�
 * setState本身的执行都是同步的，并不是由异步代码实现。只是因为合成事件和钩子函数的执行顺序在更新之前，所以合成事件和钩子函数中无法拿到更新后的值。形成了异步。可以通过setState的第二个callback参数拿到更新后的值。
 * 在合成事件与钩子函数中会对多次setState进行更新优化，只执行最后一次；在原生事件与setTimeout内不会进行批量更新优化；
 
+## React 中什么是合成事件
+React 合成事件（SyntheticEvent）是 React 模拟原生 DOM 事件所有能力的一个事件对象。即浏览器原生事件的跨浏览器包装器。它根据 W3C 规范 来定义合成事件，兼容所有浏览器，拥有与浏览器原生事件相同的接口。
+
+在 React 中，“合成事件”会以事件委托（Event Delegation）方式绑定在组件最上层，并在组件卸载（unmount）阶段自动销毁绑定的事件。
+
+一般如果 DOM 上绑定了过多的事件处理函数，整个页面响应以及内存占用可能都会受到影响。React 为了避免这类 DOM 事件滥用，同时屏蔽底层不同浏览器之间的事件系统差异，实现了一个中间层——SyntheticEvent。
+
+合成事件的一套机制：React 并不是将 click 事件直接绑定在 dom 上面，而是采用事件冒泡的形式冒泡到 documnet 上面，然后 React 将事件封装给正式的函数处理运行和处理
+
+1. 当用户在为 onClick 添加函数时，React 并没有将 Click 事件绑定在 DOM 上面
+2. 而是在 document 处监听所有支持的事件，当事件发生并冒泡至 document 处时，React 将事件内容封装交给中间层 SynthticEvent(负责所有事件合成)
+3. 所以当事件触发的时候，对使用统一的分发函数 dispatchEvent 将指定函数执行
+
+### 那么 React 为什么使用合成事件？其主要有三个目的：
+1. 进行浏览器兼容，实现更好的跨平台
+
+    React 采用的是顶层事件代理机制，能够保证冒泡一致性，可以跨浏览器执行。React 提供的合成事件用来抹平不同浏览器事件对象之间的差异，将不同平台事件模拟合成事件。
+
+2. 避免垃圾回收
+
+    事件对象可能会被频繁创建和回收，因此 React 引入事件池，在事件池中获取或释放事件对象。即 React 事件对象不会被释放掉，而是存放进一个数组中，当事件触发，就从这个数组中弹出，避免频繁地去创建和销毁(垃圾回收)。
+
+3. 方便事件统一管理和事务机制
+
 ## 类组件和函数组件之间的区别是啥（不考虑hook）？
 1. 类组件有state和生命周期， 函数式组件又叫无状态组件， 没有state和生命周期。
 2. 类组件使用时需要先实例化， 函数式组件不能实例化，他是一个函数， 传参， 执行，返回结果。
 3. 无状态组件由于没有实例化过程，所以无法访问组件this中的对象。
 
 ## hooks
-hooks为函数组件提供了状态，也支持在函数组件中进行数据获取、订阅事件、解绑事件等等。
+hooks为函数组件提供了状态，也支持在函数组件中获取数据等。
 * 只能在函数最外层调用 Hook。不要在循环、条件判断或者子函数中调用。
 * 只能在 React 的函数组件中调用 Hook。不要在其他 JavaScript 函数中调用。
 ### useState
@@ -80,7 +108,7 @@ hooks为函数组件提供了状态，也支持在函数组件中进行数据获
 * 如果想只第一次渲染执行，依赖项传空数组。数组不为空时，将会依赖项变化后执行。
 * 可以返回一个函数来清楚副作用。将会在组件卸载时执行。
 ### useCallback
-用于缓存函数，如果依赖项发生了变化，该函数才发生变化。一般用于将此函数传入子组件中，因为默认每次父组件更新，传入子组件的该函数都不一样。
+用于缓存函数，如果依赖项发生了变化，该函数才发生变化。一般用于将此函数传入子组件中，因为默认每次父组件更新，传入子组件的该函数都不一样。配合React.memo()一起使用
 ### useMemo
 用于缓存函数返回值。如果依赖项发生变化，该函数才重新执行，计算返回值。一般用于该函数比较复杂，开销较大。避免每次更新此函数都重新执行。
 ### useRef
@@ -88,28 +116,74 @@ hooks为函数组件提供了状态，也支持在函数组件中进行数据获
 * useRef 用来创建ref对象
 * 通过 ref={myRef} 绑定在DOM 对象或者React组件上
 * 通过 this.myRef.current 访问DOM对象或者class组件的实例
-* useRef(inivalue)定义的ref可以将initvalue保存为一个不变的数组。
-
-## state 和 props 的区别是什么
-* props和state都是普通的 JS 对象
-* state 是组件内部状态，可变
-* props 是外部传入的参数， 不可变
+* useRef()可以用来保存一个不变的值。简单来说，我们可以将useRef返回值看作一个组件内部全局共享变量，它会在多次渲染内部共享一个相同的值。
 
 ## 如何创建 refs
 * 类组件中： `this.myRef = React.createRef();`
 * 函数式组件中： `const ref = useRef();`
 * 或者在类组件中通过回调函数： `<input type='text' ref={(input) => this.input = input} />`
 
-## 什么是高阶组件
-高阶组件(HOC)是接受一个组件并返回一个新组件的函数。基本上，这是一个模式，是从 React 的组合特性中衍生出来的，称其为纯组件，因为它们可以接受任何动态提供的子组件，但不会修改或复制输入组件中的任何行为。
+## 用React hook实现一个计数器组件
 ```js
-const EnhancedComponent = higherOrderComponent(WrappedComponent);
+fucntion Counter() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCount(count => count+1)
+    }, 1000)
+  },[])
+  return () => {
+    clearInterval(timer)
+  }
+}
 ```
-## 高阶组件可以用来做什么
-* 代码重用、逻辑和引导抽象
-* 渲染劫持
-* state 抽象和操作
-* props 处理
+
+## 如何实现一个自定义hook，useEventListener
+```js
+function useEventListener(eventName, handler, dom) {
+  const savedHandler = useRef();
+
+  useEffect(() => {
+    savedHandler.current = handler;
+  }, [handler]);
+
+  useEffect(() => {
+    const eventListener = (event) => savedHandler.current(event);
+    dom.addEventLister(eventName, eventListener);
+    return () => {
+      dom.removeEventListener(eventName, eventListener);
+    }
+  }, [eventName, dom])
+}
+```
+
+## useEffect中如何使用async/await
+在useEffect内部或者外部，重新封装一个async函数，在async函数内部使用await。在useEffect里面调用这个async函数。
+```js
+async function fetchMyAPI() {
+  let response = await fetch("api/data");
+}
+
+useEffect(() => {
+  fetchMyAPI();
+}, []);
+
+// 或者
+useEffect(() => {
+  const fetchMyAPI = async () => {
+    let response = await fetch("api/data");
+  }
+  fetchMyAPI();
+}, []);
+```
+
+## react hooks 的原理是什么
+闭包
+
+## state 和 props 的区别是什么
+* props和state都是普通的 JS 对象
+* state 是组件内部状态，可变
+* props 是外部传入的参数， 不可变
 
 ## 什么是受控组件
 在html中，表单元素如input, textarea，通常自己维护自己的状态，由用户输入自动更新。他们都是有自己的value的，这些元素是可以被直接设置value属性值的。 
@@ -146,12 +220,36 @@ jsx将html和js混在一起编写，需要通过babel和webpack编译来转化�
 * 注释也要用{}包裹
 
 ## 如何避免组件的重新渲染？
-* React.memo(): 这可以防止不必要地重新渲染函数组件
-* PureComponent: 这可以防止不必要地重新渲染类组件
+* React.memo(): 这可以防止不必要地重新渲染函数组件。对子组件默认使用浅比较对比前后两次 props 的变更，若未发生变更则不会重新渲染。
+* PureComponent: 这可以防止不必要地重新渲染类组件。对子组件默认使用浅比较对比前后两次 props 的变更。
 
 ## 为什么要给所有的实例方法绑定this呢？
+```js
+class ToggleButton extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {isToggleOn: true};
+        this.handleClick = this.handleClick.bind(this); 
+    }
+    handleClick(){
+        this.setState(prevState => ({
+            isToggleOn: !preveState.isToggleOn
+        }));
+    }
+    render(){
+        return(
+          <button onClick={this.handleClick}>
+              {this.state.isToggleOn ? 'ON':'OFF'}
+          </button>
+        )
+    }
+}
+```
 为了提前规避this指针丢失的问题，不然在程序执行过程中this就可能会指向window而不是该实例。
+
 可以使用箭头函数， 他会默认指向上下文。
+
+React在事件发生时调用onClick，由于onClick只是中间变量，如果不绑定this, 所以处理函数中的this指向会丢失。其实真正调用时并不是this.handleClick(),如果是这样调用那么this指向就不会有问题。真正调用的是onClick()，而onclick是dom事件，并不是类中的方法，简单可以理解为是在类外面的调用，此时的this其实指向的是全局作用域，而这个作用域下并没有setstate方法，所以自然而然地报undefined错误。
 
 ## react组件通信
 ### 父组件向子组件通信
@@ -183,14 +281,14 @@ jsx将html和js混在一起编写，需要通过babel和webpack编译来转化�
 ## 组件插槽
 使用props.children
 
-## 组件生命周期
+## React组件生命周期
 ### 挂载阶段
 constructor()   
-static getDerivedStateFromProps()   
+static getDerivedStateFromProps() 从props中获取state，将传入的props映射到state  
 render()   
 componentDidMount()
 ### 更新阶段
-static getDerivedStateFromProps()   
+static getDerivedStateFromProps()  从props中获取state，将传入的props映射到state 
 shouldComponentUpdate()   
 render()   
 getSnapshotBeforeUpdate()   
@@ -206,6 +304,13 @@ import()， React.lazy()
 
 ## 怎么开发错误边界组件
 如果一个 class 组件中定义了 static getDerivedStateFromError() 或 componentDidCatch() 这两个生命周期方法中的任意一个（或两个）时，那么它就变成一个错误边界组件。
+
+## 使用 PropTypes 进行类型检查
+```js
+Component.propTypes = {
+  name: PropTypes.string
+};
+```
 
 ## 如何创建，使用Context
 ### 创建
@@ -246,13 +351,90 @@ render() {
 }} />
 ```
 
-## render prop 和 HOC 的区别， 使用场景
-
-## 使用 PropTypes 进行类型检查
+## 什么是高阶组件HOC
+高阶组件(HOC)是接受一个组件并返回一个新组件的函数。基本上，这是一个模式，是从 React 的组合特性中衍生出来的，称其为纯组件，因为它们可以接受任何动态提供的子组件，但不会修改或复制输入组件中的任何行为。
 ```js
-Component.propTypes = {
-  name: PropTypes.string
-};
+function higherOrderComponent(wrappedComponent) {
+  return class HOCComponent extends Component {
+    static displayName = `HOC(${wrappedComponent.displayName})`
+
+    constructor(props){
+      super(props)
+      // 操作state
+      this.state = {
+        name:'alien'
+      }
+     }
+
+    // 操作props
+    let newProps = { ...this.props, title: 'new title'}
+    
+    return <WrappedComponent {...newProps} { ...this.state } />;
+  }
+}
+const EnhancedComponent = higherOrderComponent(WrappedComponent);
+```
+## 高阶组件可以用来做什么
+* 代码重用、逻辑和引导抽象
+* 渲染劫持
+* state 抽象和操作
+* props 处理
+
+## React 中各种组件复用的优劣势（mixin、render props、hoc、hook）
+mixins: 变量来源不清、属性重名、Mixins引入过多会导致顺序冲突
+
+HOC：优点：提取公共逻辑，降低耦合度。缺点：组件嵌套过多，调试溯源不清晰，state、内部方法相同的话会进行覆盖。
+
+Render props：优点：清楚知道这个state来自哪里。缺点：使用起来会嵌套地狱。不能在return外使用数据。
+
+hook: Hooks 就是让你不必写class组件就可以用state和其他的React特性；也可以编写自己的hooks在不同的组件之间复用。代码量少，复用性高，易拆分，也有一些闭包的坑
+
+## React 路由有3种渲染方式——render，children，component，到底用哪一个？用任何一个都可以吗？
+### render
+给 render 传递的是一个函数，它和 component 一样，在函数的参数中可以访问到所有的 route props
+```js
+//内联方式
+<Route path="path" render={() => <div>这是内联组件写法</div>} />
+//嵌套组合方式
+<Route path="path" render={ props => (
+  <ParentComp>
+    <Comp {...props} />
+  </ParentComp>
+) />
+```
+### children
+无论 location 是否匹配路由，你都需要渲染一些内容，这时候你可以使用 children。
+```js
+<Route path="path" children={ props => (
+  <div className={props.match? "active": ''}>
+    <Link to="path" />
+  </div>
+) />
+```
+### component
+只有在当 location 匹配时才渲染
+```js
+<Route path="path" component={Comp} />
 ```
 
+但当他们同时存在时，优先渲染component的值，其次是render属性的值，而children属性的值优先级最低，为了避免 不必要的错误，尽量每个Route中只是用他们三个中的其中一个。
+## React 的 Fiber 是干什么的
+因为 JavaScript 单线程的特点，每个同步任务不能耗时太长，不然就会让程序不会对其他输入作出相应，React 的更新过程就是犯了这个禁忌，而 React Fiber 就是要改变现状。 而可以通过分片来破解 JavaScript 中同步操作时间过长的问题。
+
+把一个耗时长的任务分成很多小片，每一个小片的运行时间很短，虽然总时间依然很长，但是在每个小片执行完之后，都给其他任务一个执行的机会，这样唯一的线程就不会被独占，其他任务依然有运行的机会。
+
+React Fiber 把更新过程碎片化，每执行完一段更新过程，就把控制权交还给 React 负责任务协调的模块，看看有没有其他紧急任务要做，如果没有就继续去更新，如果有紧急任务，那就去做紧急任务。
+
+维护每一个分片的数据结构，就是 Fiber。
+
+## React 性能优化
+* Code Splitting
+* shouldComponentUpdate 避免重复渲染
+* 异步按需加载，路由懒加载，路由监听器
+* 组件尽可能的进行拆分、解耦
+* 列表类组件优化，
+比如：shouldComponentUpdate(nextProps, nextState)：React.PureComponent、Immutable，React.memo
+* bind 函数优化
+* 非可控组件和可控组件区别是否受 state 影响
+* ReactDOMServer 进行服务端渲染组件
 
