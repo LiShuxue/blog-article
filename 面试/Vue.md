@@ -387,81 +387,83 @@ const resetRoute = () => {
     4. patch 将虚拟DOM树插入到真实的DOM中
 
 ## Vue响应式原理(数据绑定原理)
-Vue 采用数据劫持结合发布—订阅模式的方法，通过 Object.defineProperty() 来劫持各个属性的 setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。模板编译的时候，生成对应的Watcher，调用setter进行依赖收集。
+Vue 采用数据劫持结合发布—订阅模式的方法，通过 Object.defineProperty() 来劫持各个属性的 setter，getter，在set时通知订阅者更新，get的时候收集订阅者。模板编译的时候，生成对应的订阅者，调用这个属性的get，主动去完成这个订阅者收集。所以一共分为4部分：
 
-实现一个监听器 Observer：对数据对象进行遍历，包括子属性对象的属性，利用 Object.defineProperty() 对属性都加上 setter 和 getter。调用getter的时候，进行依赖收集，将Watcher存起来。如果给某个值赋值，就会触发 setter，然后循环调用该数据的watter去执行更新回调。
+1. 对数据对象进行遍历，包括子属性对象的属性，利用 Object.defineProperty() 对属性都加上 setter 和 getter。调用getter的时候，进行依赖收集，将Observer存起来。调用setter的时候通知更新。每一个对象属性都有自己的任务中心。
 
-实现一个解析器 Compile：解析 Vue 模板指令，将模板中的变量都替换成数据，然后初始化渲染页面视图，并将每个变量对应的节点绑定更新函数，生成Watcher,调用对应的getter方法来添加监听数据的订阅者，即依赖收集。
+2. 模板编译的时候，对模板上的每一个属性，生成对应的订阅者，这样数据变化时，可以通知模板视图的更新。
 
-实现一个订阅者 Watcher：Watcher 订阅者是 Observer 和 Compile 之间通信的桥梁 ，主要的任务是订阅 Observer 中的属性值变化的消息，当收到属性值变化的消息时，触发解析器 Compile 中对应的更新函数。
+3. 实现一个任务调度中心：采用 发布-订阅 设计模式，用来收集订阅者 Observer，以及通知Observer去更新。
 
-实现一个订阅器 Dep：订阅器采用 发布-订阅 设计模式，用来收集订阅者 Watcher，对监听器 Observer 和 订阅者 Watcher 进行统一管理。
+4. 实现一个Observer类，用来作为订阅者类。订阅者初始化的时候主动调用属性的getter，将自己作为订阅这个属性变化的，完成依赖收集。
 
 ```js
 class Vue {
-    constructor(options) {
-        this.data = options.data
-        this.walkData(this.data)
-        this.compile()
-    }
+  constructor(options) {
+    this.data = options.data;
+    this.walkData(this.data);
+    this.compile();
+  }
 
-    walkData(data) {
-        Object.keys(data).forEach(key => {
-            let val= data[key];
-            let sub = new Subject();
-            Object.defineProperty(data, key, {
-                set(value){
-                    val = value;
-                    sub.notify();
-                },
-                get(value){
-                    sub.collect(); // 最开始collect的时候， 因为Subject.target是null， 所以并没有依赖，只有编译页面的时候， 才将依赖收集上来
-                    return value;
-                }
-            })
-        })
-    }
+  // 第一步
+  walkData(data) {
+    Object.keys(data).forEach((key) => {
+      let val = data[key];
+      let eventCenter = new EventCenter(); // 每一个属性都有一个任务中心
+      Object.defineProperty(data, key, {
+        set(value) {
+          val = value;
+          eventCenter.notify(); // 通知所有的observer更新
+        },
+        get(value) {
+          eventCenter.collect(); // 最开始collect的时候， 因为EventCenter.target是null， 所以并没有依赖，只有编译页面的时候， 才将依赖收集上来
+          return value;
+        },
+      });
+    });
+  }
 
-    compile() {
-        new Observer();
-    }
+  // 第二步
+  compile() {
+    new Observer(); // 指定target 和 调用get，完成依赖收集
+  }
 }
 
-class Subject {
-    constructor() {
-        this.subs = [];
+// 第三步
+class EventCenter {
+  constructor() {
+    this.observers = []; // 存储所有的observer
+  }
+  addObserver(ob) {
+    this.observers.push(ob);
+  }
+  notify() {
+    this.observers.forEach((ob) => {
+      ob.update();
+    });
+  }
+  collect() {
+    // 依赖收集
+    if (EventCenter.target) { // 这里是重点，借用静态属性target存储当前的observer实例。
+      EventCenter.target.addSelf(this);
     }
-    addSub(sub) {
-        this.subs.push(sub)
-    }
-    notify() {
-        this.subs.forEach(sub => {
-            sub.update();
-        })
-    }
-    collect() {
-        // 依赖收集
-        if (Subject.target) {
-            Subject.target.add(this)
-        } 
-    }
+  }
 }
-Subject.target = null;
+EventCenter.target = null;
 
+// 第四步
 class Observer {
-    constructor() {
-        this.init()
-    }
-    init(){
-        Subject.target = this;
-        // 调用get， 完成依赖收集
-    }
-    update() {
-
-    }
-    add(sub){
-        sub.addSub(this)
-    }
+  constructor() {
+    this.init();
+  }
+  init() {
+    EventCenter.target = this;
+    // 调用get， 完成依赖收集
+  }
+  update() {}
+  addSelf(eventCenter) {
+    eventCenter.addObserver(this); // 将自己添加到事件调度中心的订阅者队列
+  }
 }
 ```
 

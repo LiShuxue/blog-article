@@ -47,18 +47,19 @@ css-loader, style-loader, sass-loader, less-loader, url-loader, file-loader, bab
 ## 如何编写一个plugin
 1. 创建一个类，包含apply方法
 2. 逻辑在apply中实现，可以监听webpack的各种钩子函数， 比如beforeRun, run, compile, emit, done等。
+3. tap，tapAsync方法可以用来同步或者异步执行。
 
     ```js
-    class webpackPlugin {
+    class MyWebpackPlugin {
     　　constructor(options){
     　　　　this.options = options;
     　　}
     　　apply(compiler) {
-    　　// compiler 很重要，是webpack的一个实例，这个实例存储了webpack各种信息，所有打包信息
-            compiler.hooks.run.tap('', () => {})
-            compiler.hooks.compile.tap('', () => {})
-            compiler.hooks.emit.tap('', () => {})
-            compiler.hooks.done.tap('', () => {})
+    　　    // compiler 很重要，是webpack的一个实例，这个实例存储了webpack各种信息，所有打包信息
+            compiler.hooks.run.tap('MyWebpackPlugin', (compiler) => {})
+            compiler.hooks.compile.tap('MyWebpackPlugin', (compilationParams) => {})
+            compiler.hooks.emit.tap('MyWebpackPlugin', (compilation) => {})
+            compiler.hooks.done.tap('MyWebpackPlugin', (stats) => {})
     　　}
     }
     module.exports = webpackPlugin;

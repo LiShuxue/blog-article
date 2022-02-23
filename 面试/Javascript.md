@@ -638,6 +638,40 @@ window.addEventListener('scroll', debounce(handle, 1000));
     `arr.map((value, index, arr) => { return ... })`
 * Object.keys也是循环对象的key，返回一个数组
 
+## js 跳出循环，break, continue, return
+1. for 循环，for of循环，while循环，for in循环。都是break跳出循环，continue下一次循环
+    ```js
+    const arr = [0,1,2,3,4,5];
+    for(let i=0; i<arr.length;i++){
+        if(i===1) continue;
+        if(i===4) break;
+        console.log(arr[i])
+    }
+
+    for(let i of arr){
+        if(i===1) continue;
+        if(i===4) break;
+        console.log(arr[i])
+    }
+
+    let i = 0;
+    while(i < arr.length){
+        console.log(arr[i])
+        i++;
+        if(i===1) continue;
+        if(i===4) break;
+    }
+
+    const obj = {a:'a',b:'b',c:'c',d:'d',e:'e'}
+    for(let key in obj){
+        if(key==='a') continue;
+        if(key==='e') break;
+        console.log(i)
+    }
+    ```
+2. map, forEach等循环，不能跳出循环，如果想跳出，只能主动抛出一个异常。throw new Error()
+
+3. return 一般用来作为函数的返回值，不能单独用在循环中。
 ## 前端存储方式
 1. cookie  
     cookie 中主要存储sessionid，过期时间，域名，路径等。会在发送请求的时候自动携带。为了维持服务器的状态。大小只有4k。
