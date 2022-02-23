@@ -382,19 +382,25 @@ function new2(Constructor, ...args) {
 hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性，忽略那些从原型链上继承到的属性。
 
 ## typeof, instanceof, Object.prototype.toString.call()
-* typeof 可以用于判断基本数据类型和函数，判断不出来null对象数组
+* typeof 可以用于判断基本数据类型和函数，判断不出来null对象数组和实例。输出的是小写的。
 ```js
 typeof 1  // "number"
 typeof '1' // "string"
 typeof true  //"boolean"
-typeof new Boolean(false)  // "object"
-typeof null // "object"
 typeof undefined // "undefined"
-typeof {} // "object"
-typeof []  // "object"
+let s = Symbol()
+typeof s // "symbol"
+
+typeof function(){} // "function"
 typeof Object // "function"
 typeof Array // "function"
 typeof Function // "function"
+
+typeof null // "object"
+typeof {} // "object"
+typeof []  // "object"
+typeof new Boolean(false)  // "object"
+typeof new Date() // "object"
 ```
 * Object.prototype.toString.call()，可以精确判断所有类型
 ```js
@@ -410,15 +416,36 @@ Object.prototype.toString.call(Function) // "[object Function]"
 Object.prototype.toString.call(Array) // "[object Function]"
 Object.prototype.toString.call(Object) // "[object Function]"
 ```
-* instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。所以主要是用来检测对象和数组，无法准确判断Function
+* instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。所以主要是用来检测对象和数组，无法准确判断Function 和基本数据类型
 ```js
 console.log([] instanceof Array); // true
 console.log({} instanceof Object); // true
 console.log(/\d/ instanceof RegExp); // true
+
 console.log(function(){} instanceof Object); // true
 console.log(function(){} instanceof Function);// true
+
 console.log('' instanceof String); // false
 console.log(1 instanceof Number); // false
+console.log(true instanceof Boolean); // false
+```
+
+## 模拟实现instanceof
+instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断，`实例.__proto__ === 构造函数.prototype` 或者 `实例.__proto__.__proto__ === 构造函数.prototype`，递归。
+```js
+function myinstanceof(instance, func){
+    let left = instance.__proto__;
+    let right = func.prototype;
+    while(true){
+        if(left === null) { // 找到最顶层，原型链的最顶层是null
+            return false;
+        } 
+        if(left === right) {
+            return true;
+        }
+        left = left.__proto__
+    }
+}
 ```
 
 ## Object.defineProperty(obj, prop, descriptor)
