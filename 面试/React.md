@@ -271,6 +271,15 @@ React在事件发生时调用onClick，由于onClick只是中间变量，如果�
     * 同级，provide/inject, context
 4. 数据绑定， vue双向，v-modal. react单向
 
+## Vue 和 React 的 Diff 算法有哪些区别
+相同点：
+1. 都只对同级节点进行对比
+2. 都用key做为标识
+
+不同点：
+1. 列表对比，react 采用单指针从左向右进行遍历，vue采用双指针，从两头向中间进行遍历。
+2. 节点对比，当节点元素类型相同，但是className不同，vue认为是不同类型元素，删除重建，而react会认为是同类型节点，只是修改节点属性。
+
 ## react性能优化
 * render里面尽量减少新建变量和bind函数，传递参数时尽量减少传递参数的数量。
 * 定制shouldComponentUpdate函数
@@ -298,6 +307,22 @@ componentWillUnmount()
 ### 错误处理 
 static getDerivedStateFromError()   
 componentDidCatch()
+
+## 如何在 hooks 中实现 shouldComponentUpdate 这个生命周期
+React.memo默认情况下其只会对复杂对象做浅层对比，如果你想要控制对比过程，那么请将自定义的比较函数通过第二个参数传入来实现。
+```js
+function MyComponent(props) {
+  /* 使用 props 渲染 */
+}
+function areEqual(prevProps, nextProps) {
+  /*
+  如果把 nextProps 传入 render 方法的返回结果与
+  将 prevProps 传入 render 方法的返回结果一致则返回 true，
+  否则返回 false
+  */
+}
+export default React.memo(MyComponent, areEqual);
+```
 
 ## 代码分割, 组件懒加载
 import()， React.lazy()

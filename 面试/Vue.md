@@ -25,6 +25,14 @@ keep-alive 组件激活时 activated，keep-alive 组件停用时 deactivated
 销毁：  
 父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
 
+## beforeCreate 的时候能拿到 Vue 实例么
+可以拿到组件实例，也就是可以用this。但是不能获取到data和methods。如果想强行获取data，可以用this.$options.data()
+## 什么情况下会触发组件销毁，销毁的时候会卸载自定义事件和原生事件么
+页面关闭，路由切换（没有keep-alive时），v-if
+
+Vue本身的一些自定义事件监听，比如@click, @blur等会自动销毁，但是原生的document.addEventListener事件比如scroll，keydown，keyup，vue监测不到，无法移除监听，你可以自己销毁。
+
+其实组件销毁后DOM元素也被移除，根据JS的垃圾回收机制，节点的销毁，会顺带把该节点所有的监听事件置空，所以绑定在DOM元素上的事件自然也就被移除了。但是绑定的是document的话，因为document对象没有被清楚，所以事件没有被卸载。
 ## 哪个生命周期调用异步请求
 created、beforeMount、mounted 中都可以，因为此时data已经创建。一般在created中。
 
@@ -93,7 +101,10 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
 `vm.$set(vm.items, indexOfItem, newValue)`  
 `vm.items.splice(indexOfItem, 1, newValue)`  
 解决第二种问题：  
-`vm.items.splice(newLength)`  
+`vm.items.splice(newLength)` 
+
+## Vue 如何实现的数组的监听，为什么 Vue 没有对数组下标修改做劫持 
+重写数组的方法。不对数组下标做劫持就是因为性能问题。
 
 ## 组件通信
 1. props/$emit 父子通信  
@@ -133,7 +144,7 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
     // 子孙
     inject: ['test']
     ```
-5. $attrs/$listeners 隔代通信
+5. `$attrs/$listeners` 隔代通信
     * $attrs：当子组件的props中没有声明父组件传下来的prop属性时，那么父组件传下来的prop属性会被保存在子组件的$attrs属性上( class 和 style 除外 )。  
     子组件加了inheritAttrs:false，DOM上就不会继承未声明的props。
         ```js
@@ -467,6 +478,10 @@ class Observer {
 }
 ```
 
+## vue响应式原理的两大缺陷，解决办法
+1. 无法监听到对象属性的动态添加和删除。用this.$set 或者this.$delete解决
+2. 无法监听到数组下标和length长度的变化。用 arr.splice 解决
+
 ## Object.defineProperty(obj, prop, descriptor)
 会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
 1. obj  要在其上定义属性的对象。
@@ -572,7 +587,13 @@ class EventBus {
     }
     ```
 2. diff 算法 — 比较两棵虚拟 DOM 树的差异；
+    * 比较只会在同层级进行, 不会跨层级比较
+    * 在diff比较的过程中，循环从两边向中间比较
 3. pach 算法 — 将两个虚拟 DOM 对象的差异应用到真正的 DOM 树。
+
+## vue scoped 是怎么实现的
+1. 给HTML的DOM节点加一个不重复data属性(形如：data-v-2311c06a)来表示他的唯一性。
+2. 在每句css选择器的末尾（编译后的生成的css语句）加一个当前组件的data属性选择器的哈希特征值（如[data-v-2311c06a]）来私有化样式。
 
 ## vue-router实现原理
 前端路由：  

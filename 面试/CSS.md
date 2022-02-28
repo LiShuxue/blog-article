@@ -17,6 +17,27 @@
 * display: inline; 将一个块元素改变为行元素，不会独占一行，并且不能设置宽高，不能设置垂直方向上的padding和margin
 * display: inline-block; 将一个元素设置为行内块。即既有行元素的特性，不会独占一行，跟其他行元素并列排一行，又有块元素的特性，可以设置宽高padding margin。
 
+## CSS实现一个三角形
+```css
+.sanjiao{
+    width: 0px;
+    height: 0px;
+    border: 50px solid transparent;
+    border-top-color: black;
+}
+```
+
+## CSS实现一个扇形
+```css
+.sanxing{
+    width: 0px;
+    height: 0px;
+    border: 100px solid transparent;
+    border-top-color: red;
+    border-radius: 50%;
+}
+```
+
 ## 水平居中，垂直居中
 ### 水平居中  
 行元素：  

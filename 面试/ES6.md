@@ -145,6 +145,18 @@ Map 类似于对象，也是键值对的集合，但是“键”的范围不限�
 ### WeakMap
 与上面的WeakSet类似
 
+## 用 Set 获取两个数组的并集，交集，差集，补集
+```js
+// 并集
+let union = Array.from(new Set([...a, ...b]));
+// 交集
+let intersect = Array.from(new Set(a)).filter(x => b.includes(x));
+// 差集
+let difference = Array.from(new Set(a)).filter(x => !b.includes(x));
+// 补集
+let complement = [...a.filter(x => !b.includes(x)), ...b.filter(x => !a.includes(x))];
+```
+
 ## Proxy
 Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。
 
@@ -277,7 +289,7 @@ Reflect.apply(a.say, b, []) //b
 * `Promise.resolve()` 将现有对象转为 Promise 对象,并且是resolve状态。不带参数，直接返回一个resolved状态的 Promise 对象。
 * `Promise.reject()` 返回一个新的 Promise 实例，该实例的状态为rejected。
 * `Promise.prototype.then()` 为 Promise 实例添加状态改变时的回调函数。前面说过，then方法的第一个参数是resolved状态的回调函数，第二个参数（可选）是rejected状态的回调函数。
-* `Promise.prototype.catch()` 如果异步操作抛出错误，状态就会变为rejected，就会调用catch方法指定的回调函数，处理这个错误。另外，then方法指定的回调函数，如果运行中抛出错误，也会被catch方法捕获。
+* `Promise.prototype.catch()` 如果异步操作抛出错误，状态就会变为rejected，就会调用catch方法指定的回调函数，处理这个错误。另外，then方法指定的成功或者失败的回调函数，如果运行中抛出错误，也会被catch方法捕获。
 * `Promise.prototype.finally()` 用于指定不管 Promise 对象最后状态如何，都会执行的操作。
 
 ## Promise的执行顺序
@@ -390,6 +402,37 @@ class MyPromise{
     } 
 }
 ```
+
+## 手写实现 Promise.all
+1. Promise.all的返回值也是一个Promise
+2. 返回一个对应的数组，数组下标的值对应其Promise的结果。
+3. 如果有Promise 被reject, Promise.all失败。都成功才成功。
+4. 参数数组里面可以是promise，也可是普通数据。
+```js
+function promiseAll(promiseList) {
+    let result = [];
+    let count = 0;
+    return new Promise((resolve, reject) => {
+        for(let i=0; i<promiseList.length; i++) {
+            Promise.resolve(promiseList[i]).then(res => {
+                count++;
+                result[i] = res;
+                if (count === promiseList.length) {
+                    resolve(result);
+                }
+            }).catch(e => {
+                reject(e)
+            })
+        }
+    })
+}
+```
+
+## 如何限制 Promise 请求并发数
+通过Promise.all()实现
+1. 初始化limit个Promise对象，作为Promise.all的参数
+2. Promise.all，执行这limit个数的Promise，等待resolve
+3. 重复步骤1，2
 
 ## Iterator遍历器和for...of
 Iterator它是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作。用for...of遍历。
@@ -512,6 +555,18 @@ class Son extends Father {
     }
 }
 ```
+ES5的继承，子类必须调用父类的call，同时子类原型prototype是父类实例，子类原型prototype的构造函数是本身。
+```js
+var Father = function() {
+    this.name = '爸爸';
+}
+var Son = function() {
+    Father.call(this);
+    this.name = '儿子';
+}
+Son.prototype = new Father();
+Son.prototype.constructor = Son;
+```
 
 ### class中的原型链
 同时存在两条继承链：
@@ -530,3 +585,20 @@ B.prototype.__proto__ === A.prototype // true
 a.__proto__ === A.prototype // true
 b.__proto__ === B.prototype // true
 ```
+
+## class 中的箭头函数和普通函数有什么区别，如下
+```js
+class A {
+  a = 1;
+  fn() {
+      console.log(this.a)
+  }
+  f = () => {
+      console.log(this.a)
+  };
+}
+let a = new A()
+```
+1. 两种写法都是原型方法，实例可以调用。
+2. 普通函数写法，`a.fn()`这样调用没问题，如果是改下引用， `let b = a.fn; b();`这样调用会报错。
+3. 箭头函数会绑定this，以后不管什么方式调用this都不会丢失。
