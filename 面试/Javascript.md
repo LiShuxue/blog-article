@@ -28,7 +28,7 @@ undefined表示未初始化的变量
 * Map 中的元素会保持其插入时的顺序；而 Object 则不会完全保持插入时的顺序。
 * Map 是可迭代对象，所以其中的键值对是可以通过 for of 循环或 .foreach() 方法来迭代的；而普通的对象键值对则默认是不可迭代的，只能通过 for in 循环来访问。
 
-## 一个对象作为key，会自动转成[object,object]
+## 一个对象作为key，会自动转成[object,Object]，第二个O大写
 ```js
 var a = { name: "Sam" };
 var b = { name: "Tom" };
