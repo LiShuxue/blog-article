@@ -667,7 +667,7 @@ window.addEventListener('scroll', debounce(handle, 1000));
     用async/await需要注意的是，如果里面有多个Promise，需要注意他们是否有依赖，没有依赖的话用await Promise.all([...])
 
 ## map、forEach、for in、for of、Object.keys
-* for in 遍历对象的key   
+* for in 遍历对象的key，因为key排序的问题，for-in语句无法保证遍历顺序。   
     `for (var prop in obj) { ... }`
 * for of ES6引入，用来遍历任何有Iterator接口的数据结构，如数组, Set, Map, String, Arguments等   
     `for (var value of arr) { ... }`

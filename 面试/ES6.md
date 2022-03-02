@@ -171,13 +171,13 @@ var proxy = new Proxy(target, {
         console.log(property);
         console.log(value);
         console.log(receiver);
-        target[property] = value;
+        Reflect.set(target, property, value, receiver);
     },
     get(target, property, receiver) {
         console.log(target);
         console.log(property);
         console.log(receiver);
-        return target[property];
+        return Reflect.get(target, property, receiver);
     }
 })
 
@@ -231,11 +231,12 @@ proxy.m()  // true
 13. construct(target, args)：拦截 Proxy 实例作为构造函数调用的操作，比如new proxy(...args)。
 
 ## Reflect
-Reflect对象的设计目的有这样几个  
-1. 将Object对象的一些明显属于语言内部的方法（比如Object.defineProperty），放到Reflect对象上。
-2. 修改某些Object方法的返回结果，让其变得更合理。比如，Object.defineProperty(obj, name, desc)在无法定义属性时，会抛出一个错误，而Reflect.defineProperty(obj, name, desc)则会返回false。
-3. 让Object操作都变成函数行为。某些Object操作是命令式，比如name in obj和delete obj[name]，而Reflect.has(obj, name)和Reflect.deleteProperty(obj, name)让它们变成了函数行为。
-4. Reflect对象的方法与Proxy对象的方法一一对应，只要是Proxy对象的方法，就能在Reflect对象上找到对应的方法。这就让Proxy对象可以方便地调用对应的Reflect方法，完成默认行为，作为修改行为的基础。
+Reflect对象一般搭配Proxy使用，Reflect对象的设计目的有这样几个  
+1. Reflect对象的方法与Proxy对象的方法一一对应，只要是Proxy对象的方法，就能在Reflect对象上找到对应的方法。这就让Proxy对象可以方便地调用对应的Reflect方法，完成默认行为，作为修改行为的基础。
+2. 将Object对象的一些明显属于语言内部的方法（比如Object.defineProperty），放到Reflect对象上。
+3. 修改某些Object方法的返回结果，让其变得更合理。比如，Object.defineProperty(obj, name, desc)在无法定义属性时，会抛出一个错误，而Reflect.defineProperty(obj, name, desc)则会返回false。
+4. 让Object操作都变成函数行为。某些Object操作是命令式，比如name in obj和delete obj[name]，而Reflect.has(obj, name)和Reflect.deleteProperty(obj, name)让它们变成了函数行为。
+
 ```js
 var target = {}
 var proxy = new Proxy(target, {
@@ -380,25 +381,23 @@ class MyPromise{
         }
     }
 
-    then(successcallback, errorcallback) {
-        if (this.status === 'fullfilled') {
-            successcallback(this.value)
+    then(success, error) {
+        // 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行
+        if (this.status === 'pending' && success) {
+            this.onResolvedCallbacks.push(() => success(this.value));
         }
-        if (this.status === 'rejected') {
-            errorcallback(this.reason)
+        if (this.status === 'pending' && error) {
+            this.onRejectedCallbacks.push(() => error(this.reason))
         }
-        if (this.status === 'pending') {
-            // 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行
-            this.onResolvedCallbacks.push(() => {
-                successcallback(this.value)
-            });
-            this.onRejectedCallbacks.push(()=> {
-                errorcallback(this.reason);
-            })
+        if (this.status === 'fullfilled' && success) {
+            success(this.result)
+        }
+        if (this.status === 'rejected' && error) {
+            error(this.reason)
         }
     }
-    catch(errorcallback) {
-        return this.then(null, errorcallback);
+    catch(error) {
+        this.then(null, error);
     } 
 }
 ```
@@ -414,6 +413,7 @@ function promiseAll(promiseList) {
     let count = 0;
     return new Promise((resolve, reject) => {
         for(let i=0; i<promiseList.length; i++) {
+            // 不能直接promiseList[i].then()， 因为promiseList[i]可能是普通数据
             Promise.resolve(promiseList[i]).then(res => {
                 count++;
                 result[i] = res;
