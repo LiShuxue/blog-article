@@ -216,7 +216,7 @@ foo.call(obj) // 10
 
 ## v8执行原理
 1. 初始化堆栈空间，全局上下文，全局作用域，事件循环系统。
-2. 输入全局的js代码，解析器(Parser)通过词法分析，生成token，语法分析生成AST抽象语法树。
+2. 输入全局的js代码，解析器(Parser)通过词法分析，生成tokens，语法分析根据tokens生成AST抽象语法树。
 3. 解释器(Ignition) 会将 AST 转换为字节码，一边解释一边执行。（解释执行）
 4. 在解释执行字节码的过程中，如果发现一段代码被多次重复执行，就会将其标记为热点（Hot）代码。V8 会将这段热点代码丢给优化编译器 TurboFan 编译为二进制代码。如果下次再执行时，就会直接执行二进制代码，提高执行速度。（编译执行）
 5. 如果遇到普通函数，只会对其进行预解析(Pre-Parser)，验证函数的语法是否有效、解析函数声明以及确定函数作用域，并不会生成 AST，当函数被调用时，才会对其完全解析。
@@ -555,11 +555,14 @@ a.h = new Date();
     * 无法复制一些特殊的对象，如 RegExp, Date, Set, Map等
 
 2. 面试版：
-    * 先判断目标类型，如果是对象，循环每一个key，如果是数组，递归每一个元素。
-    * 判断是对象，如果循环引用，跳出循环并返回本身。否则递归调用自身。
-    * 判断是数组，遍历数组的每一项，如果是对象，递归调用自身， 否则直接返回
-    * 判断是函数，重新生成函数
-    * 其他的值类型，直接复制
+    * 第一层如果是对象，循环每一个key，判断每一项
+        * 判断是对象，如果循环引用，返回本身。否则递归调用自身。
+        * 判断是数组，遍历数组的每一项，如果是对象，递归调用自身，否则直接返回
+        * 判断是函数，重新生成函数
+        * 值类型直接复制
+    * 第一层如果是数组，递归每一个元素。
+    * 第一层如果是值类型，直接复制。
+    
     ```js
     function deepClone(obj) {
         let newobj;
@@ -570,7 +573,6 @@ a.h = new Date();
                 if (Object.prototype.toString.call(value) === '[object Object]') {
                     if (value === obj) { // 循环引用
                         newobj[key] = obj;
-                        continue;
                     } else {
                         newobj[key] = deepClone(value); // 递归本身
                     }
@@ -746,12 +748,12 @@ window.addEventListener('scroll', debounce(handle, 1000));
 6. `trimStart()`和`trimEnd()` 与trim()一致，trimStart()消除字符串头部的空格，trimEnd()消除尾部的空格。
 
 ## 如何判断是否是数组？
-1. `arr instanceof Array`
-2. `arr.constructor === Array`
-3. `Object.prototype.toString.call(arr) === "[object Array]"`
-4. `Array.isArray(arr) // es6提供` 
+1. `Array.isArray(arr) // es6提供`
+2. `Object.prototype.toString.call(arr) === "[object Array]"` 
+3. `arr instanceof Array`
+4. `arr.constructor === Array`
 
-一般用3，4方法
+一般用1，2方法
 
 ## 数组操作
 1. `arr.push(a, b, c...)` 从后面添加一个或多个元素，返回值为添加完后的数组的长度
