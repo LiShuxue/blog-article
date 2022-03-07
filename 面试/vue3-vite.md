@@ -4,7 +4,7 @@
 3. 重构了虚拟 DOM，模板编译优化，slot优化，diff算法优化
 4. 代码结构调整，将一些全局代码抽出来，更便于Tree shaking，使得体积更小，如nextTick
 5. 使用Typescript
-6. 支持在 <style></style> 里使用 v-bind，给 CSS 绑定 JS 变量(color: v-bind(str))
+6. 支持在 `<style></style>`里使用 v-bind，给 CSS 绑定 JS 变量(color: v-bind(str))
 
 ## Vue3.0 里为什么要用 Proxy 替代 defineProperty
 1. 可直接监听数组类型的数据变化，及对象新增属性

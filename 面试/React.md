@@ -56,6 +56,23 @@ diff算法的作用是计算出Virtual DOM中真正变化的部分，并只针�
 * 插入： 插入节点
 * 移动： 根据key进行移动
 
+## Vue 和 React 的 Diff 算法有哪些区别
+相同点：
+1. 都只对同级节点进行对比
+2. 都用key做为标识
+
+不同点：
+1. 列表对比，react 采用单指针从左向右进行遍历，vue采用双指针，从两头向中间进行遍历。
+2. 节点对比，当节点元素类型相同，但是className不同，vue认为是不同类型元素，删除重建，而react会认为是同类型节点，只是修改节点属性。
+
+## vue和react的区别
+1. 模板 与 JSX
+2. 复用 mixin与HOC， hooks和setup
+3. 通信方面 
+    * 父子，vue, data down, event up. react props 和 callback
+    * 同级，provide/inject, context
+4. 数据绑定， vue双向，v-modal. react单向
+
 ## React 中 keys 的作用是什么？
 key是react元素或组件的唯一标识，用于diff的时候，追踪元素或组件的删除，插入，移动等。
 
@@ -263,23 +280,6 @@ React在事件发生时调用onClick，由于onClick只是中间变量，如果�
 2. 自定义event bus
 3. redux
 
-## vue和react的区别
-1. 模板 与 JSX
-2. 复用 mixin与HOC， hooks和setup
-3. 通信方面 
-    * 父子，vue, data down, event up. react props 和 callback
-    * 同级，provide/inject, context
-4. 数据绑定， vue双向，v-modal. react单向
-
-## Vue 和 React 的 Diff 算法有哪些区别
-相同点：
-1. 都只对同级节点进行对比
-2. 都用key做为标识
-
-不同点：
-1. 列表对比，react 采用单指针从左向右进行遍历，vue采用双指针，从两头向中间进行遍历。
-2. 节点对比，当节点元素类型相同，但是className不同，vue认为是不同类型元素，删除重建，而react会认为是同类型节点，只是修改节点属性。
-
 ## react性能优化
 * render里面尽量减少新建变量和bind函数，传递参数时尽量减少传递参数的数量。
 * 定制shouldComponentUpdate函数
@@ -289,6 +289,21 @@ React在事件发生时调用onClick，由于onClick只是中间变量，如果�
 
 ## 组件插槽
 使用props.children
+```js
+// 父组件中
+<Parent>
+    <h1>this is children</h1>
+</Parent>
+
+function Parent(props) {
+    return (
+        <div>
+            <h1>below is children</h1>
+            {props.children}
+        </div>
+    );
+}
+```
 
 ## React组件生命周期
 ### 挂载阶段

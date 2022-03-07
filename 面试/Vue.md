@@ -16,14 +16,23 @@ keep-alive 组件激活时 activated，keep-alive 组件停用时 deactivated
 * updated : 当数据更新要做统一业务处理的时候
 
 ## Vue 的父组件和子组件生命周期钩子函数执行顺序
+组件的调用顺序都是先父后子
+
 加载渲染：  
 父beforeCreate --> 父created --> 父beforeMounted --> 子beforeCreate --> 子created --> 子beforeMounted --> 子mounted -->父mounted  
+
 父组件更新：  
-父 beforeUpdate --> 父 updated  
+* 影响到子组件： 父beforeUpdate -> 子beforeUpdate->子updated -> 父updted
+* 不影响子组件： 父beforeUpdate -> 父updated
+
 子组件更新：  
 父beforeUpdate --> 子beforeUpdate --> 子updated --> 父updated  
-销毁：  
+
+父组件销毁：  
 父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
+
+子组件销毁：  
+子 beforeDestroy -> 子 destroyed
 
 ## beforeCreate 的时候能拿到 Vue 实例么
 可以拿到组件实例，也就是可以用this。但是不能获取到data和methods。如果想强行获取data，可以用this.$options.data()
@@ -195,8 +204,8 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
 3. 全局后置钩子 `router.afterEach((to, from) => {...})`，没有 next 函数也不会改变导航本身
 4. 路由独享守卫 `beforeEnter((to, from, next) => {...})`，在路由配置上直接定义
 5. 组件内的守卫
-    * beforeRouteEnter (to, from, next) {...}在渲染该组件的对应路由被confirm
-    * beforeRouteUpdate (to, from, next) {...}在当前路由改变，但是该组件被复
+    * beforeRouteEnter (to, from, next) {...}在渲染该组件的对应路由被confirm前调用
+    * beforeRouteUpdate (to, from, next) {...}在当前路由改变，但是该组件被复用时调用
     * beforeRouteLeave (to, from, next) {...}导航离开该组件的对应路由时调用
 
 ## 完整的导航解析流程
@@ -228,7 +237,7 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
 * Model：Model的变化也会被Binder监听(仍然是通过观察者模式)，一旦监听到变化，Binder就会自动实现View的更新。
 
 ## 单向数据流
-1. 数据只能从父组件流向子组件
+1. 数据只能从父组件流向子组件，props向下传，emit触发事件，父组件中去更新data。子组件修改props, vue 将会报错。
 2. vuex的单向数据流，状态只能通过提交mutation去更改。
 
 ## v-for循环为什么要加key
@@ -607,7 +616,7 @@ class EventBus {
 
 ### hash模式和history模式的区别
 * 一般使用场景没啥区别，他们俩也都可以使用浏览器的前进后退按钮。
-* hisotry 模式需要配置服务器， 负责刷新页面可能会导致404
+* hisotry 模式需要配置服务器， 否则刷新页面可能会导致404
 * hash 模式带#号，一般不能用来做分享的url，因为有的app里面url是不允许带有#号的
 
 ## vuex state、getter、mutation、action、module
