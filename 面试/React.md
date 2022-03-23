@@ -97,6 +97,8 @@ React 合成事件（SyntheticEvent）是 React 模拟原生 DOM 事件所有能
 2. 而是在 document 处监听所有支持的事件，当事件发生并冒泡至 document 处时，React 将事件内容封装交给中间层 SynthticEvent(负责所有事件合成)
 3. 所以当事件触发的时候，对使用统一的分发函数 dispatchEvent 将指定函数执行
 
+https://segmentfault.com/a/1190000039108951
+
 ### 那么 React 为什么使用合成事件？其主要有三个目的：
 1. 进行浏览器兼容，实现更好的跨平台
 

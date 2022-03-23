@@ -39,6 +39,19 @@
 }
 ```
 
+## CSS实现一个箭头，45度角
+原理：需要实现一个45度的菱形，取border。通过正方形来调整边长和倾斜。
+```css
+.arrow {
+    width: 42px; // 高的根号2倍
+    height: 30px;
+    background: red;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    transform: rotate(-22deg) skewX(45deg)
+}
+```
+
 ## 水平居中，垂直居中
 ### 水平居中  
 行元素：  
@@ -96,8 +109,8 @@ top: 10px;
 ## transition， transform， translate, animation, @keyframes
 transition：过渡。可以定义过渡属性，过渡效果时间，速度曲线，延迟执行。  
 `transition: width 2s ease 2s;`  
-transform：变换。平移translate，缩放scale，旋转rotate  
-`transform: translate(10px) rotate(45deg) scale(1.5)`
+transform：变换。平移translate，缩放scale，旋转rotate，倾斜skew。  
+`transform: translate(10px) rotate(45deg) scale(1.5) skew(45deg)`
 translate：transform的一个值。  
 animation：动画。可以定义keyframe的名字，动画时间，速度曲线，延迟执行，播放次数，轮流反向播放。  
 `animation: myKeyframe 4s infinite;`  

@@ -2,6 +2,36 @@
 ==：比较值，类型不同的时候，先进行类型转换，再比较值；1 == "1"  true  
 ===：比较类型和值，不做类型转换，类型不同就是不等；1 === "1"  false
 
+## [] == false，是true还是false，隐式转换
+true。
+* NaN和其他任何类型比较永远返回false。
+* Boolean 和其他任何类型比较，Boolean 首先被转换为 Number 类型。
+* String和Number比较，先将String转换为Number类型。
+* null == undefined比较结果是true，除此之外，null、undefined和其他任何结果的比较值都为false。
+* 两个引用类型比较，引用地址不一样，直接false。
+* 原始类型和引用类型做比较时，引用类型会依照ToPrimitive规则转换为原始类型。
+    * 引用类型先调用valueOf()，如果是基本类型，直接返回
+    * 不是基本类型，再调用toString
+    * String再转Number
+
+## 与或非优先级运算
+1. 与或非混合时，非>与>或。 
+    ```js
+    true && !false || false // true
+    false || !false && false // false
+    ```
+2. && 和 || 的短路运算
+    * &&的短路运算：左边能转成false，无条件返回左边式子的值。反之无条件返回右边式子的值
+        ```js
+        false && 1; // 输出false
+        true && 1; // 输出1
+        ```
+    * ||的短路运算：若左边能转成true，无条件返回左边式子的值。反之无条件返回右边式子的值
+        ```js
+        false || 1; // 输出1
+        true || 1; // 输出true
+        ```
+
 ## Object.is(value1, value2)
 `Object.is()`是在ES6中定义的一个新方法，它与‘===’相比，特别针对-0、+0、NaN做了处理。
 ```js
@@ -23,9 +53,17 @@ Object, Array, Set, Map, WeakSet, WeakMap
 null表示空对象  
 undefined表示未初始化的变量
 
+## number的最大/小值，最大/小安全整数，位数
+Number.MAX_VALUE，Number.MIN_VALUE，Number.MAX_SAFE_INTEGER，Number.MIN_SAFE_INTEGER
+
+所有 JavaScript 数字均为 64 位。其中 0 到 51 存储数字（占52位），52 到 62 存储指数（占11位），63 位存储符号。
+
 ## Object 和 Map 有什么区别
 * Object 键（key）的类型只能是字符串，数字或者 Symbol；而 Map 可以是任何类型。
 * Map 中的元素会保持其插入时的顺序；而 Object 则不会完全保持插入时的顺序。
+* Object的key顺序：
+    1. key是整数或者整数类型的字符串，那么会按照从小到大的排序。
+    2. 其它数据类型，控制台展示的时候，按照ASC码升序排序，如果用Object.keys()获取，按照实际创建顺序排序。
 * Map 是可迭代对象，所以其中的键值对是可以通过 for of 循环或 .foreach() 方法来迭代的；而普通的对象键值对则默认是不可迭代的，只能通过 for in 循环来访问。
 
 ## 一个对象作为key，会自动转成[object,Object]，第二个O大写
@@ -38,9 +76,59 @@ o[b] = 2;
 console.log(o[a]);
 ```
 
+## function.length可以获取函数的参数个数
+```js
+const sum = (a, b, c) => a + b + c
+sum.length // 3
+```
+
+## 函数柯里化
+柯里化是编程语言中的一个通用的概念（不只是Js，其他很多语言也有柯里化），是指把接收多个参数的函数变换成接收单一参数的函数，嵌套返回直到所有参数都被使用并返回最终结果。
+
+更简单地说，柯里化是一个函数变换的过程，是将函数从调用方式：f(a,b,c)变换成调用方式：f(a)(b)(c)的过程。
+
+柯里化不会调用函数，它只是对函数进行转换。
+
+```js
+const sum = (a, b, c) => a + b + c
+const fn = curry(sum);
+
+fn(1, 2, 3); // 6
+fn(1, 2)(3); // 6
+fn(1)(2, 3); // 6
+fn(1)(2)(3); // 6
+
+// 实现柯里化函数curry
+const curry = fn => {
+    /*
+        思路解析：
+        1. 接受一个原函数，返回一个柯里化后的函数
+        2. 如果柯里化后的函数接受的参数个数大于等于原函数的参数个数，直接调用原函数，返回结果
+        3. 否则的话，说明参数还未接受完毕，返回一个函数，继续接受新的参数，旧参数+新的参数 去递归
+    */
+    const nest = function(...args) {
+        if (args.length >= fn.length) {
+            return fn(...args)
+        } else {
+            return function(...restArgs) {
+                return nest(...[...args, ...restArgs])
+            }
+        }
+    }
+    return nest;
+}
+```
+
 ## 基本数据类型和引用类型存储在哪里
-基本数据类型：变量标识符和变量的值存放于栈内存  
-引用类型：变量标识符和指向堆内存中该对象的指针存放于栈，具体的对象存放于堆
+基本数据类型：变量标识符和变量的值存放于栈内存。占用固定大小的空间。  
+引用类型：变量标识符和指向堆内存中该对象的指针存放于栈，具体的对象存放于堆。
+
+## 一个string，他不定长，放在栈中是怎么处理的？
+基本数据类型不一定是直接存在栈中的。
+
+* 字符串： 存在堆里，栈中为引用地址，如果存在相同字符串，则引用地址相同。
+* 数字： 小整数（-2³¹ 到 2³¹-1（2³¹≈2*10⁹）的整数）存在栈中，其他类型存在堆中，如小数。
+* 其他类型：引擎初始化时分配唯一地址，栈中的变量存的是唯一的引用。
 
 ## 函数的参数是按照什么方式传递的
 ### 按值传递 vs 按引用传递
@@ -186,6 +274,22 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
 ### 变量提升
 在执行上下文的创建阶段，会先声明var类型的变量，但不进行赋值，执行阶段才去赋值。  
 所以在后面的代码中可以先使用这个变量，但是他是undefined
+
+### var变量声明 和 函数声明都会变量提升
+1. var变量声明 和 函数声明都会变量提升
+2. 函数声明是整体提升，优先级高于var声明，且直接赋值
+3. 具体的执行是什么取决于赋值是什么。
+```js
+var log = function () {
+  console.log(1)
+};
+function log() {
+  console.log(2)
+}
+
+log() // 输出 1
+// function log 先提升， var log 再提升，function log 会直接给log 赋值。 var log = function 再赋值，所以最后log是consolo.log(1)的
+```
 
 ### this指向
 简单来说，谁调用这个函数，这个函数中的this就指向谁

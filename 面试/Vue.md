@@ -192,6 +192,35 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
     * 使用 this.$refs 查找命名子组件。
     * 使用 this.$root 查找根组件，并可以配合$children遍历全部组件。
 
+## provide/inject实现原理
+通过原型链实现的传参。
+
+provides
+
+实例上挂载的provides要么是直接拿的父实例上的provides，要么是创建的一个原型指向父实例provides的对象。
+
+inject 
+
+若当前实例没有父实例则取根实例上的provides否则取父实例上的provides。
+拿到provides后，会遍历原型上的属性去取内容。
+
+## template 和 jsx 的优缺点 
+template:  
+
+优点：
+* 基于 dom 结构，方便，易读，易上手，学习成本低
+
+缺点：
+* 不够灵活，只能基于提供的指令去写逻辑
+
+jsx:
+
+优点：
+* 基于js语法表达各种逻辑，十分灵活
+
+缺点：
+* 可读性差，容易写的很乱
+* 没有编译优化
 
 ## 路由跳转
 1. 声明式，`<router-link to='home'>` router-link标签会渲染为`<a>`标签

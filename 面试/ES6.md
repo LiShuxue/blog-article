@@ -145,6 +145,23 @@ Map 类似于对象，也是键值对的集合，但是“键”的范围不限�
 ### WeakMap
 与上面的WeakSet类似
 
+### WeakSet/WeakMap的key被垃圾处理器回收了，访问get会是什么表现
+```js
+var obj = {a: 'a'};
+var ws = new WeakSet();
+var map = new WeakMap();
+ws.add(obj);
+map.set(obj, 'test');
+obj = null; // 模拟垃圾回收，或者手动在chrom > devtools > performance > collect garbage
+
+console.log(ws); // WeakSet {}
+ws.has(obj); // false
+
+console.log(map); // WeakMap {}
+map.get(obj); // undefined
+map.has(obj); // false
+```
+
 ## 用 Set 获取两个数组的并集，交集，差集，补集
 ```js
 // 并集
@@ -236,6 +253,9 @@ Reflect对象一般搭配Proxy使用，Reflect对象的设计目的有这样几�
 2. 将Object对象的一些明显属于语言内部的方法（比如Object.defineProperty），放到Reflect对象上。
 3. 修改某些Object方法的返回结果，让其变得更合理。比如，Object.defineProperty(obj, name, desc)在无法定义属性时，会抛出一个错误，而Reflect.defineProperty(obj, name, desc)则会返回false。
 4. 让Object操作都变成函数行为。某些Object操作是命令式，比如name in obj和delete obj[name]，而Reflect.has(obj, name)和Reflect.deleteProperty(obj, name)让它们变成了函数行为。
+
+### Proxy中为啥要搭配Reflect使用。
+在复杂的使用场景保持正确的上下文和this。
 
 ```js
 var target = {}
