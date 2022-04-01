@@ -19,25 +19,27 @@ keep-alive 组件激活时 activated，keep-alive 组件停用时 deactivated
 组件的调用顺序都是先父后子
 
 加载渲染：  
-父beforeCreate --> 父created --> 父beforeMounted --> 子beforeCreate --> 子created --> 子beforeMounted --> 子mounted -->父mounted  
+* 父beforeCreate --> 父created --> 父beforeMounted --> 子beforeCreate --> 子created --> 子beforeMounted --> 子mounted -->父mounted  
 
 父组件更新：  
 * 影响到子组件： 父beforeUpdate -> 子beforeUpdate->子updated -> 父updted
 * 不影响子组件： 父beforeUpdate -> 父updated
 
 子组件更新：  
-父beforeUpdate --> 子beforeUpdate --> 子updated --> 父updated  
+* 父beforeUpdate --> 子beforeUpdate --> 子updated --> 父updated  
 
 父组件销毁：  
-父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
+* 父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
 
 子组件销毁：  
-子 beforeDestroy -> 子 destroyed
+* 子 beforeDestroy -> 子 destroyed
 
 ## beforeCreate 的时候能拿到 Vue 实例么
 可以拿到组件实例，也就是可以用this。但是不能获取到data和methods。如果想强行获取data，可以用this.$options.data()
 ## 什么情况下会触发组件销毁，销毁的时候会卸载自定义事件和原生事件么
-页面关闭，路由切换（没有keep-alive时），v-if
+* 页面关闭
+* 路由切换（没有keep-alive时）
+* v-if
 
 Vue本身的一些自定义事件监听，比如@click, @blur等会自动销毁，但是原生的document.addEventListener事件比如scroll，keydown，keyup，vue监测不到，无法移除监听，你可以自己销毁。
 
@@ -76,8 +78,16 @@ created、beforeMount、mounted 中都可以，因为此时data已经创建。�
 ## computed watch
 computed和watch都起到监听/依赖一个数据，并执行相应操作
 
-1. computed：常用于比较消耗性能的计算场景，具有缓存性，只有它依赖的属性值变化后，下一次获取的computed值才会重新计算
-2. watch：常用于某些数据的监听，无缓存性，页面重新渲染时值不变化也会执行。
+1. computed：
+    * 计算属性，值会缓存，下次使用此属性，直接使用缓存的值。它依赖的属性值变化后，此值会重新计算。
+    * 可以依赖多个属性
+    * 需要有return
+    * 不支持异步
+2. watch：
+    * 数据的监听，监听的数据变化后，回调函数会执行。页面重新渲染时值不变化也会执行。
+    * 支持异步
+    * immediate：watch默认在数据从无到有的过程是不进行监听的，如果需要监听这个过程，可将immediate设置为true；
+    * deep：若对象没有改变，但是对象内部的属性改变了，需要监听此变化就将deep设置为true。
 
 ## 常用指令有哪些
 `v-if v-else v-for v-show v-modal`
@@ -106,10 +116,10 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
 当你修改数组的长度时，例如：`vm.items.length = newLength`  
 
 解决方法：  
-解决第一种问题：  
+* 解决第一种问题：  
 `vm.$set(vm.items, indexOfItem, newValue)`  
 `vm.items.splice(indexOfItem, 1, newValue)`  
-解决第二种问题：  
+* 解决第二种问题：  
 `vm.items.splice(newLength)` 
 
 ## Vue 如何实现的数组的监听，为什么 Vue 没有对数组下标修改做劫持 
@@ -195,17 +205,17 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
 ## provide/inject实现原理
 通过原型链实现的传参。
 
-provides
+* provides
 
-实例上挂载的provides要么是直接拿的父实例上的provides，要么是创建的一个原型指向父实例provides的对象。
+    实例上挂载的provides要么是直接拿的父实例上的provides，要么是创建的一个原型指向父实例provides的对象。
 
-inject 
+* inject  
 
-若当前实例没有父实例则取根实例上的provides否则取父实例上的provides。
-拿到provides后，会遍历原型上的属性去取内容。
+    若当前实例没有父实例则取根实例上的provides否则取父实例上的provides。
+    拿到provides后，会遍历原型上的属性去取内容。
 
 ## template 和 jsx 的优缺点 
-template:  
+### template:  
 
 优点：
 * 基于 dom 结构，方便，易读，易上手，学习成本低
@@ -213,7 +223,7 @@ template:
 缺点：
 * 不够灵活，只能基于提供的指令去写逻辑
 
-jsx:
+### jsx:
 
 优点：
 * 基于js语法表达各种逻辑，十分灵活
@@ -270,15 +280,26 @@ jsx:
 2. vuex的单向数据流，状态只能通过提交mutation去更改。
 
 ## v-for循环为什么要加key
-使用v-for更新已渲染的元素列表时,默认用”就地复用“策略;列表数据修改的时候,他会根据key值去判断某个值是否修改,如果修改,则重新渲染这一项,否则复用之前的元素。  
+使用v-for更新已渲染的元素列表时,默认用”就地复用“策略;列表数据修改的时候,他会根据key值去判断某个值是否修改,如果修改,则重新渲染这一项,否则复用之前的元素。
+
 从原理上来说，使用key来给每个节点做一个唯一标识，Diff算法就可以正确的识别此节点，key的作用主要是为了高效的更新虚拟DOM。
+
+## key可以是index吗，可以是随机数吗？会有什么问题？
+
+判断两个节点是否为同一节点（也就是是否可复用），标准是key相同且tag相同。
+
+1. 用index作为key，如果数组元素都变了，比如arr.reverse()，所有列表项会重新创建渲染，不会复用。
+2. 用index作为key，如果删除了数组第一个元素，虚拟diff的结果会是删除了最后一个元素，其他元素内容改变，导致所有列表项会重新创建渲染，不会复用。
+3. 用index作为key时，在对数据进行，逆序添加，逆序删除等破坏顺序的操作时，会产生没必要的真实 DOM更新，从而导致效率低。
+4. 用随机数作为key，所有列表项会重新创建渲染，不会复用。
 
 ## v-for为什么不能跟v-if一起使用
 v-for优先级高于v-if，这意味着 v-if 将分别重复运行于每个 v-for 循环中，效率比较低。  
 推荐将v-if移到父元素
 
 ## 组件中的data为什么是函数而不是对象
-一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。  
+一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。 
+
 组件是可复用的vue实例，一个组件被创建好之后，就可能被用在各个地方，而组件不管被复用了多少次，组件中的data数据都应该是相互隔离，互不影响的。
 
 ## Vue的数据为什么频繁变化但只会更新一次DOM
@@ -307,16 +328,22 @@ watch: {
 ```
 
 ## keep-alive
-`<keep-alive>` 是 Vue 内置的一个组件，可以使被包含的组件保留状态，避免重新渲染。  
-`<keep-alive>` 包裹动态组件时，会缓存不活动的组件实例，而不是销毁它们。  
-它是一个抽象组件：它自身不会渲染一个 DOM 元素，也不会出现在父组件链中。  
-当组件在 `<keep-alive>` 内被切换，它的 activated 和 deactivated 这两个生命周期钩子函数将会被对应执行。
+* `<keep-alive>` 是 Vue 内置的一个组件，可以使被包含的组件保留状态，避免重新渲染。
+
+* `<keep-alive>` 包裹动态组件时，会缓存不活动的组件实例，而不是销毁它们。  
+
+* 它是一个抽象组件：它自身不会渲染一个 DOM 元素，也不会出现在父组件链中。  
+
+* 当组件在 `<keep-alive>` 内被切换，它的 activated 和 deactivated 这两个生命周期钩子函数将会被对应执行。
 
 ## 自定义指令
 一般自定义指令解决的问题或者说使用场景是对普通 DOM 元素进行底层操作。
 
-全局自定义指令  `Vue.directive('test', hookOptions)`  
-局部自定义指令  
+### 全局自定义指令  
+`Vue.directive('test', hookOptions)`  
+
+### 局部自定义指令  
+
 在组件的directives选项中进行声明。
 ```js
 directives: {
@@ -336,11 +363,11 @@ directives: {
 
 上面的hookOptions用来定义指令的行为。有bind, inserted, update, componentUpdated, unbind 共5个hook函数。
 
-bind：只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置。  
-inserted：被绑定元素插入父节点时调用 (仅保证父节点存在，但不一定已被插入文档中)。  
-update：所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前。指令的值可能发生了改变，也可能没有。但是你可以通过比较更新前后的值来忽略不必要的模板更新 (详细的钩子函数参数见下)。  
-componentUpdated：指令所在组件的 VNode 及其子 VNode 全部更新后调用。  
-unbind：只调用一次，指令与元素解绑时调用。  
+* bind：只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置。  
+* inserted：被绑定元素插入父节点时调用 (仅保证父节点存在，但不一定已被插入文档中)。  
+* update：所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前。指令的值可能发生了改变，也可能没有。但是你可以通过比较更新前后的值来忽略不必要的模板更新 (详细的钩子函数参数见下)。  
+* componentUpdated：指令所在组件的 VNode 及其子 VNode 全部更新后调用。  
+* unbind：只调用一次，指令与元素解绑时调用。  
 
 ## 自定义过滤器
 过滤器，可被用于一些常见的文本格式化。过滤器可以用在两个地方：双花括号插值和 v-bind 表达式中。被添加在 JavaScript 表达式的尾部，由“管道”符号指示：
@@ -351,13 +378,14 @@ unbind：只调用一次，指令与元素解绑时调用。
 <!-- 在 `v-bind` 中 -->
 <div v-bind:id="rawId | formatId"></div>
 ```
-全局过滤器： 
+### 全局过滤器
 
 ```
 Vue.filter('test', value => { ... })
 ```
 
-局部过滤器，定义在组件的filters选项中。
+### 局部过滤器
+定义在组件的filters选项中。
 ```js
 filters: {
     test() { ... }
@@ -366,6 +394,7 @@ filters: {
 
 ## nextTick()
 nextTick一般用在，当我们想在更新数据后，获取被更新的DOM进行操作。  
+
 因为数据更新时，并不会立即更新 DOM。如果在更新数据之后的代码执行DOM操作，有可能达不到预想效果。
 ```js
 this.msg = 'hello'
@@ -386,11 +415,12 @@ router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requireAuth)) { ... }
 }
 ```
-为什么不直接用to.mate判断，而要用to.matched来判断：  
+### 为什么不直接用to.mate判断，而要用to.matched来判断：  
 to.matched能够拿到父级的组件的路由对象，用to.matched则只需要给较高一级的路由添加requiresAuth即可，其下的所有子路由不必添加。
 
 ## 路由动态加载与动态删除
 动态添加: router.addRoutes([...])  
+
 动态删除：
 1. 刷新页面
 2. 替换 router.matcher 为一个新的matcher
@@ -634,7 +664,7 @@ class EventBus {
 2. 在每句css选择器的末尾（编译后的生成的css语句）加一个当前组件的data属性选择器的哈希特征值（如[data-v-2311c06a]）来私有化样式。
 
 ## vue-router实现原理
-前端路由：  
+### 前端路由：  
 路由模块的本质 就是建立起url和页面之间的映射关系，在单页面应用程序中，动态替换DOM内容并同步修改url地址。
 
 ### hash模式：  
@@ -664,6 +694,7 @@ const getters = {
 }
 ```
 更改 store 中的状态的唯一方法是提交 mutation  
+
 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数
 ```js
 const mutations = {

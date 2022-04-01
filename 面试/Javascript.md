@@ -1,6 +1,6 @@
 ## == 和 ===
-==：比较值，类型不同的时候，先进行类型转换，再比较值；1 == "1"  true  
-===：比较类型和值，不做类型转换，类型不同就是不等；1 === "1"  false
+* ==：比较值，类型不同的时候，先进行类型转换，再比较值；1 == "1"  true  
+* ===：比较类型和值，不做类型转换，类型不同就是不等；1 === "1"  false
 
 ## [] == false，是true还是false，隐式转换
 true。
@@ -43,15 +43,15 @@ Object.is(NaN, 0/0) // true
 ```
 
 ## 6种基本数据类型和3种引用类型
-number, boolean, string, null, undefined, Symbol  
-Object, Array, Function
+* number, boolean, string, null, undefined, Symbol  
+* Object, Array, Function
 
 ## javascript自带的数据结构
-Object, Array, Set, Map, WeakSet, WeakMap
+* Object, Array, Set, Map, WeakSet, WeakMap
 
 ## null和undefined有什么区别
-null表示空对象  
-undefined表示未初始化的变量
+* null表示空对象  
+* undefined表示未初始化的变量
 
 ## number的最大/小值，最大/小安全整数，位数
 Number.MAX_VALUE，Number.MIN_VALUE，Number.MAX_SAFE_INTEGER，Number.MIN_SAFE_INTEGER
@@ -73,7 +73,7 @@ var b = { name: "Tom" };
 var o = {};
 o[a] = 1;
 o[b] = 2;
-console.log(o[a]);
+console.log(o[a]); // 2
 ```
 
 ## function.length可以获取函数的参数个数
@@ -120,8 +120,8 @@ const curry = fn => {
 ```
 
 ## 基本数据类型和引用类型存储在哪里
-基本数据类型：变量标识符和变量的值存放于栈内存。占用固定大小的空间。  
-引用类型：变量标识符和指向堆内存中该对象的指针存放于栈，具体的对象存放于堆。
+* 基本数据类型：变量标识符和变量的值存放于栈内存。占用固定大小的空间。  
+* 引用类型：变量标识符和指向堆内存中该对象的指针存放于栈，具体的对象存放于堆。
 
 ## 一个string，他不定长，放在栈中是怎么处理的？
 基本数据类型不一定是直接存在栈中的。
@@ -132,12 +132,12 @@ const curry = fn => {
 
 ## 函数的参数是按照什么方式传递的
 ### 按值传递 vs 按引用传递
-按值传递：实际参数把它的值传递给对应的形式参数，形式参数只是用实际参数的值初始化自己的存储单元内容，是两个不同的存储单元，所以方法执行中形式参数值的改变不影响实际参数的值。按值传递的意思就是形参是实参的复制。    
-按引用传递：就是传递对象的引用，实参和形参是完全一样的，函数内部对形参的任何改变都会影响实际参数。函数的形参接收实参的隐式引用，而不再是副本。  
+* 按值传递：实际参数把它的值传递给对应的形式参数，形式参数只是用实际参数的值初始化自己的存储单元内容，是两个不同的存储单元，所以方法执行中形式参数值的改变不影响实际参数的值。按值传递的意思就是形参是实参的复制。    
+* 按引用传递：就是传递对象的引用，实参和形参是完全一样的，函数内部对形参的任何改变都会影响实际参数。函数的形参接收实参的隐式引用，而不再是副本。  
 
 ### 首先理解复制变量： 
-基本数据类型：将原始值副本赋值给新的变量，所以两个变量是完全独立的，只不过value相同。  
-复杂类型：将指针（内存地址）赋值给新的变量，所以两个变量保存的内存地址一致，也就是指向的具体的对象一致。任何一个改变都会影响另一个。
+* 基本数据类型：将原始值副本赋值给新的变量，所以两个变量是完全独立的，只不过value相同。  
+* 复杂类型：将指针（内存地址）赋值给新的变量，所以两个变量保存的内存地址一致，也就是指向的具体的对象一致。任何一个改变都会影响另一个。
 
 ### 传递参数
 传递参数就是变量复制的过程，将实参的值赋值给形参。  
@@ -185,13 +185,13 @@ ES6新增对象：
 一个函数包含另一个函数，并且被包含的函数使用了父函数中的变量。内部函数即为闭包。  
 即有权访问另一个函数作用域内变量的函数都是闭包。 
 
-闭包的特性：  
-内部函数总是可以访问其所在的外部函数中声明的参数和变量，即使在其外部函数被返回（寿命终结）了之后  
+* 闭包的特性：  
+    内部函数总是可以访问其所在的外部函数中声明的参数和变量，即使在其外部函数被返回（寿命终结）了之后  
 
-闭包的作用：  
-1. 使其他函数可以访问某函数内部的变量
-2. 让函数内部的变量一直隐藏/保存在内存中（但是这样会导致内存泄漏，所以在退出函数之前，应将不使用的局部变量设为null）
-3. 实现私有变量
+* 闭包的作用：  
+    1. 使其他函数可以访问某函数内部的变量
+    2. 让函数内部的变量一直隐藏/保存在内存中（但是这样会导致内存泄漏，所以在退出函数之前，应将不使用的局部变量设为null）
+    3. 实现私有变量
 ```js
 function Person(){
     var name = 'cxk';
@@ -257,8 +257,10 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
     * 函数执行
 
 ### 函数调用栈
-代码在运行过程中，会有一个叫做调用栈(call stack)的概念。调用栈是一种栈结构,它用来存储计算机程序执行时候其活跃子程序的信息（即执行上下文）。  
+代码在运行过程中，会有一个叫做调用栈(call stack)的概念。调用栈是一种栈结构,它用来存储计算机程序执行时候其活跃子程序的信息（即执行上下文）。 
+
 在执行阶段，先将全局执行上下文放入函数调用栈栈底，然后执行函数，并将函数执行上下文放入栈。  
+
 处于栈顶的上下文执行完毕之后，就会自动出栈。函数中，遇到return能直接终止可执行代码的执行，因此会直接将当前上下文弹出栈。
 
 ### 作用域，作用域链
@@ -268,7 +270,7 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
 
 可执行上下文中的词法环境中含有外部词法环境的引用，我们可以通过这个引用获取外部词法环境的变量、声明等，这些引用串联起来一直指向全局的词法环境，因此形成了作用域链。
 
-变量查找（ResolveBinding）：  
+### 变量查找（ResolveBinding）：  
 先从当前的执行上下文中找保存的作用域，查看当前作用域里面的 Environment Record 是否有此变量的信息，如果找到了，则返回当前作用域内的这个变量。如果没有查找到，则顺着 `__outer__` 到父作用域里面的 Environment Record 查找，以此递归。
 
 ### 变量提升
@@ -327,7 +329,7 @@ foo.call(obj) // 10
 
 ![v8](https://cdn.lishuxue.site/blog/image/面试/v8.png)
 
-## js 到底是解释型还是编译型语言？
+### js 到底是解释型还是编译型语言？
 V8 同时采用了解释执行和编译执行这两种方式，这种混合使用的方式称为 JIT (即时编译)。  
 
 ## 什么是作用域链，什么是原型链，它们的区别
@@ -344,8 +346,8 @@ V8 同时采用了解释执行和编译执行这两种方式，这种混合使�
 2. 类的__proto__属性指向父类，如果没有父类指向Function.prototype。ES5中用function创建的类，__proto__都指向Function.prototype。  
 ---
 3. 对象的.constructor指向本类
-4. 类的.constructor指向Function
-5. 类的prototype.constructor默认指向自己
+4. 类的prototype.constructor指向本类
+5. 类的.constructor指向Function
 ---
 6. 类的prototype是父类的实例， 所以instanceof 父类是true，没有父类时instanceof Object是true
 
@@ -489,8 +491,8 @@ function new2(Constructor, ...args) {
 
 ## 箭头函数可以作为构造函数吗？
 不可以。  
-普通函数在运行时才会确定 this 的指向。  
-箭头函数则是在函数定义的时候就确定了 this 的指向，此时的 this 指向外层的作用域。所以不可以用来做构造函数，因为如果做构造函数，生成的实例的this不是指向实例，而是指向箭头函数的上下文，这是不对的。
+
+普通函数在运行时才会确定 this 的指向。箭头函数则是在函数定义的时候就确定了 this 的指向，此时的 this 指向外层的作用域。所以不可以用来做构造函数，因为如果做构造函数，生成的实例的this不是指向实例，而是指向箭头函数的上下文，这是不对的。
 
 ## obj.hasOwnProperty(prop)
 hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性，忽略那些从原型链上继承到的属性。
@@ -545,7 +547,9 @@ console.log(true instanceof Boolean); // false
 ```
 
 ## 模拟实现instanceof
-instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断，`实例.__proto__ === 构造函数.prototype` 或者 `实例.__proto__.__proto__ === 构造函数.prototype`，递归。
+instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断，
+* `实例.__proto__ === 构造函数.prototype` 或者 
+* `实例.__proto__.__proto__ === 构造函数.prototype`，递归。
 ```js
 function myinstanceof(instance, func){
     let left = instance.__proto__;
@@ -933,9 +937,9 @@ for (let i=0; i<arr.length; i++) {
 
 ## 函数内部 arguments 变量有哪些特性,有哪些属性,如何将它转换为数组
 arguments对象是所有（非箭头）函数中都可用的局部变量。可以使用arguments[i]引用函数的参数，也可以修改函数参数。修改的只是函数的形参，并不会影响实参。  
-`arguments.callee` 指向当前执行的函数。  
-`arguments.caller` 指向调用当前函数的函数。
-`arguments.length` 指向传递给当前函数的参数数量。
+* `arguments.callee` 指向当前执行的函数。  
+* `arguments.caller` 指向调用当前函数的函数。  
+* `arguments.length` 指向传递给当前函数的参数数量。
 
 转换为数组：  
 1. `var arr = [...arguments];`
@@ -1000,7 +1004,7 @@ $.fn.extends({
 on, off, trigger
 
 ## 前端模块化的发展历程
-1. <b>IIFE</b>  
+1. ### IIFE
 立即执行函数定义模块
 ```js
 var utilModule = (function() {
@@ -1020,7 +1024,7 @@ utilModule.setName('test')
 utilModule.getName() // "test"
 ```
 
-2. <b>CommonJS </b>  
+2. ### CommonJS
 Nodejs的模块规范, 用module.exports定义当前模块对外输出的接口（不推荐直接用exports），用require加载模块。
 ```js
 // module.js
@@ -1043,7 +1047,7 @@ testModule.setName('test');
 console.log(testModule.getName()); // test
 ```
 
-3. <b>AMD</b>  
+3. ### AMD 
 require.js遵循了这个规范。通过define方法去定义模块，通过require方法去加载模块。
 ```js
 // a.js
@@ -1085,7 +1089,7 @@ this is test1
 this is test2
 ```
 
-4. <b>CMD</b>  
+4. ### CMD
 seajs遵循了这个规范。通过define方法去定义模块，通过seajs.use去加载模块。
 ```js
 // a.js
@@ -1129,12 +1133,37 @@ this is test1
 this is test2
 ```
 
-5. <b>ES6 module</b>
+5. ###  ES6 module
 ```js
 export
 export default
 import 
 import * as ...
+```
+
+6. ### UMD
+UMD是同时支持AMD和CommonJS的规范。
+```js
+(function (root, factory) {
+  if (typeof define === "function" && define.amd) {
+    // 如果环境中有define函数，并且define函数具备amd属性，则可以判断当前环境满足AMD规范
+    define(["test"], factory());
+  } else if (
+    typeof exports === "object" &&
+    typeof module.exports === "object"
+  ) {
+    // 是commonjs模块规范，nodejs环境
+    module.exports = factory();
+  } else {
+    // 浏览器全局变量(root 即 window)
+    root.umdModule = factory();
+  }
+})(this, function () {
+  return {
+    name: "我是一个umd模块",
+  };
+});
+
 ```
 
 ## AMD 和 CMD 的区别

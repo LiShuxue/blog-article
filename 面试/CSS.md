@@ -1,17 +1,18 @@
 ## 盒模型，标准盒模型，怪异（IE）盒模型
 浏览器将所有元素表示为一个个矩形的盒子，包括content, padding, border, margin  
-标准盒模型：box-sizing: content-box; width = content  
-怪异盒模型：box-sizing: border-box; width = content + padding + border  
+* 标准盒模型：box-sizing: content-box; width = content  
+* 怪异盒模型：box-sizing: border-box; width = content + padding + border  
 
 ## 行元素与块元素
-行元素：不会独占一行，不能设置宽高，不能设置垂直方向的padding, margin  
-块元素：独占一行，可以设置宽高，padding, margin, 如果不设置宽度，那么宽度将默认变为父级的100%  
+* 行元素：不会独占一行，不能设置宽高，不能设置垂直方向的padding, margin  
+* 块元素：独占一行，可以设置宽高，padding, margin, 如果不设置宽度，那么宽度将默认变为父级的100%  
+
 行元素和块元素都可以设置border  
 
 ## margin: 0px 10px 10px 分别代表哪几个
-四个值：上右下左
-三个值：中间的值代表右左
-两个值：上下，左右
+* 四个值：上右下左
+* 三个值：中间的值代表右左
+* 两个值：上下，左右
 
 ## display: block, inline, inline-block的区别
 * display: block; 将一个行元素设置为块元素，独占一行，并且可以给他设置宽, 高, padding, margin
@@ -106,7 +107,7 @@ position: sticky;
 top: 10px;
 ```
 
-## transition， transform， translate, animation, @keyframes
+## transition，transform，translate，animation，@keyframes
 transition：过渡。可以定义过渡属性，过渡效果时间，速度曲线，延迟执行。  
 `transition: width 2s ease 2s;`  
 transform：变换。平移translate，缩放scale，旋转rotate，倾斜skew。  
@@ -153,6 +154,7 @@ flex-wrap: wrap | no-wrap | wrap-reverse; /* 换行， 不换行， 跟正常换
 align-items: center | flex-start | flex-end | base-line | stretch; /* 交叉轴对齐方式：居中，上对齐，下对齐，第一行基线对齐，子元素占满整个容器高度 */
 ```
 子元素：  
+默认会缩小不会放大
 ```css
 order: 0; /* 数值越小越靠前 */
 flex-grow: 0; /* 有剩余空间时放大系数，0不放大 */
