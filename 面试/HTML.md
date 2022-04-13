@@ -165,6 +165,22 @@ var img=document.getElementById("img");
 ctx.drawImage(img,10,10);
 ```
 
+## 判断元素是否在视窗内
+Element.getBoundingClientRect() 方法返回元素的大小及其相对于视口的位置。该函数返回一个Object对象，该对象有6个属性：
+top,lef,right,bottom,width,height；
+这里的top、left和css中的理解很相似，width、height是元素自身的宽高，但是right，bottom和css中的理解有点不一样。right是指元素右边界距窗口最左边的距离，bottom是指元素下边界距窗口最上面的距离。
+```js
+const box = document.getElementById('box');         // 获取元素
+
+box.getBoundingClientRect().top          // 元素上边距离页面上边的距离
+
+box.getBoundingClientRect().right;       // 元素右边距离页面左边的距离
+
+box.getBoundingClientRect().bottom;      // 元素下边距离页面上边的距离
+
+box.getBoundingClientRect().left;        // 元素左边距离页面左边的距离
+```
+
 ## 各种宽高
 * document.body.clientWidth;        //网页可见区域宽(body)   
 * document.body.clientHeight;       //网页可见区域高(body)   
