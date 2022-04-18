@@ -100,6 +100,25 @@ Number.MAX_VALUE，Number.MIN_VALUE，Number.MAX_SAFE_INTEGER，Number.MIN_SAFE_
 
 所有 JavaScript 数字均为 64 位。其中 0 到 51 存储数字（占52位），52 到 62 存储指数（占11位），63 位存储符号。
 
+## 十进制转二进制 和 parseInt
+1. 转二进制toString(2)：
+```js
+const number = 100;
+number.toString(2)
+```
+
+2. parseInt(string, radix);
+
+解析一个字符串并返回指定基数的十进制整数。 radix 是2-36之间的整数，表示被解析字符串的基数，例如指定 16 表示被解析值是十六进制数。请注意，10不是默认值！
+
+如果 radix 是 undefined、0或未指定的，JavaScript会假定以下情况：
+
+* 如果输入的 string以 "0x"或 "0x"（一个0，后面是小写或大写的X）开头，那么radix被假定为16，字符串的其余部分被当做十六进制数去解析。
+* 如果输入的 string以 "0"（0）开头， radix被假定为8（八进制）或10（十进制）。具体选择哪一个radix取决于实现。ECMAScript 5 澄清了应该使用 10 (十进制)，但不是所有的浏览器都支持。因此，在使用 parseInt 时，一定要指定一个 radix。
+* 如果输入的 string 以任何其他值开头， radix 是 10 (十进制)。
+
+如果第一个字符不能转换为数字，parseInt会返回 NaN。
+
 ## Object 和 Map 有什么区别
 * Object 键（key）的类型只能是字符串，数字或者 Symbol；而 Map 可以是任何类型。
 * Map 中的元素会保持其插入时的顺序；而 Object 则不会完全保持插入时的顺序。
