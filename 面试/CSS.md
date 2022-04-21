@@ -6,12 +6,11 @@
 ## 行元素与块元素
 * 行元素：不会独占一行，不能设置宽高，不能设置垂直方向的padding, margin  
 * 块元素：独占一行，可以设置宽高，padding, margin, 如果不设置宽度，那么宽度将默认变为父级的100%  
-
-行元素和块元素都可以设置border  
+* 行元素和块元素都可以设置border  
 
 ## margin: 0px 10px 10px 分别代表哪几个
-* 四个值：上右下左
-* 三个值：中间的值代表右左
+* 四个值：上 右 下 左
+* 三个值：上，左右，下。中间的值代表右左
 * 两个值：上下，左右
 
 ## display: block, inline, inline-block的区别
@@ -20,6 +19,7 @@
 * display: inline-block; 将一个元素设置为行内块。即既有行元素的特性，不会独占一行，跟其他行元素并列排一行，又有块元素的特性，可以设置宽高padding margin。
 
 ## CSS实现一个三角形
+宽高为0，利用border实现，只有某一个boder有颜色，其他border透明
 ```css
 .sanjiao{
     width: 0px;
@@ -30,6 +30,7 @@
 ```
 
 ## CSS实现一个扇形
+宽高为0，利用border实现，border-radius为50%是圆形，所以只有某一个boder有颜色，其他border透明时为扇形
 ```css
 .sanxing{
     width: 0px;
@@ -41,7 +42,7 @@
 ```
 
 ## CSS实现一个箭头，45度角
-原理：需要实现一个45度的菱形，取border。通过正方形来调整边长和倾斜。
+原理：需要实现一个45度的菱形，取border。保留两个边，形成箭头，对箭头旋转和倾斜
 ```css
 .arrow {
     width: 42px; // 高的根号2倍
@@ -56,32 +57,38 @@
 ## 水平居中，垂直居中
 ### 水平居中  
 行元素：  
-首先看它的父元素是不是块级元素，如果是，则直接给父元素设置 text-align: center;   
+
+* 首先看它的父元素是不是块级元素，如果是，则直接给父元素设置 text-align: center;   
 如果不是，则先将其父元素设置为块级元素，再给父元素设置 text-align: center;
 
 块元素：
 * margin: 0 auto; 需要设置该元素的宽度
 * justify-content: center;
-* 绝对定位+translate，适用于不定宽  
+* 绝对定位 + translate，适用于不定宽 
+    ```css
     position: absolute;   
     left:50%;  
     transform:translateX(-50%);  
-* 绝对定位+负margin，适用于定宽  
+    ```
+* 绝对定位 + 负margin，适用于定宽  
+    ```css
     position: absolute;  
     width: 100px;  
     left: 50%;  
     margin-left: -50px;
+    ```
 
 ### 垂直居中
 行元素：  
-若元素是单行文本, 则可设置 line-height 等于父元素高度  
-或者设置父元素 display: table-cell; vertical-align: middle;  
-若元素是多行文本，也是设置父元素 display: table-cell; vertical-align: middle;  
+
+* 若元素是单行文本, 则可设置 line-height 等于父元素高度  
+* 或者设置父元素 display: table-cell; vertical-align: middle;  
+* 若元素是多行文本，也是设置父元素 display: table-cell; vertical-align: middle;  
 
 块元素中：  
 * align-items: center;  
-* 绝对定位+translate，适用于不定高
-* 绝对定位+负margin，适用于定高
+* 绝对定位 + translate，适用于不定高
+* 绝对定位 + 负margin，适用于定高
 
 ## 浮动，清除浮动
 浮动：float: left或者float: right. 脱离文档流，不能撑开父元素。  
@@ -97,52 +104,60 @@
 * 父元素使用overflow: auto;
 
 ## 定位方式
-static：正常文档流定位。此时 top, right, bottom, left 和 z-index 属性无效，块级元素从上往下纵向排布，行级元素从左向右排列。  
-relative：相对定位，相对自身正常文档流的位置。  
-absolute：绝对定位，相对于最近的非static的祖先元素定位。  
-fixed：固定定位，相对于屏幕视口定位。  
-sticky：粘性定位，初始时，元素在正常文档流位置，当屏幕滚动时，该元素会始终固定于顶部某位置。
-```css
-position: sticky;
-top: 10px;
-```
+* static：正常文档流定位。此时 top, right, bottom, left 和 z-index 属性无效，块级元素从上往下纵向排布，行级元素从左向右排列。 
+
+* relative：相对定位，相对自身正常文档流的位置。  
+
+* absolute：绝对定位，相对于最近的非static的祖先元素定位。  
+
+* fixed：固定定位，相对于屏幕视口定位。  
+
+* sticky：粘性定位，初始时，元素在正常文档流位置，当屏幕滚动时，该元素会始终固定于顶部某位置。
+    ```css
+    position: sticky;
+    top: 10px;
+    ```
 
 ## transition，transform，translate，animation，@keyframes
-transition：过渡。可以定义过渡属性，过渡效果时间，速度曲线，延迟执行。  
+* transition：过渡。可以定义过渡属性，过渡效果时间，速度曲线，延迟执行。  
 `transition: width 2s ease 2s;`  
-transform：变换。平移translate，缩放scale，旋转rotate，倾斜skew。  
+
+* transform：变换。平移translate，旋转rotate，缩放scale，倾斜skew。  
 `transform: translate(10px) rotate(45deg) scale(1.5) skew(45deg)`
-translate：transform的一个值。  
-animation：动画。可以定义keyframe的名字，动画时间，速度曲线，延迟执行，播放次数，轮流反向播放。  
+
+* translate：transform的一个值。  
+
+* animation：动画。可以定义keyframe的名字，动画时间，速度曲线，延迟执行，播放次数，轮流反向播放。  
 `animation: myKeyframe 4s infinite;`  
-@keyframes定义具体的动画细节。注意keyframes， 加s  
-```css
-@keyframes myKeyframe
-{
-    0%   {top:0px;}
-    25%  {top:200px;}
-    50%  {top:100px;}
-    75%  {top:200px;}
-    100% {top:0px;}
-}
-```
+
+* @keyframes定义具体的动画细节。注意keyframes， 加s  
+    ```css
+    @keyframes myKeyframe
+    {
+        0%   {top:0px;}
+        25%  {top:200px;}
+        50%  {top:100px;}
+        75%  {top:200px;}
+        100% {top:0px;}
+    }
+    ```
 速度曲线：
 * linear	动画从头到尾的速度是相同的。
-* ease	默认。动画以低速开始，然后加快，在结束前变慢。
+* ease	    默认。动画以低速开始，然后加快，在结束前变慢。
 * ease-in	动画以低速开始。
 * ease-out	动画以低速结束。
 * ease-in-out	动画以低速开始和结束。
 
 ## transition和animation的区别
-* transition只能播放一次
-* transition只有开始和结束状态，而animation可以定义很多中间状态
 * transition需要有触发条件，如hover或者js事件，而animation写了之后会自动播放
+* transition只能播放一次，animation可以重复播放
+* transition只有开始和结束状态，而animation可以定义很多中间状态
+
 
 ## link标签和@import的区别
-* 两者都是引入外部css文件
-* link是html标签，@import是css语法
-* link除了css，还可以引用其他资源文件。
+* 两者都是引入外部css文件，link是html标签，@import是css语法
 * link引用的css会在页面加载的时候同时加载，而import引入的css需要等页面完全加载完后才去加载。
+* link除了css，还可以引用其他资源文件。
 
 ## flex布局
 父元素： 
@@ -154,29 +169,35 @@ flex-wrap: wrap | no-wrap | wrap-reverse; /* 换行， 不换行， 跟正常换
 align-items: center | flex-start | flex-end | base-line | stretch; /* 交叉轴对齐方式：居中，上对齐，下对齐，第一行基线对齐，子元素占满整个容器高度 */
 ```
 子元素：  
-默认会缩小不会放大
+
+默认会缩小不会放大。  
+flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。
 ```css
 order: 0; /* 数值越小越靠前 */
 flex-grow: 0; /* 有剩余空间时放大系数，0不放大 */
 flex-shrink: 1; /* 空间不足时如何缩小，0不缩小 */
 flex-basis: 100px; /* 项目的初始长度。若不设置伸缩性，则为固定大小 */
 align-self: flex-start; /* 自己单独的对齐方式，可覆盖align-items属性 */
-flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。
 ```
 
 ## grid布局
 父元素：
+
 ```css
 display: grid; /* 创建一个网格容器 */
 grid-template-columns: 200px 100px 200px; /* 声明了三列，宽度分别为 200px 100px 200px */
-grid-gap: 5px; /* 声明行间距和列间距 */
 grid-template-rows: 50px 50px 50px; /* 声明了三行，行高分别为 50px 50px 50px  */
+
+grid-row-gap: 5px; /* 声明行间距 */
+grid-column-gap: 5px; /* 声明列间距 */
+
 grid-auto-flow: row; /* row或者column， 默认row， "先行后列"，即先填满第一行，再开始放入第二行 */
-/* 上面的布局是一个九宫格 */
-justify-items: start | end | center | stretch; 单元格水平方向的对齐方式
-align-items: start | end | center | stretch; 单元格垂直方向的对齐方式
-justify-content: start | end | center | stretch | space-around | space-between | space-evenly;  是整个内容区域在容器里面的水平位置（左中右）
-align-content 属性是整个内容区域的垂直位置（上中下）
+
+justify-content: start | end | center | stretch | space-around | space-between | space-evenly;  /* 水平方向的对齐方式 */
+align-content: start | end | center | stretch | space-around | space-between | space-evenly; /* 垂直方向的对齐方式 */
+
+justify-items: start | end | center | stretch; /* 单元格水平方向的对齐方式 */
+align-items: start | end | center | stretch; /* 单元格垂直方向的对齐方式 */
 ```
 grid-row-gap 属性、grid-column-gap 属性分别设置行间距和列间距。grid-gap 属性是两者的简写形式。
 
@@ -184,12 +205,9 @@ grid-row-gap 属性、grid-column-gap 属性分别设置行间距和列间距。
 
 子元素：
 
-grid-column-start 属性、grid-column-end 属性、grid-row-start 属性以及grid-row-end 属性，可以指定网格项目所在的四个边框，分别定位在哪根网格线，从而指定项目的位置。
+* grid-column-start 属性、grid-column-end 属性、grid-row-start 属性以及grid-row-end 属性，可以指定网格项目所在的四个边框，分别定位在哪根网格线，从而指定项目的位置。
 
-justify-self 属性、align-self 属性
-
-justify-self 属性设置单元格内容的水平位置（左中右），跟 justify-items 属性的用法完全一致，但只作用于单个项目   
-align-self 属性设置单元格内容的垂直位置（上中下），跟align-items属性的用法完全一致，也是只作用于单个项目
+* justify-self 属性、align-self 属性 指定该单元格水平方向和垂直方向的对齐方式
 
 ## 隐藏页面元素 
 * opacity=0：不会影响页面布局，还可以触发点击事件
@@ -208,58 +226,54 @@ align-self 属性设置单元格内容的垂直位置（上中下），跟align-
 9. 伪元素选择器 div::after
 10. 结合元素选择器： div.test  所有包含test类的div
 11. 多类选择器： .testA.testB  选择同时包含这些类名的元素
+12. 选择器分组（分隔），用逗号 ` , `
 
-选择器分组（分隔），用逗号 ` , `
-
-## 选择器的优先级，权重计算
-!important > 内联 > ID选择器 > 类选择器 > 元素选择器  
+## CSS样式生效的优先级
+!important > 内联样式 > ID选择器 > 类选择器 > 元素选择器  
 
 权重计算：  
-有四个值，ABCD, 从左到右分别表示，内联样式，ID选择器，类选择器，元素选择器  
-ul li .red { ... } 的权重表示 {A=0, B=0, C=1, D=2}, 即 {0, 0, 1, 2}  
-#red { ... } 的权重表示 {0, 1, 0, 0}  
-权重比较：将ABCD四个值，从左到右依次比较，大的则优先级更高。
+有!important的优先级最高
 
 ## 浏览器如何解析css选择器
-按照CSS类从上到下的定义解析，后定义的会覆盖前面的。
+按照CSS类从上到下的定义解析，后定义的会覆盖前面的，与标签上class的排序无关。
 ```html
-<div class="a">text1</div>
-<div class="b">text2</div>
-<div class="a b">text3</div>
-<div class="b a">text4</div>
-
 <style>
 .a {
-  color: red;
+    color: red;
 }
 .b {
-  color: green;
+    color: green;
 }
-.a.b {
-  color: blue;
+.c.d {
+    color: blue;
 }
-.b.a{
-  color: orange;
+.d.c {
+    color: orange;
 }
 </style>
 
+<div class="a">text1</div>
+<div class="b">text2</div>
+<div class="a b">text3</div>
+<div class="c d">text4</div>
+
 text1 ===> red
 text2 ===> green
-text3 ===> orange
+text3 ===> green
 text4 ===> orange
 ```
 
 ## 伪类，伪元素
 ### 伪类： 用一个冒号
-* :active  被激活的元素 
+* :hover 
 * :focus   
-* :hover    
-* :link   未被访问的链接 
-* :visited   
 * :first-child  
 * :last-child 
 * :nth-child(n) 第n个子元素
 * :nth-of-type(n) 同类子元素中的第n个
+* :active  被激活的元素  
+* :link   未被访问的链接 
+* :visited   
 * :not(selector) 除 selector 元素以外的元素
 * :enabled
 * :disabled
@@ -318,14 +332,14 @@ text4 ===> orange
 2. 媒体查询结合transform缩放为相应尺寸。
 ```css
 @media screen and (-webkit-min-device-pixel-ratio: 2) {
-    div {
+    .line-1px {
         height:1px;
         background:#000;
         transform: scaleY(0.5);
     }
 }
 @media screen and (-webkit-min-device-pixel-ratio: 3) {
-    div {
+    .line-1px {
         height:1px;
         background:#000;
         transform: scaleY(0.333);
@@ -335,20 +349,21 @@ text4 ===> orange
 
 ## 外边距折叠（合并）
 块级元素的上下外边距(margin)在某些情况下会合并（折叠）起来，合并之后的大小为较大的margin。  
+
 准确来说，外边距折叠应该叫垂直外边距折叠，因为只会发生在垂直方向上，而水平方向上不会发生。
 
-会发生外边距折叠的情况：  
+### 会发生外边距折叠的情况：  
 1. 相邻兄弟元素
 2. 父元素的上外边距和第一个子元素的上外边距
 3. 父元素的下外边距和最后一个子元素的下外边距
-4. 空元素自己的上外边距会和自己的下外边距合并
 
-解决方案：  
+### 解决方案：  
 1. 变为BFC。但overflow:hidden不能解决相邻元素外边距重叠问题。
 2. 使用padding或者border取代margin间距效果
 
 ## 什么是BFC? 如何产生BFC? BFC作用
 BFC:  
+
 块级格式化上下文(Block Formatting Context)，它是一个独立的渲染区域，BFC内部的元素与外部的元素互相隔离。  
 主要是管理他的子元素的。
 
@@ -369,7 +384,7 @@ BFC的作用：
 其实就是在Z轴上的使用权利，元素有了层叠上下文之后，会根据元素属性和优先顺序占用Z轴空间。
 #### 怎么生成层叠上下文元素
 1. position: relative , absolute 且z-index值不为auto
-1. z-index不为auto的flex item元素(不是父元素)
+1. z-index不为auto的flex弹性盒子元素(不是父元素)
 1. opacity值小于1的元素
 1. 根HTML元素
 1. 其他一些 CSS3 属性，属性值不为none  
@@ -504,14 +519,17 @@ Normalize.css是一种CSS reset的替代方案。它是一个很小的CSS文件�
 11. 控制指令`@if @for @each @while`
 
 ## CSS-Sprites
-CSS-sprites，又叫精灵图或者雪碧图。选择合适的图像素材去拼合到一张图片上，再利用定位将图像在网页中渲染出来。  
+CSS-sprites，又叫精灵图或者雪碧图。选择合适的图像素材去拼合到一张图片上，再利用定位将图像在网页中渲染出来。 
+
 优点：  
-将众多小图像拼合，一次性加载，减少http请求，提高网站性能  
+* 将众多小图像拼合，一次性加载，减少http请求，提高网站性能  
+
 缺点：  
-不利于维护，当CSS-sprites上的一个图像需要改动时，往往需要改动其他的图像的CSS代码  
+* 不利于维护，当CSS-sprites上的一个图像需要改动时，往往需要改动其他的图像的CSS代码  
+
 更好的方案：icon-font
 
-## PNG,GIF,JPG的区别及如何选
+## PNG, GIF, JPG的区别及如何选
 * GIF:  
 8 位像素，256 色  
 无损压缩  

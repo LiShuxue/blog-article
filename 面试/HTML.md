@@ -70,23 +70,40 @@ href 主要在 link和 a 等元素上使用，用于在当前文档和引用资�
 src 主要在 img、script、iframe 等元素上使用，引入一个资源，并将该元素的内容整体替换。如果不写src，script会不存在脚本代码，img会显示x，iframe会显示空白页。
 
 ## prefetch, preload
-preload 立即下载该资源并缓存起来，但不执行。只有遇见这个js的时候，才开始执行，无需重新下载。
-```html
-<link href="js/chunk-1308.c09665a1.js" rel="preload">
-```
+提升下次将打开的页面速度， 用prefetch。优化当前加载的页面，用preload。
 
 prefetch 空闲时间下载该资源并缓存。
 ```html
 <link href="js/chunk-1308.c09665a1.js" rel="prefetch">
 ```
 
+preload 立即下载该资源并缓存起来，但不执行。只有遇见这个js的时候，才开始执行，无需重新下载。
+```html
+<link href="js/chunk-1308.c09665a1.js" rel="preload">
+```
+
 如果prefetch还没下载完之前，浏览器发现script标签也引用了同样的资源，浏览器会再次发起请求，所以不要在当前页面马上就要用的资源上用prefetch，要用preload。
 
-优化当前加载的页面，用preload， 提升下次将打开的页面速度， 用prefetch。
-
 ## 图片预加载，懒加载
-预加载：在网页全部加载之前，提前加载图片，当用户需要查看时可直接从本地缓存中渲染。以提供给用户更好的体验，减少等待的时间  
+预加载：在网页全部加载之前，提前加载图片，当用户需要查看时可直接从本地缓存中渲染。以提供给用户更好的体验，减少等待的时间 
+```js
+// 这种写法会立即请求图片
+let img = new Image()
+img.src = 'xxx';
+img.onload = function() { ... }
+``` 
 懒加载：延迟加载图片，当浏览到相应区域时或符合某些条件时才加载某些图片。懒加载的主要目的是前端的优化，减少请求数或延迟请求数。  
+在图片没有进入可视区域时，先不给src赋值（或者可以先给一个很小的loading图），等到图片进入可视区域再给src赋真正的值。图片的真实地址可以先存储在data-src中。
+```js
+// <img id="test" src="xxx/loading.png" data-src="xxx/real.png">
+
+const dom = document.getElementById('test');
+const distance = dom.getBoundingClientRect(); // 元素据视口的距离
+const clientHeight = window.innerHeight; // 视口的高度
+// distance.top <= clientHeight 时，图片是在可视区域内的。
+
+window.onscroll = function () { } // 在滚动条滚动的时候，判断图片的位置，如果在可视区域，替换src
+```
 两种技术的本质：两者的行为是相反的，一个是提前加载，一个是迟缓甚至不加载。
 懒加载对服务器前端有一定的缓解压力作用，预加载则会增加服务器前端压力。
 
@@ -142,6 +159,7 @@ defer（延迟执行），async（立即执行）
 * 少使用iframe框架
 
 ## canvas 相关
+### const ctx = canvasDom.getContext('2d');
 ```js
 // 使用canvas标签
 <canvas id="myCanvas" width="200" height="100"></canvas>
@@ -166,7 +184,8 @@ ctx.drawImage(img,10,10);
 ```
 
 ## 判断元素是否在视窗内
-Element.getBoundingClientRect() 方法返回元素的大小及其相对于视口的位置。该函数返回一个Object对象，该对象有6个属性：
+### Element.getBoundingClientRect()
+返回元素的大小及其相对于视口的位置。该函数返回一个Object对象，该对象有6个属性：
 top,lef,right,bottom,width,height；
 这里的top、left和css中的理解很相似，width、height是元素自身的宽高，但是right，bottom和css中的理解有点不一样。right是指元素右边界距窗口最左边的距离，bottom是指元素下边界距窗口最上面的距离。
 ```js
@@ -180,6 +199,24 @@ box.getBoundingClientRect().bottom;      // 元素下边距离页面上边的距
 
 box.getBoundingClientRect().left;        // 元素左边距离页面左边的距离
 ```
+### IntersectionObserver API
+自动"观察"元素是否可见，当元素变的可见时，会自动触发callback
+```js
+const callback = entries => {
+    console.log(entries);
+}
+const io = new IntersectionObserver(callback, option);
+io.observe(document.getElementById('example'));
+```
+callback一般会触发两次。一次是目标元素刚刚进入视口（开始可见），另一次是完全离开视口（开始不可见）。
+
+entry对象的属性：
+* time：可见性发生变化的时间，是一个高精度时间戳，单位为毫秒
+* target：被观察的目标元素，是一个 DOM 节点对象
+* rootBounds：根元素的矩形区域的信息，getBoundingClientRect()方法的返回值，如果没有根元素（即直* 接相对于视口滚动），则返回null
+* boundingClientRect：目标元素的矩形区域的信息
+* intersectionRect：目标元素与视口（或根元素）的交叉区域的信息
+* intersectionRatio：目标元素的可见比例，即intersectionRect占boundingClientRect的比例，完全可见时为1，完全不可见时小于等于0
 
 ## 各种宽高
 * document.body.clientWidth;        //网页可见区域宽(body)   
@@ -196,8 +233,9 @@ box.getBoundingClientRect().left;        // 元素左边距离页面左边的距
 * window.screen.availHeight;        //屏幕可用工作区的高  
 * window.screen.availWidth;         //屏幕可用工作区的宽  
 ---
+* window.innerHeight;               //视口的高度
 * window.screenTop;                 //浏览器窗口相对于整个屏幕Top的距离
-* window.screenLeft;                //浏览器窗口相对于整个屏幕Left的距离  
+* window.screenLeft;                //浏览器窗口相对于整个屏幕Left的距离
 
 ## DOM渲染的过程中可能有哪些情况会阻塞渲染
 1. 加载js脚本。解决方法，放在body之后，或者加defer

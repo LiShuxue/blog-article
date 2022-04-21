@@ -2,17 +2,21 @@
 * ==：比较值，类型不同的时候，先进行类型转换，再比较值；1 == "1"  true  
 * ===：比较类型和值，不做类型转换，类型不同就是不等；1 === "1"  false
 
-## [] == false，是true还是false，隐式转换
-true。
-* NaN和其他任何类型比较永远返回false。
-* Boolean 和其他任何类型比较，Boolean 首先被转换为 Number 类型。
-* String和Number比较，先将String转换为Number类型。
-* null == undefined比较结果是true，除此之外，null、undefined和其他任何结果的比较值都为false。
+## == 比较时的隐式转换
+* 基本数据类型比较，比较值
+    * null == undefined比较结果是true，除此之外，null、undefined和其他任何结果的比较值都为false。
+    * Boolean 和其他任何类型比较，Boolean 被转换为 Number 类型。Number(false) 是 0，Number(true) 是 1
+    * String和Number比较，先将String转换为Number类型( parseInt或者Number() )。除了数字型string可以转成number，其他都是NaN。Number('') 是 0
+    * NaN和其他任何类型比较永远返回false。
 * 两个引用类型比较，引用地址不一样，直接false。
 * 原始类型和引用类型做比较时，引用类型会依照ToPrimitive规则转换为原始类型。
     * 引用类型先调用valueOf()，如果是基本类型，直接返回
     * 不是基本类型，再调用toString
-    * String再转Number
+    * String再转Number，
+    * [].valueOf().toString() === ''，转number是0 
+    * {}.valueOf().toString() === '[object Object]'，转number是NaN 
+    * [] == false // true
+    * {} == false // false
 
 ## 与或非优先级运算
 1. 与或非混合时，非>与>或。 
@@ -71,8 +75,27 @@ console.log(1 << 1)     // 2，     1左移一位，相当于 1 * 2¹
 // 64的二进制表示为: 00000000 00000000 00000000 01000000
 // 右移5位
 // 结果为：         00000000 00000000 00000000 00000010
-console.log(64 << 5)     // 2，    64左移5位，相当于 64 / 2⁵
+console.log(64 >> 5)     // 2，    64左移5位，相当于 64 / 2⁵
 ```
+
+## 十进制转二进制 和 parseInt
+1. 转二进制toString(2)：
+```js
+const number = 100;
+number.toString(2)
+```
+
+2. parseInt(string, radix);
+
+解析一个字符串并返回指定基数的十进制整数。 radix 是2-36之间的整数，表示被解析字符串的基数，例如指定 16 表示被解析值是十六进制数。请注意，10不是默认值！
+
+如果 radix 是 undefined、0或未指定的，JavaScript会假定以下情况：
+
+* 如果输入的 string以 "0x"或 "0x"（一个0，后面是小写或大写的X）开头，那么radix被假定为16，字符串的其余部分被当做十六进制数去解析。
+* 如果输入的 string以 "0"（0）开头， radix被假定为8（八进制）或10（十进制）。具体选择哪一个radix取决于实现。ECMAScript 5 澄清了应该使用 10 (十进制)，但不是所有的浏览器都支持。因此，在使用 parseInt 时，一定要指定一个 radix。
+* 如果输入的 string 以任何其他值开头， radix 是 10 (十进制)。
+
+如果第一个字符不能转换为数字，parseInt会返回 NaN。
 
 ## Object.is(value1, value2)
 `Object.is()`是在ES6中定义的一个新方法，它与‘===’相比，特别针对-0、+0、NaN做了处理。
@@ -95,39 +118,26 @@ Object.is(NaN, 0/0) // true
 * null表示空对象  
 * undefined表示未初始化的变量
 
-## number的最大/小值，最大/小安全整数，位数
-Number.MAX_VALUE，Number.MIN_VALUE，Number.MAX_SAFE_INTEGER，Number.MIN_SAFE_INTEGER
+## number的位数，最大/小值，最大/小安全整数
+JS的基础类型Number，遵循 IEEE 754 规范，采用双精度存储，占用 64 bit。其中 0 到 51 存储数字（占52位），52 到 62 存储指数（占11位），63 位存储符号，如图。
+![number](https://cdn.lishuxue.site/blog/image/面试/number.png)
 
-所有 JavaScript 数字均为 64 位。其中 0 到 51 存储数字（占52位），52 到 62 存储指数（占11位），63 位存储符号。
+* Number.MAX_VALUE，
+* Number.MIN_VALUE，
+* Number.MAX_SAFE_INTEGER，
+* Number.MIN_SAFE_INTEGER
 
-## 十进制转二进制 和 parseInt
-1. 转二进制toString(2)：
-```js
-const number = 100;
-number.toString(2)
-```
-
-2. parseInt(string, radix);
-
-解析一个字符串并返回指定基数的十进制整数。 radix 是2-36之间的整数，表示被解析字符串的基数，例如指定 16 表示被解析值是十六进制数。请注意，10不是默认值！
-
-如果 radix 是 undefined、0或未指定的，JavaScript会假定以下情况：
-
-* 如果输入的 string以 "0x"或 "0x"（一个0，后面是小写或大写的X）开头，那么radix被假定为16，字符串的其余部分被当做十六进制数去解析。
-* 如果输入的 string以 "0"（0）开头， radix被假定为8（八进制）或10（十进制）。具体选择哪一个radix取决于实现。ECMAScript 5 澄清了应该使用 10 (十进制)，但不是所有的浏览器都支持。因此，在使用 parseInt 时，一定要指定一个 radix。
-* 如果输入的 string 以任何其他值开头， radix 是 10 (十进制)。
-
-如果第一个字符不能转换为数字，parseInt会返回 NaN。
 
 ## Object 和 Map 有什么区别
 * Object 键（key）的类型只能是字符串，数字或者 Symbol；而 Map 可以是任何类型。
 * Map 中的元素会保持其插入时的顺序；而 Object 则不会完全保持插入时的顺序。
 * Object的key顺序：
+    1. 先number类型，后字符串类型。
     1. key是整数或者整数类型的字符串，那么会按照从小到大的排序。
     2. 其它数据类型，控制台展示的时候，按照ASC码升序排序，如果用Object.keys()获取，按照实际创建顺序排序。
 * Map 是可迭代对象，所以其中的键值对是可以通过 for of 循环或 .foreach() 方法来迭代的；而普通的对象键值对则默认是不可迭代的，只能通过 for in 循环来访问。
 
-## 一个对象作为key，会自动转成[object,Object]，第二个O大写
+## 一个对象作为key，会将对象toString()，转成[object,Object]，第二个O大写
 ```js
 var a = { name: "Sam" };
 var b = { name: "Tom" };
@@ -137,7 +147,7 @@ o[b] = 2;
 console.log(o[a]); // 2
 ```
 
-## function.length可以获取函数的参数个数
+## function.length可以获取函数的参数个数，arguments.length也可以
 ```js
 const sum = (a, b, c) => a + b + c
 sum.length // 3
@@ -177,6 +187,39 @@ const curry = fn => {
         }
     }
     return nest;
+}
+```
+```js
+sum(a)(b)(c)...(n)()，返回a到n的和。
+
+const sum = (a) => {
+    // 返回一个函数，如果没有参数就返回当前值，有参数就递归
+    return (x) => {
+        if (x) {
+            return sum(a + x);
+        } else {
+            return a
+        }
+    }
+}
+
+sum(a)(b)(c)...(n).count()，返回a到n的和。
+
+const sum = (a)=> {
+    let args = [a];
+
+    const add = (x) => {
+        args.push(x);
+        return add
+    }
+
+    add.count = () => {
+        return args.reduce((total, next) => {
+            return total + next;
+        }, 0);
+    };
+
+    return add;
 }
 ```
 
@@ -219,7 +262,7 @@ console.log(person.name); // 输出test
 如果是按引用传递，那他两个应该是同一个东西，修改obj=new Object()之后，person也应该是这个新的object。
 
 ## js内置对象
-基本对象：
+基本对象：数据类型对应的对象
 1. Object
 2. Function
 3. Array
@@ -292,14 +335,8 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
 * 语法分析（Parsing）
 * 预编译（解释）
 
-### 执行阶段
-将JavaScript代码分为一块块的可执行代码块进行执行，在代码块执行前会创建执行上下文，目前有三类代码块：  
-* 全局代码块（Global code）
-* 函数代码块（Function code）
-* eval代码块（Eval code）  
-
-### 执行上下文
-根据这三类代码快创建三种执行上下文
+### 代码执行阶段，创建执行上下文 和 代码执行
+创建三种执行上下文
 * 全局执行上下文
 * 函数执行上下文
 * eval执行上下文
@@ -307,7 +344,7 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
 执行上下文也分为两个阶段(ES6规范)：
 1. 创建阶段
     * 决定 this 的指向
-    * 创建词法环境(LexicalEnvironment) (也就是作用域) 
+    * 创建词法环境(Lexical Environment) (也就是作用域) 
         1. 函数声明
         2. 变量声明
         3. 确立作用域和作用域链
@@ -318,9 +355,9 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
     * 函数执行
 
 ### 函数调用栈
-代码在运行过程中，会有一个叫做调用栈(call stack)的概念。调用栈是一种栈结构,它用来存储计算机程序执行时候其活跃子程序的信息（即执行上下文）。 
+栈里面存储的就是执行上下文。 
 
-在执行阶段，先将全局执行上下文放入函数调用栈栈底，然后执行函数，并将函数执行上下文放入栈。  
+在代码执行阶段，先将全局执行上下文放入函数调用栈栈底，然后执行函数，并将函数执行上下文放入栈。  
 
 处于栈顶的上下文执行完毕之后，就会自动出栈。函数中，遇到return能直接终止可执行代码的执行，因此会直接将当前上下文弹出栈。
 
@@ -331,8 +368,9 @@ JavaScript代码的整个执行过程，分为两个阶段，代码编译阶段�
 
 可执行上下文中的词法环境中含有外部词法环境的引用，我们可以通过这个引用获取外部词法环境的变量、声明等，这些引用串联起来一直指向全局的词法环境，因此形成了作用域链。
 
-### 变量查找（ResolveBinding）：  
-先从当前的执行上下文中找保存的作用域，查看当前作用域里面的 Environment Record 是否有此变量的信息，如果找到了，则返回当前作用域内的这个变量。如果没有查找到，则顺着 `__outer__` 到父作用域里面的 Environment Record 查找，以此递归。
+### 变量查找：  
+先从当前的执行上下文的作用域中查找，查看当前作用域里面的 Environment Record 是否有此变量的信息，如果找到了，则返回当前作用域内的这个变量。  
+如果没有查找到，则顺着 `__outer__` 到父作用域里面的 Environment Record 查找，以此递归。
 
 ### 变量提升
 在执行上下文的创建阶段，会先声明var类型的变量，但不进行赋值，执行阶段才去赋值。  
@@ -387,6 +425,60 @@ foo.call(obj) // 10
 3. 解释器(Ignition) 会将 AST 转换为字节码，一边解释一边执行。（解释执行）
 4. 在解释执行字节码的过程中，如果发现一段代码被多次重复执行，就会将其标记为热点（Hot）代码。V8 会将这段热点代码丢给优化编译器 TurboFan 编译为二进制代码。如果下次再执行时，就会直接执行二进制代码，提高执行速度。（编译执行）
 5. 如果遇到普通函数，只会对其进行预解析(Pre-Parser)，验证函数的语法是否有效、解析函数声明以及确定函数作用域，并不会生成 AST，当函数被调用时，才会对其完全解析。
+```js
+// 源码
+var test = 1;
+
+// Tokens
+[
+    {
+        "type": "Keyword",
+        "value": "var"
+    },
+    {
+        "type": "Identifier",
+        "value": "test"
+    },
+    {
+        "type": "Punctuator",
+        "value": "="
+    },
+    {
+        "type": "Numeric",
+        "value": "1"
+    },
+    {
+        "type": "Punctuator",
+        "value": ";"
+    }
+]
+
+// AST 抽象语法树
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "id": {
+            "type": "Identifier",
+            "name": "test"
+          },
+          "init": {
+            "type": "Literal",
+            "value": 1,
+            "raw": "1"
+          }
+        }
+      ],
+      "kind": "var"
+    }
+  ],
+  "sourceType": "script"
+}
+```
 
 ![v8](https://cdn.lishuxue.site/blog/image/面试/v8.png)
 
@@ -398,43 +490,49 @@ V8 同时采用了解释执行和编译执行这两种方式，这种混合使�
 * 原型链是针对对象属性或者方法的， 当我们从一个对象上寻找某个属性或者方法时， 先在本身寻找， 没有的话就去父类的原型上找。父类原型找不到，再去父类的父类的原型找。形成原型链。
 
 ## 原型，原型链，构造函数
-<b>原型：</b>即prototype属性，只有函数才有，用来存放所有实例对象需要共享的属性和方法。那些不需要共享的属性和方法，就放在构造函数里面。  
-<b>构造函数：</b>用来创建实例。通过new关键字可以创建实例。命名通常首字母大写。  
-<b>原型链：</b>即__proto__属性，任何对象都有这个属性。  
+* <b>原型：</b>即prototype属性，只有函数才有，用来存放所有实例对象需要共享的属性和方法。那些不需要共享的属性和方法，就放在构造函数里面。  
+* <b>构造函数：</b>用来创建实例。通过new关键字可以创建实例。命名通常首字母大写。  
+* <b>原型链：</b>即__proto__属性，任何对象都有这个属性。  
+
+当我们访问一个对象的属性或方法时，如果这个对象内部不存在这个属性，那么他就会去他的__proto__里找这个属性，也就是去父类的protorype上找，父类的prototype上如果没有，这个prototype又会去找他的__proto__，这个__proto__又会有自己的__proto__，于是就这样 一直找下去，也就是我们平时所说的原型链的概念。
+
+一张图总结：主要是每个部分都要明白__proto__和 constructor的指向。
+![proto](https://cdn.lishuxue.site/blog/image/面试/proto3.png)
+
+__proto__有两条链，一条是实例对象的，一条是类的。类中有Function参与，实例的没有。
+```js
+// 实例的，父类的prototype.__proto__直接指向Object.prototype
+son.__proto__ === Son.prototype
+Son.prototype.__proto__ === Father.prototype
+Father.prototype.__proto__ === Object.prototype
+Object.prototype.__proto__ === null
+
+// 类的，类的__proto__属性指向父类，没有父类指向Function.prototype
+Son.__proto__ === Father
+Father.__proto__ === Function.prototype
+Function.prototype.__proto__ === Object.prototype
+Object.prototype.__proto__ === null
+```
 
 结论：
 1. 对象的__proto__属性指向父类的prototype属性，没有父类则指向Object.prototype
 2. 类的__proto__属性指向父类，如果没有父类指向Function.prototype。ES5中用function创建的类，__proto__都指向Function.prototype。  
 ---
-3. 对象的.constructor指向本类
+3. 实例对象的.constructor指向本类
 4. 类的prototype.constructor指向本类
 5. 类的.constructor指向Function
 ---
-6. 类的prototype是父类的实例， 所以instanceof 父类是true，没有父类时instanceof Object是true
+6. 类的prototype是父类的实例， 所以 instanceof 父类是true，没有父类时 instanceof Object是true
 
-5.6 也证明在自己写继承的时候， 要些这两行代码。
+5.6 也证明在自己写ES5继承的时候， 要些这两行代码。
 ```js
 Son.prototype = new Father();
 Son.prototype.constructor = Son;
 ```
 
-当我们访问一个对象的属性或方法时，如果这个对象内部不存在这个属性，那么他就会去他的__proto__里找这个属性，也就是去父类的protorype上找，父类的prototype上如果没有，这个prototype又会去找他的__proto__，这个__proto__又会有自己的__proto__，于是就这样 一直找下去，也就是我们平时所说的原型链的概念。
-
-一张图总结：主要是每个部分都要明白 __proto__ 和 constructor的指向
-![proto](https://cdn.lishuxue.site/blog/image/面试/proto3.png)
-
 ```js
-class GrandPa {
+class Father {
     constructor() {
-        this.name = '爷爷';
-    }
-    isPerson() {
-        console.log('我是一个:' + this.name);
-    }
-}
-class Father extends GrandPa {
-    constructor() {
-        super();
         this.name = '爸爸';
     }
 }
@@ -446,51 +544,39 @@ class Son extends Father {
 }
 var ss = new Son();
 
-// 先看构造函数.constructor，构造函数一定是指向某一个函数的
+// 先看__proto__属性，实例对象的__proto__链
+console.log(ss.__proto__ === Son.prototype) // true
+console.log(Son.prototype.__proto__ === Father.prototype) // true
+console.log(Father.prototype.__proto__ === Object.prototype) // true
+console.log(Object.prototype.__proto__ === null) // true
+// 类的 __proto__ 链
+console.log(Son.__proto__ === Father) // true， ES5创建的类这里会不一样，都是指向Function.prototype
+console.log(Father.__proto__ === Function.prototype) //true
+console.log(Function.prototype.__proto__ === Object.prototype) // true
+console.log(Object.prototype.__proto__ === null) // true
+
+// 再看构造函数.constructor，构造函数一定是指向某一个函数的
 console.log(ss.constructor === Son) // true
 
 console.log(Son.constructor === Function) // true
 console.log(Father.constructor === Function) // true
-console.log(GrandPa.constructor === Function) // true
 console.log(Function.constructor === Function) // true 函数的构造还是函数
-// 再看原型的构造函数
+// 类的原型的构造函数
 console.log(Son.prototype.constructor === Son) // true
 console.log(Father.prototype.constructor === Father) // true
-console.log(GrandPa.prototype.constructor === GrandPa) // true
-
-// 再看__proto__属性
-console.log(ss.__proto__ === Son.prototype) // true
-console.log(Son.__proto__ === Father) // true
-console.log(Father.__proto__ === GrandPa) //true
-console.log(GrandPa.__proto__ === Function.prototype) // true
-
-console.log(Son.prototype.__proto__ === Father.prototype) // true
-console.log(Father.prototype.__proto__ === GrandPa.prototype) // true
-console.log(GrandPa.prototype.__proto__ === Object.prototype) //true
-console.log(Object.prototype.__proto__ === null) // true
+console.log(Function.prototype.constructor === Function) // true
 
 // 再看原型.prototype，只有函数才有原型对象
 console.log(Son.prototype instanceof Father) // true   Son的原型是Father类的实例
-console.log(Father.prototype instanceof GrandPa) // true  Father的原型是GrandPa类的实例
-console.log(GrandPa.prototype instanceof Object) // true  GrandPa的原型是Object的实例
+console.log(Father.prototype instanceof Object) // true  Father的原型是Object的实例
 ```
 
 ## ES5继承
 ```js
 // 组合继承
-var GrandPa = function() {
-    this.name = '爷爷';
-}
-GrandPa.prototype.isPerson = function() {
-    console.log('我是一个:' + this.name);
-}
-
 var Father = function() {
-    GrandPa.call(this);
     this.name = '爸爸';
 }
-Father.prototype = new GrandPa();
-Father.prototype.constructor = Father;
 
 var Son = function() {
     Father.call(this);
@@ -500,52 +586,26 @@ Son.prototype = new Father();
 Son.prototype.constructor = Son;
 
 var ss = new Son();
-
-// 先看构造函数.constructor，构造函数一定是指向某一个函数的
-console.log(ss.constructor === Son) // true
-
-console.log(Son.constructor === Function) // true
-console.log(Father.constructor === Function) // true
-console.log(GrandPa.constructor === Function) // true
-console.log(Function.constructor === Function) // true 函数的构造还是函数
-// 再看原型的构造函数
-console.log(Son.prototype.constructor === Son) // true
-console.log(Father.prototype.constructor === Father) // true
-console.log(GrandPa.prototype.constructor === GrandPa) // true
-
-// 再看__proto__属性
-console.log(ss.__proto__ === Son.prototype) // true
-console.log(Son.__proto__ === Function.prototype) // true 这里跟class形式不一样
-console.log(Father.__proto__ === Function.prototype) //true 这里跟class形式不一样
-console.log(GrandPa.__proto__ === Function.prototype) // true
-
-console.log(Son.prototype.__proto__ === Father.prototype) // true 
-console.log(Father.prototype.__proto__ === GrandPa.prototype) // true 
-console.log(GrandPa.prototype.__proto__ === Object.prototype) //true
-console.log(Object.prototype.__proto__ === null) // true
-
-// 再看原型.prototype，只有函数才有原型对象
-console.log(Son.prototype instanceof Father) // true   Son的原型是Father类的实例
-console.log(Father.prototype instanceof GrandPa) // true  Father的原型是GrandPa类的实例
-console.log(GrandPa.prototype instanceof Object) // true  GrandPa的原型是Object的实例
 ```
 
 ## new 操作符做了什么？怎么模拟new ？
 1. 创建了一个空对象  
-    `var obj = {}`
-2. 将对象的__proto__指向函数的prototype  
-    `obj.__proto__ = Constructor.prototype`
+    `let obj = {}`
+2. 将对象的__proto__指向函数的prototype，对象的constructor指向函数
+    `obj.__proto__ = Constructor.prototype`  
+    `obj.constructor = Constructor`
 3. 将函数的this绑定到这个空对象上  
-    `var result = Constructor.apply(obj, arguments)`
+    `let result = Constructor.apply(obj, arguments)`
 4. 判断构造函数的返回值类型，如果没有返回值或者返回值是值类型，返回obj这个新创建的实例（相当于this）。如果返回值时是引用类型比如return {x: 'a'}，就返回这个引用类型的对象。  
     `return result instanceof Object ? result : obj`
 
 <b>模拟实现new</b>
 ```js
-function new2(Constructor, ...args) {
-    var obj = {};
+function myNew(Constructor, ...args) {
+    let obj = {};
     obj.__proto__ = Constructor.prototype; // 或者Object.setPrototypeOf(obj, Constructor.prototype)
-    var result = Constructor.apply(obj, args);
+    obj.constructor = Constructor
+    let result = Constructor.apply(obj, args);
     return result instanceof Object ? result : obj
 }
 ```
@@ -559,7 +619,7 @@ function new2(Constructor, ...args) {
 hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性，忽略那些从原型链上继承到的属性。
 
 ## typeof, instanceof, Object.prototype.toString.call()
-* typeof 可以用于判断基本数据类型和函数，判断不出来null对象数组和实例。输出的是小写的。
+* typeof 可以用于判断基本数据类型和函数，判断不出来引用类型null对象数组。输出的是小写的。
 ```js
 typeof 1  // "number"
 typeof '1' // "string"
@@ -579,7 +639,7 @@ typeof []  // "object"
 typeof new Boolean(false)  // "object"
 typeof new Date() // "object"
 ```
-* Object.prototype.toString.call()，可以精确判断所有类型
+* Object.prototype.toString.call()，可以精确判断所有类型，前面是小写的object，后面是具体的类型
 ```js
 Object.prototype.toString.call(1)   // "[object Number]"
 Object.prototype.toString.call('1') // "[object String]"
@@ -593,7 +653,7 @@ Object.prototype.toString.call(Function) // "[object Function]"
 Object.prototype.toString.call(Array) // "[object Function]"
 Object.prototype.toString.call(Object) // "[object Function]"
 ```
-* instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断某个对象是否是某个构造函数的实例。所以主要是用来检测对象和数组，无法准确判断Function 和基本数据类型
+* instanceof 用于判断某个对象是否是某个构造函数的实例。即检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。所以主要是用来检测对象和数组，无法准确判断Function 和基本数据类型
 ```js
 console.log([] instanceof Array); // true
 console.log({} instanceof Object); // true
@@ -612,38 +672,35 @@ instanceof 用于检测构造函数的 prototype 属性是否出现在某个实�
 * `实例.__proto__ === 构造函数.prototype` 或者 
 * `实例.__proto__.__proto__ === 构造函数.prototype`，递归。
 ```js
-function myinstanceof(instance, func){
-    let left = instance.__proto__;
-    let right = func.prototype;
-    while(true){
-        if(left === null) { // 找到最顶层，原型链的最顶层是null
-            return false;
-        } 
-        if(left === right) {
-            return true;
+function myInstanceof(instance, func) {
+    while(instance) { // 找到最顶层，原型链的最顶层是null
+        if (instance.__proto__ === func.prototype) {
+            return true
+        } else {
+            instance = instance.__proto__;
         }
-        left = left.__proto__
     }
+    return false
 }
 ```
 
 ## Object.defineProperty(obj, prop, descriptor)
-会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
+在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
 1. obj  要在其上定义属性的对象。
 2. prop  要定义或修改的属性的名称。
 3. descriptor  将被定义或修改的属性描述符。属性描述符有两种主要形式：数据描述符和存取描述符。描述符必须是这两种形式之一，不能同时是两者。
+
+    存取描述符  
+    * get  
+    当访问该属性时，该方法会被执行，默认为 undefined。
+    * set  
+    当属性值修改时，触发执行该方法，该方法将接受唯一参数，即该属性新的参数值。默认为 undefined  
 
     数据描述符
     * writable  
     当且仅当该属性的writable为true时，value才能被赋值运算符改变。默认为 false。
     * value  
     该属性对应的值。可以是任何有效的 JavaScript 值（数值，对象，函数等）。默认为 undefined。
-
-    存取描述符
-    * get  
-   当访问该属性时，该方法会被执行，默认为 undefined。
-    * set  
-    当属性值修改时，触发执行该方法，该方法将接受唯一参数，即该属性新的参数值。默认为 undefined  
 
     数据描述符和存取描述符均具有以下可选键值
     * configurable  
@@ -665,10 +722,9 @@ function myinstanceof(instance, func){
 ## 模拟实现call, apply, bind
 <b>模拟实现call</b>
 ```js
-Function.prototype.call2 = function(context, ...args) {
+Function.prototype.myCall = function(context, ...args) {
     const ctx = context || window; // 如果没有传参，则指向window
-    // ctx.func只是一个名字，可以随便取。this是被调用的函数，因为函数调用call方法，call里面的this就指向那个函数。所以ctx.func就是那个函数。
-    ctx.func = this; 
+    ctx.func = this; // ctx.func只是一个名字，可以随便取。this是被调用的函数，因为函数调用call方法，call里面的this就指向那个函数。所以ctx.func就是那个函数。
     const result = ctx.func(...args); // 调用该方法并传入参数，此时该方法的this指向ctx
     delete ctx.func; // 删除该方法，不然会在传入的对象上添加这个方法。
     return result; // 返回返回值。
@@ -676,20 +732,20 @@ Function.prototype.call2 = function(context, ...args) {
 ```
 <b>模拟实现apply</b>
 ```js
-Function.prototype.apply2 = function(context, arr = []) {
+Function.prototype.myApply = function(context, args = []) {
     const ctx = context || window;
     ctx.func = this; 
-    const result = ctx.func(...arr); // 跟call唯一的区别是参数不一样
+    const result = ctx.func(...args); // 跟call唯一的区别是参数不一样
     delete ctx.func;
     return result;
 }
 ```
 <b>模拟实现bind</b>
 ```js
-Function.prototype.bind2 = function(context, ...args) {
+Function.prototype.myBind = function(context, ...args) {
     const ctx = context || window;
     ctx.func = this; 
-    return function() { // 跟call的区别是不立即执行，而是返回一个函数。
+    return () => { // 跟call的区别是不立即执行，而是返回一个函数。
         const result = ctx.func(...args);
         delete ctx.func;
         return result;
@@ -709,7 +765,7 @@ Function.prototype.bind2 = function(context, ...args) {
 ```js
 var a = {
     a: {b: 'b'},
-    c: () => {},
+    c: () => { console.log('c') },
     d: [1,2],
     e: undefined,
     f: 1,
@@ -718,53 +774,44 @@ a.g = a;
 a.h = new Date();
 ```
 1. 简易版： JSON.parse(JSON.stringify(obj));
-    * 无法解决循环引用问题，会报错。 比如上面的 a.g = a.
+    * 无法解决循环引用问题，会报错。 比如上面的 a.g = a
     * 无法复制值为undefined的
     * 无法复制函数
     * 无法复制一些特殊的对象，如 RegExp, Date, Set, Map等
 
 2. 面试版：
-    * 第一层如果是对象，循环每一个key，判断每一项
-        * 判断是对象，如果循环引用，返回本身。否则递归调用自身。
-        * 判断是数组，遍历数组的每一项，如果是对象，递归调用自身，否则直接返回
-        * 判断是函数，重新生成函数
-        * 值类型直接复制
-    * 第一层如果是数组，递归每一个元素。
-    * 第一层如果是值类型，直接复制。
+    * 如果是对象，循环每一个key，判断每一项
+        * 如果是循环引用，直接复制
+        * 否则直接递归该元素
+    * 如果是数组，递归每一个元素。
+    * 如果是值类型，直接复制。
     
     ```js
     function deepClone(obj) {
-        let newobj;
-        if (Object.prototype.toString.call(obj) === '[object Object]') { // 先判断目标类型
-            newobj = {};
+        let result;
+        if (Object.prototype.toString.call(obj) === '[object Object]') {
+            result = {}
             for(let key in obj) {
-                let value = obj[key];
-                if (Object.prototype.toString.call(value) === '[object Object]') {
-                    if (value === obj) { // 循环引用
-                        newobj[key] = obj;
-                    } else {
-                        newobj[key] = deepClone(value); // 递归本身
-                    }
-                } else if (Object.prototype.toString.call(value) === '[object Array]') {
-                    newobj[key] = value.map(item => {
-                        return deepClone(item); // 递归数组元素
-                    })
-                } else if (Object.prototype.toString.call(value) === '[object Function]') {
-                    newobj[key] = function() { return value.call(this, ...arguments) } // 重新构建函数
+                // 对象并且循环引用
+                if(Object.prototype.toString.call(obj[key]) === '[object Object]' && obj[key] === obj) {
+                    result[key] = obj
                 } else {
-                    newobj[key] = value;
-                }  
+                    result[key] = deepClone(obj[key]) // 递归处理元素
+                }
             }
         } else if (Object.prototype.toString.call(obj) === '[object Array]') {
-            newobj = [];
-            for (let i = 0; i < obj.length; i++) {
-                newobj.push(deepClone(obj[i])) // 递归数组的元素
+            result = []
+            for(let item of obj) {
+                result.push(deepClone(item)) // 递归数组元素
             }
+        } else if (Object.prototype.toString.call(obj) === '[object Function]') {
+            result = () => {  // 重新构建函数
+                return obj.call(this , ...arguments) 
+            } 
         } else {
-            newobj = obj;
+            result = obj // 直接复制
         }
-        
-        return newobj;
+        return result;
     }
     ```
 
@@ -778,10 +825,9 @@ a.h = new Date();
 function throttle(method, delay) {
     let startTime = Date.now();
     return function() {
-        let context = this, args = arguments;
         let currentTime = Date.now();
-        if (currentTime - startTime >= delay) { // 靠两次运行的时间戳对比
-            method.apply(context, args);
+        if (currentTime - startTime >= delay) { // 靠两次运行的时间戳对比，时间没到不执行
+            method.apply(this, arguments);
             startTime = currentTime;
         }
     }
@@ -794,13 +840,12 @@ window.addEventListener('scroll', throttle(handle, 1000));
 ### 实现防抖
 ```js
 function debounce(method, delay) {
-    let timer = null;
+    let timer;
     return function() {
-        let context = this, args = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(function() { // 靠setTimout等待一定的时间执行
-            method.apply(context, args)
-        }, delay);
+        if(timer) clearTimeout(timer) // 靠setTimout等待一定的时间执行，时间未到，清空timer重新等待
+        timer = setTimeout(() => { 
+            method.apply(this, arguments)
+        }, delay)
     }
 }
 function handle() {
@@ -811,7 +856,9 @@ window.addEventListener('scroll', debounce(handle, 1000));
 
 ## JS 异步解决方案的发展历程以及优缺点
 * 回调函数  
-    缺点：回调地狱，不能用 try catch 捕获错误，不能 return
+    缺点：
+    1. 回调地狱
+    2. 外层try catch捕获不到回调函数内部错误
 
 * Promise  
     优点：解决了回调地狱的问题  
@@ -879,7 +926,7 @@ window.addEventListener('scroll', debounce(handle, 1000));
     ```
 2. map, forEach等循环，不能跳出循环，如果想跳出，只能主动抛出一个异常。throw new Error()
 
-3. return 一般用来作为函数的返回值，不能单独用在循环中。
+3. return 一般用来作为函数的返回值，不能单独用在循环中。写在某函数的循环中，相当于结束了函数，所以也结束了循环。
 ## 前端存储方式
 1. cookie  
     cookie 中主要存储sessionid，过期时间，域名，路径等。会在发送请求的时候自动携带。为了维持服务器的状态。大小只有4k。
@@ -903,10 +950,11 @@ window.addEventListener('scroll', debounce(handle, 1000));
 7. `str.search(regexp/substr)` 检索字符串中指定的子字符串，或检索与正则表达式相匹配的子字符串，返回相匹配的子串的起始位置
 8. `str.split()`，将字符串变为数组，以某符号分割。
 9. `str.slice(start,end)` 返回一个新的字符串。从 start 开始（包括 start）到 end 结束（不包括 end）。
-10. `str.substr(start, length)` 抽取从 start 下标开始的指定数目的字符。
-11. `str.substring(start, end)` 返回一个新的字符串, 子串包括 start 处的字符，但不包括 stop 处的字符, 与slice() 和 substr() 方法不同的是，substring() 不接受负的参数。
+10. `str.substring(start, end)` 返回一个新的字符串, 子串包括 start 处的字符，但不包括 end 处的字符, 与slice() 和 substr() 方法不同的是，substring() 不接受负的参数。
+11. `str.substr(start, length)` 抽取从 start 下标开始的指定数目的字符。
 12. `str.toLowerCase()`	把字符串转换为小写。
 13. `str.toUpperCase()`	把字符串转换为大写。
+14. `str.localeCompare(str2)` 如果引用字符存在于比较字符之前则为负数; 如果引用字符存在于比较字符之后则为正数; 相等的时候返回 0
 
 ## ES6新增字符串操作
 1. `str.includes(str)` 返回布尔值，表示是否找到了参数字符串。
@@ -915,6 +963,7 @@ window.addEventListener('scroll', debounce(handle, 1000));
 4. `str.repeat(n)` 方法返回一个新字符串，表示将原字符串重复n次。n为0则返回空串
 5. `str.padStart(n, str)`，`str.padEnd(n, str)` 字符串补全长度。如果某个字符串不够指定长度，会在头部或尾部补全。
 6. `trimStart()`和`trimEnd()` 与trim()一致，trimStart()消除字符串头部的空格，trimEnd()消除尾部的空格。
+7. `str.replaceAll(regexp/substr, str2)` 替换所有
 
 ## 如何判断是否是数组？
 1. `Array.isArray(arr) // es6提供`
@@ -935,7 +984,7 @@ window.addEventListener('scroll', debounce(handle, 1000));
 8. 易混淆的一个string的方法，`str.split()`，将字符串变为数组，以某符号分割
 9. `arr.concat(newArr)` 连接两个数组 返回值为连接后的新数组
 10. `arr.reverse()` 将数组反转，返回值是反转后的数组
-11. `arr.sort()` 将数组进行排序,返回值是排好的数组。默认将按字母顺序对数组中的元素进行排序，说得更精确点，是按照字符编码的顺序进行排序。  
+11. `arr.sort()` 将数组进行排序,返回值是排好的数组。默认是升序排列。默认将按字母顺序对数组中的元素进行排序，说得更精确点，是按照字符编码的顺序进行排序。  
     如果传入了比较函数：
     * 如果 compareFunction(a, b) 小于 0 ，那么 a 会被排列到 b 之前
     * 如果 compareFunction(a, b) 等于 0 ， a 和 b 的相对位置不变
@@ -946,7 +995,7 @@ window.addEventListener('scroll', debounce(handle, 1000));
 15. `arr.filter((value, index, arr) => { ... })` 过滤数组，返回一个满足要求的数组
 16. `arr.every((value, index, arr) => { ... })` 依据判断条件，数组的元素是否全满足，若满足则返回ture。全真则真，一假即假
 17. `arr.some((value, index, arr) => { ... })` 依据判断条件，数组的元素是否有一个满足，若有一个满足则返回ture。有真则真，全假才假
-18. `arr.reduce((total, value, index, arr) = > { ... }, initValue)` 为数组中的每一个元素依次执行callback函数，并将函数的返回值作为total参数传给下次循环
+18. `arr.reduce((prev, next, index, arr) = > { ... }, initValue)` 为数组中的每一个元素依次执行callback函数，并将函数的返回值作为total参数传给下次循环
 
 ## ES6新增数组操作
 1. `Array.from()` 将对象转为数组：string，arguments, Set, Map, key是数字的对象
@@ -991,7 +1040,7 @@ concat, [...a, ...b]扩展运算符
 for (let i=0; i<arr.length; i++) {
     if (arr[i] === target) {
         arr.splice(i, 1);
-        i = i -1; // 一定要给下标重新赋值
+        i = i - 1; // 一定要给下标重新赋值，减一
     }
 }
 ```
@@ -999,8 +1048,8 @@ for (let i=0; i<arr.length; i++) {
 ## 函数内部 arguments 变量有哪些特性,有哪些属性,如何将它转换为数组
 arguments对象是所有（非箭头）函数中都可用的局部变量。可以使用arguments[i]引用函数的参数，也可以修改函数参数。修改的只是函数的形参，并不会影响实参。  
 * `arguments.callee` 指向当前执行的函数。  
-* `arguments.caller` 指向调用当前函数的函数。  
 * `arguments.length` 指向传递给当前函数的参数数量。
+* `arguments.callee.caller` 也就是 `fn.caller` 指向调用当前函数的函数的引用，如果是在全局作用域中调用当前函数，它的值为 null。  
 
 转换为数组：  
 1. `var arr = [...arguments];`
@@ -1013,7 +1062,7 @@ arguments对象是所有（非箭头）函数中都可用的局部变量。可�
 * 适配器：为了解决两个接口不兼容的情况，通过包装一层实现两个接口正常协作。
 * 装饰模式：不需要改变已有的接口，作用是给对象添加功能。
 * 代理模式：代理是为了控制对对象的访问，不让外部直接访问到对象。代理类可以访问并操作对象，然后暴露相关方法供外部调用。
-* 发布订阅（观察者）模式：当对象发生改变时，订阅方都会收到通知。先定义一个对象，这个对象包含on方法和trigger方法，以及一个存储回调函数的list。on的时候往list里面push，trigger的时候再从list中拿出来并执行。
+* 发布订阅（观察者）模式：当对象发生改变时，订阅方都会收到通知。先定义一个对象，这个对象包含on,off方法和trigger方法，以及一个存储回调函数的map。on的时候往map里面push，trigger的时候再从map中拿出来并执行, off的时候删除。
 
 ## jquery插件开发
 其实就是给jquery增加一种新的方法。  
@@ -1235,7 +1284,7 @@ UMD是同时支持AMD和CommonJS的规范。
 1. commonJS 模块输出的是一个值的拷贝，ES6模块输出的是值的引用  
     * commonJS模块一旦输出一个值，模块内部的变化就影响不到这个值。  
     * ES6模块如果使用import从一个模块加载变量，那些变量不会被缓存，而是成为一个指向被加载模块的引用，原始值变了，import加载的值也会跟着变。  
-2. commonJS 模块是运行时加载，ES6 模块是静态编译时加载，所有可以用于tree shaking
+2. commonJS 模块是运行时加载，ES6 模块是静态编译时加载，所以可以用于tree shaking
     * 运行时加载: CommonJS 模块就是对象；即在输入时是先加载整个模块，生成一个对象，然后再从这个对象上面读取方法，这种加载称为“运行时加载”。
     * 编译时加载: ES6 模块不是对象，而是通过 export 命令显式指定输出的代码，import时采用静态命令的形式。即在import时可以指定加载某个输出值，而不是加载整个模块，这种加载称为“编译时加载”。
 3. CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载
