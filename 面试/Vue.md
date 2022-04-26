@@ -1,7 +1,11 @@
 ## vue生命周期
-创建前/后, 载入前/后, 更新前/后, 销毁前/后  
+* 创建前/后, 载入前/后, 更新前/后, 销毁前/后  
 beforeCreate/created, beforeMount/mounted, beforeUpdate/updated, beforeDestroy/destroyed  
-keep-alive 组件激活时 activated，keep-alive 组件停用时 deactivated
+* keep-alive 组件激活时 activated，keep-alive 组件停用时 deactivated
+
+* errorCaptured， 组件级错误监控，监控后代组件的错误。监控不到事件中的和异步中的错误
+
+* errorHandler，全局错误处理函数，可以监控生命周期，vue自定义事件，v-on Dom事件，如果生命周期或者事件是Promise，可以监控到，如果是其他的异步，监控不到。
 
 ## 第一次页面加载会触发哪几个钩子？
 第一次页面加载时会触发 beforeCreate, created, beforeMount, mounted 这四个钩子
@@ -106,6 +110,7 @@ computed和watch都起到监听/依赖一个数据，并执行相应操作
 ```
 
 ## 动态组件
+is: 后面指定一个组件的名字
 ```js
 <component v-bind:is="currentTabComponent"></component>
 ```
@@ -300,9 +305,13 @@ v-for优先级高于v-if，这意味着 v-if 将分别重复运行于每个 v-fo
 ## 组件中的data为什么是函数而不是对象
 一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。 
 
-组件是可复用的vue实例，一个组件被创建好之后，就可能被用在各个地方，而组件不管被复用了多少次，组件中的data数据都应该是相互隔离，互不影响的。
+如果data是一个纯碎的对象,则所有的实例将共享引用同一份data数据对象,无论在哪个组件实例中修改data,都会影响到所有的组件实例
+
+如果data是函数,每次创建一个新实例后,调用data函数,从而返回初始数据的一个全新副本数据对象
 
 ## Vue的数据为什么频繁变化但只会更新一次DOM
+Vue的dom更新是异步的，当数据发生变化，vue并不是直接去更新dom，而是开启一个队列。跟JavaScript原生的同步任务和异步任务相同。
+
 现在有这样的一种情况，mounted的时候test的值会被循环执行++1000次。 每次++时，都会根据响应式触发setter->Dep->Watcher->update->run。 如果这时候没有异步更新视图，那么每次++都会直接操作DOM更新视图，这是非常消耗性能的。 所以Vue实现了一个queue队列，在下一个tick（或者是当前tick的微任务阶段）统一执行queue中Watcher的run。同时，拥有相同id的Watcher不会被重复加入到该queue中去，所以不会执行1000次Watcher的run。最终更新视图只会直接将test对的DOM的0变成1000。 保证更新视图操作DOM的动作是在当前栈执行完以后下一个tick（或者是当前tick的微任务阶段）的时候调用，大大优化了性能。
 
 ## Vue 框架怎么实现对象和数组的监听？

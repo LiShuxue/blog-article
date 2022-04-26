@@ -18,6 +18,7 @@ let {a, b} = {a:1, b:2};
 4. `str.repeat(n)` 方法返回一个新字符串，表示将原字符串重复n次。n为0则返回空串
 5. `str.padStart(n, str)`，`str.padEnd(n, str)` 字符串补全长度。如果某个字符串不够指定长度，会在头部或尾部补全。
 6. `trimStart()`和`trimEnd()` 与trim()一致，trimStart()消除字符串头部的空格，trimEnd()消除尾部的空格。
+7. `str.replaceAll(regexp/substr, str2)` 替换所有
 
 ## 模板字符串
 反引号包裹，用`${}`包裹变量
@@ -27,7 +28,7 @@ let {a, b} = {a:1, b:2};
 2. `Number.isNaN()` 用来检查一个值是否为NaN
 3. ES6 将全局方法`parseInt()`和`parseFloat()`，移植到Number对象上面，行为完全保持不变。
 4. `Number.isInteger()` 用来判断一个数值是否为整数。
-5. ES6 引入了`Number.MAX_SAFE_INTEGER`和`Number.MIN_SAFE_INTEGER`这两个常量，用来表示-2^53到2^53之间范围的上下限。
+5. ES6 引入了`Number.MAX_SAFE_INTEGER`和`Number.MIN_SAFE_INTEGER`这两个常量，用来表示 -2^53 到 2^53 之间范围的上下限。
 6. `Number.isSafeInteger()` 则是用来判断一个整数是否落在这个范围之内
 
 ## 参数默认值，剩余参数
@@ -364,34 +365,31 @@ console.log(9);
 10. 如果excutor出错，直接变为rejected状态。
 11. Promise实例有then方法，可以接收fulfilled或者rejected的回调
 
-### 总结就是，一个 class 类， 有个constructor，参数是excutor，构造函数中执行这个excutor，excutor接受参数resolve， reject，用try catch包裹执行。同时有5个实例属性，status,value, reason, successCallbacks, errorCallbacks。两个实例方法， then, catch。then里面判断状态，执行或者放入数组，catch中调用then
+### 总结就是，一个 class 类， 有个constructor，参数是excutor，构造函数中执行这个excutor，excutor接受参数resolve， reject，用try catch包裹执行。同时有3个实例属性，status, successCallbacks, errorCallbacks。两个实例方法， then, catch。then里面判断状态，执行或者放入数组，catch中调用then
 
 ```js
 class MyPromise{
     constructor(excutor) {
         this.status = 'pending';
-        this.value = undefined;
-        this.reason = undefined;
+        this.result = undefined;
         // 存放成功的回调
-        this.onResolvedCallbacks = [];
+        this.successCallbacks = [];
         // 存放失败的回调
-        this.onRejectedCallbacks= [];
+        this.errorCallbacks= [];
 
-        let resolve = (value) => {
-            if (this.status === 'pending') {
-                this.status = 'fullfilled';
-                this.value = value;
-                // 依次将对应的函数执行
-                this.onResolvedCallbacks.forEach(fn => fn());
-            }
+        let resolve = (result) => {
+            if (this.status !== 'pending') return;
+            this.status = 'fullfilled';
+            this.result = result;
+            // 依次将对应的函数执行
+            this.successCallbacks.forEach(fn => fn.call(this, result));
         }
 
-        let reject = (reason) => {
-            if (this.status === 'pending') {
-                this.status = 'rejected';
-                this.reason = reason;
-                this.onRejectedCallbacks.forEach(fn => fn());
-            }
+        let reject = (error) => {
+            if (this.status !== 'pending') return;
+            this.status = 'rejected';
+            this.result = error;
+            this.errorCallbacks.forEach(fn => fn.call(this, error));
         }
 
         try {
@@ -402,22 +400,52 @@ class MyPromise{
     }
 
     then(success, error) {
-        // 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行
-        if (this.status === 'pending' && success) {
-            this.onResolvedCallbacks.push(() => success(this.value));
-        }
-        if (this.status === 'pending' && error) {
-            this.onRejectedCallbacks.push(() => error(this.reason))
-        }
-        if (this.status === 'fullfilled' && success) {
-            success(this.result)
-        }
-        if (this.status === 'rejected' && error) {
-            error(this.reason)
-        }
+        // 解决值穿透问题
+        success = typeof success !== "function" ? (v) => v : success;
+        error = typeof error !== "function" ? (err) => { throw err } : error;
+        // 为了保持链式调用，继续返回promise
+        return new MyPromise((resolve, reject) => {
+            // 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行
+            if (this.status === 'pending' && success) {
+                this.successCallbacks.push((val) => {
+                    try{
+                        const res = success(val);
+                        res instanceof MyPromise ? res.then(resolve, reject) : resolve(res);
+                    } catch(e){
+                        reject(e);
+                    }
+                });
+            }
+            if (this.status === 'pending' && error) {
+                this.errorCallbacks.push((val) => {
+                    try{
+                        const res = error(val);
+                        res instanceof MyPromise ? res.then(resolve, reject) : resolve(res);
+                    } catch(e){
+                        reject(e);
+                    }
+                });
+            }
+            if (this.status === 'fullfilled' && success) {
+                try{
+                    const res = success(this.result);
+                    res instanceof MyPromise ? res.then(resolve, reject) : resolve(res);
+                } catch(e){
+                    reject(e);
+                }
+            }
+            if (this.status === 'rejected' && error) {
+                try{
+                    const res = error(this.result);
+                    res instanceof MyPromise ? res.then(resolve, reject) : resolve(res);
+                } catch(e){
+                    reject(e);
+                }
+            }
+        })
     }
     catch(error) {
-        this.then(null, error);
+        return this.then(undefined, error);
     } 
 }
 ```
@@ -453,6 +481,68 @@ function promiseAll(promiseList) {
 1. 初始化limit个Promise对象，作为Promise.all的参数
 2. Promise.all，执行这limit个数的Promise，等待resolve
 3. 重复步骤1，2
+
+## 实现一个带并发限制的异步调度器 `Scheduler`，保证同时运行的任务最多有两个。
+```js
+class Scheduler {
+    add(promiseCreator) { ... }
+    // ...
+}
+
+const timeout = (time) => new Promise(resolve => {
+    setTimeout(resolve, time)
+})
+
+const scheduler = new Scheduler()
+const addTask = (time, order) => {
+    scheduler.add(() => timeout(time)).then(() => console.log(order))
+}
+
+addTask(1000, '1')
+addTask(500, '2')
+addTask(300, '3')
+addTask(400, '4')
+
+// 打印顺序是：2 3 1 4
+// 一开始，1、2两个任务进入队列
+// 500ms时，2完成，输出2，任务3进队
+// 800ms时，3完成，输出3，任务4进队
+// 1000ms时，1完成，输出1
+// 1200ms时，4完成，输出4
+```
+```js
+/*
+    1. add方法要返回一个promise，如果执行的数量<2，要执行promise，否则放入list
+    2. add方法的resolve，要在promise执行之后，所以要将resolve传下去
+    3. 执行方法中执行promise，控制count，并检查list中是否还有未执行的promise
+*/
+class Scheduler {
+    constructor() {
+        this.max = 2;
+        this.count = 0;
+        this.list = [];
+    }
+    add(promise) { 
+        return new Promise((resolve) => {
+            promise.end = resolve;
+            if (this.count < this.max) {
+                this.excute(promise)
+            } else {
+                this.list.push(promise)
+            }
+        })
+    }
+    async excute(promise) {
+        this.count++;
+        await promise();
+        promise.end()
+        this.count--;
+        if(this.list.length) {
+            this.excute(this.list.shift())
+        }
+    }
+}
+```
 
 ## Iterator遍历器和for...of
 Iterator它是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作。用for...of遍历。
@@ -590,8 +680,8 @@ Son.prototype.constructor = Son;
 
 ### class中的原型链
 同时存在两条继承链：
-1. 子类的__proto__属性，表示构造函数的继承，总是指向父类。
-2. 子类prototype属性的__proto__属性，表示方法的继承，总是指向父类的prototype属性。
+1. 类的__proto__属性，表示构造函数的继承，总是指向父类。
+2. 实例的__proto__属性，表示方法的继承，总是指向类的prototype属性。
 ```js
 class A {
 }
@@ -601,9 +691,12 @@ let a = new A();
 let b = new B();
 
 B.__proto__ === A // true
-B.prototype.__proto__ === A.prototype // true
-a.__proto__ === A.prototype // true
+A.__proto__ === Function.prototype // true
+
 b.__proto__ === B.prototype // true
+a.__proto__ === A.prototype // true
+B.prototype.__proto__ === A.prototype // true
+A.prototype.__proto__ === Object.prototype // true
 ```
 
 ## class 中的箭头函数和普通函数有什么区别，如下
