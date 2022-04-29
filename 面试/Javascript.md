@@ -137,7 +137,7 @@ JS的基础类型Number，遵循 IEEE 754 规范，采用双精度存储，占�
     2. 其它数据类型，控制台展示的时候，按照ASC码升序排序，如果用Object.keys()获取，按照实际创建顺序排序。
 * Map 是可迭代对象，所以其中的键值对是可以通过 for of 循环或 .foreach() 方法来迭代的；而普通的对象键值对则默认是不可迭代的，只能通过 for in 循环来访问。
 
-## 一个对象作为key，会将对象toString()，转成[object,Object]，第二个O大写
+## 一个对象作为key，会将对象toString()，转成[object Object]，第二个O大写
 ```js
 var a = { name: "Sam" };
 var b = { name: "Tom" };
@@ -522,11 +522,11 @@ Object.prototype.__proto__ === null
 4. 类的prototype.constructor指向本类
 5. 类的.constructor指向Function
 ---
-6. 类的prototype是父类的实例， 所以 instanceof 父类是true，没有父类时 instanceof Object是true
+6. 类的prototype是父类的原型的复制， 所以 instanceof 父类是true，没有父类时 instanceof Object是true
 
 5.6 也证明在自己写ES5继承的时候， 要些这两行代码。
 ```js
-Son.prototype = new Father();
+Son.prototype = Object.create(Father.prototype);
 Son.prototype.constructor = Son;
 ```
 
@@ -571,9 +571,9 @@ console.log(Son.prototype instanceof Father) // true   Son的原型是Father类�
 console.log(Father.prototype instanceof Object) // true  Father的原型是Object的实例
 ```
 
-## ES5继承
+## ES5组合寄生继承
 ```js
-// 组合继承
+// 组合寄生继承
 var Father = function() {
     this.name = '爸爸';
 }
@@ -582,7 +582,7 @@ var Son = function() {
     Father.call(this);
     this.name = '儿子';
 }
-Son.prototype = new Father();
+Son.prototype = Object.create(Father.prototype);
 Son.prototype.constructor = Son;
 
 var ss = new Son();
@@ -673,14 +673,15 @@ instanceof 用于检测构造函数的 prototype 属性是否出现在某个实�
 * `实例.__proto__.__proto__ === 构造函数.prototype`，递归。
 ```js
 function myInstanceof(instance, func) {
-    while(instance) { // 找到最顶层，原型链的最顶层是null
+    while(true) { 
+        if(instance === null){ // 找到最顶层，原型链的最顶层是null
+            return true;
+        }
         if (instance.__proto__ === func.prototype) {
             return true
-        } else {
-            instance = instance.__proto__;
-        }
+        } 
+        instance = instance.__proto__;
     }
-    return false
 }
 ```
 

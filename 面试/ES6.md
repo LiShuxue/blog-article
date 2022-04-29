@@ -651,7 +651,7 @@ https://stackoverflow.com/questions/38708550/difference-between-return-await-pro
 ### 继承
 通过extends关键字实现继承。  
 
-子类必须在constructor方法中调用super方法。只有调用super之后，才可以使用this关键字，否则会报错。  
+子类必须在constructor方法中调用super方法，只有调用super之后，才可以使用this关键字，否则会报错。super()代表父类的构造函数。相当于A.prototype.constructor.call(this)。
 ```js
 class Father{
     constructor(){
@@ -665,7 +665,11 @@ class Son extends Father {
     }
 }
 ```
-ES5的继承，子类必须调用父类的call，同时子类原型prototype是父类实例，子类原型prototype的构造函数是本身。
+
+### ES5的组合继承
+
+子类必须调用父类的call，同时子类原型prototype是父类实例，子类原型prototype的构造函数是本身。
+
 ```js
 var Father = function() {
     this.name = '爸爸';
@@ -676,6 +680,23 @@ var Son = function() {
 }
 Son.prototype = new Father();
 Son.prototype.constructor = Son;
+```
+
+优点：
+
+* 父类的方法可以被复用
+* 父类的引用属性不会被共享
+* 子类构建实例时可以向父类传递参数
+
+缺点：
+
+调用了两次父类的构造函数，一次是设置子类实例的原型的时候，一次在创建子类型实例的时候。这种情况造成了性能上的浪费。
+
+### ES5的寄生组合继承
+
+跟上面的区别是用Object.create(Father.prototype)来创建一个新的原型赋值给子类原型
+```js
+Son.prototype = Object.create(Father.prototype);
 ```
 
 ### class中的原型链
