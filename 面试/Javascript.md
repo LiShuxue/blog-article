@@ -156,72 +156,7 @@ sum.length // 3
 ## 函数柯里化
 柯里化是编程语言中的一个通用的概念（不只是Js，其他很多语言也有柯里化），是指把接收多个参数的函数变换成接收单一参数的函数，嵌套返回直到所有参数都被使用并返回最终结果。
 
-更简单地说，柯里化是一个函数变换的过程，是将函数从调用方式：f(a,b,c)变换成调用方式：f(a)(b)(c)的过程。
-
-柯里化不会调用函数，它只是对函数进行转换。
-
-```js
-const sum = (a, b, c) => a + b + c
-const fn = curry(sum);
-
-fn(1, 2, 3); // 6
-fn(1, 2)(3); // 6
-fn(1)(2, 3); // 6
-fn(1)(2)(3); // 6
-
-// 实现柯里化函数curry
-const curry = fn => {
-    /*
-        思路解析：
-        1. 接受一个原函数，返回一个柯里化后的函数
-        2. 如果柯里化后的函数接受的参数个数大于等于原函数的参数个数，直接调用原函数，返回结果
-        3. 否则的话，说明参数还未接受完毕，返回一个函数，继续接受新的参数，旧参数+新的参数 去递归
-    */
-    const nest = function(...args) {
-        if (args.length >= fn.length) {
-            return fn(...args)
-        } else {
-            return function(...restArgs) {
-                return nest(...[...args, ...restArgs])
-            }
-        }
-    }
-    return nest;
-}
-```
-```js
-sum(a)(b)(c)...(n)()，返回a到n的和。
-
-const sum = (a) => {
-    // 返回一个函数，如果没有参数就返回当前值，有参数就递归
-    return (x) => {
-        if (x) {
-            return sum(a + x);
-        } else {
-            return a
-        }
-    }
-}
-
-sum(a)(b)(c)...(n).count()，返回a到n的和。
-
-const sum = (a)=> {
-    let args = [a];
-
-    const add = (x) => {
-        args.push(x);
-        return add
-    }
-
-    add.count = () => {
-        return args.reduce((total, next) => {
-            return total + next;
-        }, 0);
-    };
-
-    return add;
-}
-```
+更简单地说，柯里化是一个函数变换的过程，是将函数从调用方式：f(a,b,c)变换成调用方式：f(a)(b)(c)的过程。柯里化不会调用函数，它只是对函数进行转换。
 
 ## 基本数据类型和引用类型存储在哪里
 * 基本数据类型：变量标识符和变量的值存放于栈内存。占用固定大小的空间。  
@@ -516,7 +451,7 @@ Object.prototype.__proto__ === null
 
 结论：
 1. 对象的__proto__属性指向父类的prototype属性，没有父类则指向Object.prototype
-2. 类的__proto__属性指向父类，如果没有父类指向Function.prototype。ES5中用function创建的类，__proto__都指向Function.prototype。  
+2. 类的__proto__属性指向父类，如果没有父类指向Function.prototype。ES5中用function创建的类，类的__proto__都指向Function.prototype。  
 ---
 3. 实例对象的.constructor指向本类
 4. 类的prototype.constructor指向本类
@@ -588,28 +523,6 @@ Son.prototype.constructor = Son;
 var ss = new Son();
 ```
 
-## new 操作符做了什么？怎么模拟new ？
-1. 创建了一个空对象  
-    `let obj = {}`
-2. 将对象的__proto__指向函数的prototype，对象的constructor指向函数
-    `obj.__proto__ = Constructor.prototype`  
-    `obj.constructor = Constructor`
-3. 将函数的this绑定到这个空对象上  
-    `let result = Constructor.apply(obj, arguments)`
-4. 判断构造函数的返回值类型，如果没有返回值或者返回值是值类型，返回obj这个新创建的实例（相当于this）。如果返回值时是引用类型比如return {x: 'a'}，就返回这个引用类型的对象。  
-    `return result instanceof Object ? result : obj`
-
-<b>模拟实现new</b>
-```js
-function myNew(Constructor, ...args) {
-    let obj = {};
-    obj.__proto__ = Constructor.prototype; // 或者Object.setPrototypeOf(obj, Constructor.prototype)
-    obj.constructor = Constructor
-    let result = Constructor.apply(obj, args);
-    return result instanceof Object ? result : obj
-}
-```
-
 ## 箭头函数可以作为构造函数吗？
 不可以。  
 
@@ -667,24 +580,6 @@ console.log(1 instanceof Number); // false
 console.log(true instanceof Boolean); // false
 ```
 
-## 模拟实现instanceof
-instanceof 用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。即判断，
-* `实例.__proto__ === 构造函数.prototype` 或者 
-* `实例.__proto__.__proto__ === 构造函数.prototype`，递归。
-```js
-function myInstanceof(instance, func) {
-    while(true) { 
-        if(instance === null){ // 找到最顶层，原型链的最顶层是null
-            return true;
-        }
-        if (instance.__proto__ === func.prototype) {
-            return true
-        } 
-        instance = instance.__proto__;
-    }
-}
-```
-
 ## Object.defineProperty(obj, prop, descriptor)
 在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回这个对象。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改的。
 1. obj  要在其上定义属性的对象。
@@ -720,40 +615,6 @@ function myInstanceof(instance, func) {
 * apply的第二个参数是一个参数数组,call和bind的第二个及之后的参数作为函数实参按顺序传入。
 * bind不会立即调用,其他两个会立即调用。
 
-## 模拟实现call, apply, bind
-<b>模拟实现call</b>
-```js
-Function.prototype.myCall = function(context, ...args) {
-    const ctx = context || window; // 如果没有传参，则指向window
-    ctx.func = this; // ctx.func只是一个名字，可以随便取。this是被调用的函数，因为函数调用call方法，call里面的this就指向那个函数。所以ctx.func就是那个函数。
-    const result = ctx.func(...args); // 调用该方法并传入参数，此时该方法的this指向ctx
-    delete ctx.func; // 删除该方法，不然会在传入的对象上添加这个方法。
-    return result; // 返回返回值。
-}
-```
-<b>模拟实现apply</b>
-```js
-Function.prototype.myApply = function(context, args = []) {
-    const ctx = context || window;
-    ctx.func = this; 
-    const result = ctx.func(...args); // 跟call唯一的区别是参数不一样
-    delete ctx.func;
-    return result;
-}
-```
-<b>模拟实现bind</b>
-```js
-Function.prototype.myBind = function(context, ...args) {
-    const ctx = context || window;
-    ctx.func = this; 
-    return () => { // 跟call的区别是不立即执行，而是返回一个函数。
-        const result = ctx.func(...args);
-        delete ctx.func;
-        return result;
-    }
-}
-```
-
 ## 深拷贝，浅拷贝，Object.assign()、ES6的扩展运算符
 浅拷贝只是拷贝了指向对象的指针。  
 深拷贝则是完全拷贝了整个值，创建了一个新的和原对象值一样的对象。  
@@ -764,12 +625,14 @@ Function.prototype.myBind = function(context, ...args) {
 
 ## 实现深拷贝
 ```js
-var a = {
+let a = {
     a: {b: 'b'},
     c: () => { console.log('c') },
     d: [1,2],
     e: undefined,
+    i: null,
     f: 1,
+    K: true
 }
 a.g = a;
 a.h = new Date();
@@ -785,75 +648,13 @@ a.h = new Date();
         * 如果是循环引用，直接复制
         * 否则直接递归该元素
     * 如果是数组，递归每一个元素。
+    * 如果是函数，函数复制
     * 如果是值类型，直接复制。
-    
-    ```js
-    function deepClone(obj) {
-        let result;
-        if (Object.prototype.toString.call(obj) === '[object Object]') {
-            result = {}
-            for(let key in obj) {
-                // 对象并且循环引用
-                if(Object.prototype.toString.call(obj[key]) === '[object Object]' && obj[key] === obj) {
-                    result[key] = obj
-                } else {
-                    result[key] = deepClone(obj[key]) // 递归处理元素
-                }
-            }
-        } else if (Object.prototype.toString.call(obj) === '[object Array]') {
-            result = []
-            for(let item of obj) {
-                result.push(deepClone(item)) // 递归数组元素
-            }
-        } else if (Object.prototype.toString.call(obj) === '[object Function]') {
-            result = () => {  // 重新构建函数
-                return obj.call(this , ...arguments) 
-            } 
-        } else {
-            result = obj // 直接复制
-        }
-        return result;
-    }
-    ```
 
 ## 节流（throttle），防抖（debounce）
 * 节流：频繁操作的时候，如果超过了设定的时间，就执行一次处理函数。周期性的执行。节流会稀释函数的执行频率。
 * 防抖：频繁操作的时候，如果两次的间隔时间超过了设定的时间，就执行一次处理函数，如果时间没到的时候，就把timer清除。只执行最后一次。需要一个定时器。
 * 函数防抖是某一段时间内只执行一次，而函数节流是间隔时间执行。
-
-### 实现节流
-```js
-function throttle(method, delay) {
-    let startTime = Date.now();
-    return function() {
-        let currentTime = Date.now();
-        if (currentTime - startTime >= delay) { // 靠两次运行的时间戳对比，时间没到不执行
-            method.apply(this, arguments);
-            startTime = currentTime;
-        }
-    }
-}
-function handle() {
-    console.log('test');
-}
-window.addEventListener('scroll', throttle(handle, 1000));
-```
-### 实现防抖
-```js
-function debounce(method, delay) {
-    let timer;
-    return function() {
-        if(timer) clearTimeout(timer) // 靠setTimout等待一定的时间执行，时间未到，清空timer重新等待
-        timer = setTimeout(() => { 
-            method.apply(this, arguments)
-        }, delay)
-    }
-}
-function handle() {
-    console.log('test');
-}
-window.addEventListener('scroll', debounce(handle, 1000));
-```
 
 ## JS 异步解决方案的发展历程以及优缺点
 * 回调函数  
@@ -1057,62 +858,31 @@ arguments对象是所有（非箭头）函数中都可用的局部变量。可�
 2. `Array.prototype.slice.call(arguments);`
 3. `Array.from(arguments)`
 
-## 设计模式
-* 工厂：工厂起到的作用就是隐藏了创建实例的复杂度，只需要提供一个接口，简单清晰。
-* 单例：保证每次访问得到的都是同一个对象，可以用全局对象存储。
-* 适配器：为了解决两个接口不兼容的情况，通过包装一层实现两个接口正常协作。
-* 装饰模式：不需要改变已有的接口，作用是给对象添加功能。
-* 代理模式：代理是为了控制对对象的访问，不让外部直接访问到对象。代理类可以访问并操作对象，然后暴露相关方法供外部调用。
-* 发布订阅（观察者）模式：当对象发生改变时，订阅方都会收到通知。先定义一个对象，这个对象包含on,off方法和trigger方法，以及一个存储回调函数的map。on的时候往map里面push，trigger的时候再从map中拿出来并执行, off的时候删除。
+## AMD 和 CMD 的区别
+1. 对于依赖的模块，AMD 是提前加载，CMD 是延迟加载。
+2. 从规范上，CMD更贴近CommonJS的异步模块化方案
 
-## jquery插件开发
-其实就是给jquery增加一种新的方法。  
-1. 一种是类级别的插件开发，即给jQuery添加新的全局函数，相当于给jQuery类本身添加方法。jQuery的全局函数就是属于jQuery命名空间的函数。
-```js
-jQuery.foo = function() {    
-    alert('This is a test.');   
-}; 
-// 或 
-jQuery.extend({      
-    foo: function() {      
-        alert('This is a test.');      
-    }
-});
-// 但是一般我们都加上命名空间去使用
-jQuery.myPlugin = {           
-    foo: function() {           
-        alert('This is a test.');           
-    }       
-}; 
-//调用
-jQuery.foo();
-$.foo();
-$.myPlugin.foo();     
-```
-2. 另一种是对象级别的插件开发，即给jQuery对象添加方法。这就需要把方法添加到jQuery的prototype上。查看jQuery源码可以发现jQuery.fn=jQuery.prototype。
-```js
-$.fn.test = function() {
-    alert('this is test2');
-    return this; // 为了满足链式调用
-}
-// 或
-$.fn.extends({
-    test: function() {
-        alert('this is test2');
-        return this;
-    }
-})
-// 但一般我们为了防止$.fn被其他库污染，都用立即执行函数定义
-(function($){
-    $.fn.test = function(){
-        alert('this is test2');
-        return this;
-    }
-}(jQuery));
-```
+## ES6 模块和 CommonJS 模块的区别
+1. commonJS 模块输出的是一个值的拷贝，ES6模块输出的是值的引用  
+    * commonJS模块一旦输出一个值，模块内部的变化就影响不到这个值。  
+    * ES6模块如果使用import从一个模块加载变量，那些变量不会被缓存，而是成为一个指向被加载模块的引用，原始值变了，import加载的值也会跟着变。  
+2. commonJS 模块是运行时加载，ES6 模块是静态编译时加载，所以可以用于tree shaking
+    * 运行时加载: CommonJS 模块就是对象；即在输入时是先加载整个模块，生成一个对象，然后再从这个对象上面读取方法，这种加载称为“运行时加载”。
+    * 编译时加载: ES6 模块不是对象，而是通过 export 命令显式指定输出的代码，import时采用静态命令的形式。即在import时可以指定加载某个输出值，而不是加载整个模块，这种加载称为“编译时加载”。
+3. CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载
 
-## jquery绑定事件，取消绑定，触发事件
-on, off, trigger
+CommonJS 加载的是一个对象（即module.exports属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
+
+## module.exports和exports的区别
+1. exports是module.exports的引用, 即   
+    `var exports=module.exports`
+2. 初始时这两个变量是指向同一个空对象
+3. 当执行完毕时只有module.exports会被返回。
+
+所以
+1. 当你想导出的东西可以在空对象上直接扩展就可以的时候，用exports当然省时省力
+2. 当你想导出的东西要完全覆盖掉空对象的时候，只能用module.exports了
+3. 当你分不清楚的时候请用module.exports
 
 ## 前端模块化的发展历程
 1. ### IIFE
@@ -1277,29 +1047,59 @@ UMD是同时支持AMD和CommonJS的规范。
 
 ```
 
-## AMD 和 CMD 的区别
-1. 对于依赖的模块，AMD 是提前加载，CMD 是延迟加载。
-2. 从规范上，CMD更贴近CommonJS的异步模块化方案
+## 设计模式
+* 工厂：工厂起到的作用就是隐藏了创建实例的复杂度，只需要提供一个接口，简单清晰。
+* 单例：保证每次访问得到的都是同一个对象，可以用全局对象存储。
+* 适配器：为了解决两个接口不兼容的情况，通过包装一层实现两个接口正常协作。
+* 装饰模式：不需要改变已有的接口，作用是给对象添加功能。
+* 代理模式：代理是为了控制对对象的访问，不让外部直接访问到对象。代理类可以访问并操作对象，然后暴露相关方法供外部调用。
+* 发布订阅（观察者）模式：当对象发生改变时，订阅方都会收到通知。先定义一个对象，这个对象包含on,off方法和trigger方法，以及一个存储回调函数的map。on的时候往map里面push，trigger的时候再从map中拿出来并执行, off的时候删除。
 
-## ES6 模块和 CommonJS 模块的区别
-1. commonJS 模块输出的是一个值的拷贝，ES6模块输出的是值的引用  
-    * commonJS模块一旦输出一个值，模块内部的变化就影响不到这个值。  
-    * ES6模块如果使用import从一个模块加载变量，那些变量不会被缓存，而是成为一个指向被加载模块的引用，原始值变了，import加载的值也会跟着变。  
-2. commonJS 模块是运行时加载，ES6 模块是静态编译时加载，所以可以用于tree shaking
-    * 运行时加载: CommonJS 模块就是对象；即在输入时是先加载整个模块，生成一个对象，然后再从这个对象上面读取方法，这种加载称为“运行时加载”。
-    * 编译时加载: ES6 模块不是对象，而是通过 export 命令显式指定输出的代码，import时采用静态命令的形式。即在import时可以指定加载某个输出值，而不是加载整个模块，这种加载称为“编译时加载”。
-3. CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载
+## jquery插件开发
+其实就是给jquery增加一种新的方法。  
+1. 一种是类级别的插件开发，即给jQuery添加新的全局函数，相当于给jQuery类本身添加方法。jQuery的全局函数就是属于jQuery命名空间的函数。
+```js
+jQuery.foo = function() {    
+    alert('This is a test.');   
+}; 
+// 或 
+jQuery.extend({      
+    foo: function() {      
+        alert('This is a test.');      
+    }
+});
+// 但是一般我们都加上命名空间去使用
+jQuery.myPlugin = {           
+    foo: function() {           
+        alert('This is a test.');           
+    }       
+}; 
+//调用
+jQuery.foo();
+$.foo();
+$.myPlugin.foo();     
+```
+2. 另一种是对象级别的插件开发，即给jQuery对象添加方法。这就需要把方法添加到jQuery的prototype上。查看jQuery源码可以发现jQuery.fn=jQuery.prototype。
+```js
+$.fn.test = function() {
+    alert('this is test2');
+    return this; // 为了满足链式调用
+}
+// 或
+$.fn.extends({
+    test: function() {
+        alert('this is test2');
+        return this;
+    }
+})
+// 但一般我们为了防止$.fn被其他库污染，都用立即执行函数定义
+(function($){
+    $.fn.test = function(){
+        alert('this is test2');
+        return this;
+    }
+}(jQuery));
+```
 
-CommonJS 加载的是一个对象（即module.exports属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
-
-## module.exports和exports的区别
-1. exports是module.exports的引用, 即   
-    `var exports=module.exports`
-2. 初始时这两个变量是指向同一个空对象
-3. 当执行完毕时只有module.exports会被返回。
-
-所以
-1. 当你想导出的东西可以在空对象上直接扩展就可以的时候，用exports当然省时省力
-2. 当你想导出的东西要完全覆盖掉空对象的时候，只能用module.exports了
-3. 当你分不清楚的时候请用module.exports
-
+## jquery绑定事件，取消绑定，触发事件
+on, off, trigger
