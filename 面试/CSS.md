@@ -160,7 +160,7 @@
 * link除了css，还可以引用其他资源文件。
 
 ## flex布局
-父元素： 
+### 父元素： 
 ```css 
 display: flex;  
 flex-direction: row | column; /* 横竖 */
@@ -168,10 +168,11 @@ justify-content: center | flex-start | flex-end | space-between | space-around; 
 flex-wrap: wrap | no-wrap | wrap-reverse; /* 换行， 不换行， 跟正常换行相反，如向上换行，第一行在下，新行在上 */
 align-items: center | flex-start | flex-end | base-line | stretch; /* 交叉轴对齐方式：居中，上对齐，下对齐，第一行基线对齐，子元素占满整个容器高度 */
 ```
-子元素：  
+### 子元素：  
+默认会缩小不会放大。 
 
-默认会缩小不会放大。  
 flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。
+
 ```css
 order: 0; /* 数值越小越靠前 */
 flex-grow: 0; /* 有剩余空间时放大系数，0不放大 */
@@ -179,6 +180,12 @@ flex-shrink: 1; /* 空间不足时如何缩小，0不缩小 */
 flex-basis: 100px; /* 项目的初始长度。若不设置伸缩性，则为固定大小 */
 align-self: flex-start; /* 自己单独的对齐方式，可覆盖align-items属性 */
 ```
+
+### flex-basis 和 width的区别
+* 不设置width和flex-basis时，宽度默认为内容自身的宽度
+* 不设置flex-basis时，使用 width
+* 设置 flex-basis后，width 不再起作用
+* Flex 项目的最终尺寸会受到 min-width 和 max-width 属性影响
 
 ## grid布局
 父元素：

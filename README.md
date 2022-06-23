@@ -3,8 +3,9 @@
 https://www.geekxh.com/0.0.%E5%AD%A6%E4%B9%A0%E9%A1%BB%E7%9F%A5/01.html
 https://github.com/geekxh/hello-algorithm
 https://github.com/biaochenxuying/blog/issues/43
-https://github.com/trekhleb/javascript-algorithms/blob/master/README.zh-CN.md
 https://zhuanlan.zhihu.com/p/137041568
+
+https://github.com/hustcc/JS-Sorting-Algorithm
 
 时间复杂度
 https://www.cnblogs.com/itplay/p/13711032.html
@@ -19,4 +20,8 @@ https://github.com/biaochenxuying/blog/issues/34
 
 react原理
 https://juejin.cn/post/6898292945867571207
+
+babel原理
+如何实现 Babel 编译器？ - 神说要有光的回答 - 知乎
+https://www.zhihu.com/question/49043143/answer/1891072917
 

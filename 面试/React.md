@@ -177,7 +177,7 @@ function useEventListener(eventName, handler, dom) {
 ```
 
 ## useEffect中如何使用async/await
-在useEffect内部或者外部，重新封装一个async函数，在async函数内部使用await。在useEffect里面调用这个async函数。
+在useEffect内部或者外部，重新封装一个async函数，在async函数内部使用await。在useEffect里面调用这个async函数。不能直接在useEffect的函数上面加async。
 ```js
 async function fetchMyAPI() {
   let response = await fetch("api/data");

@@ -320,37 +320,6 @@ Reflect.apply(a.say, b, []) //b
 3. then方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行
 4. setTimeout等异步方法会最后执行。
 5. 如果有async/await，await关键字后面的方法也是立即执行，执行完之后会继续执行全局同步代码，等同步代码执行完毕, 才会将await语句后面的代码放入微任务队列。不是立即放入。  
-```js
-console.log(1);
-setTimeout(() => {
-    console.log(2);
-}, 0)
-new Promise((resolve, reject) => {
-    console.log(3);
-    resolve();
-}).then(() => {
-    console.log(4);
-})
-
-Promise.resolve().then(() => {
-    console.log(5);
-})
-async function async1() {
-	await async2()
-	console.log(6)
-}
-async function async2() {
-    await async3()
-	console.log(7)
-}
-async function async3() {
-    console.log(8)
-}
-async1()
-console.log(9);
-
-// 1, 3, 8, 9, 4, 5, 7, 6, 2
-```
 
 ## 如何限制 Promise 请求并发数
 通过Promise.all()实现
