@@ -256,15 +256,6 @@ class DoublyLinkedList extends LinkedList {
         return node;
     }
 
-    update(position, data) {
-        // 删除 position 位置的节点
-        this.removeAt(position);
-
-        // 在 position 位置插入元素
-        const node = this.insert(position, data);
-        return node;
-    }
-
     removeAt(position) {
         // 越界判断
         if (position === null || position === undefined || position < 0 || position >= this.length) {
@@ -282,10 +273,9 @@ class DoublyLinkedList extends LinkedList {
             }
         } else if (position === this.length - 1) { // 删除最后一个
             current = this.tail;
-            this.tail.prev.next = null;
             this.tail = this.tail.prev;
-        } else {
-            // 遍历链表，找到删除的位置的节点。
+            this.tail.next = null;
+        } else { // 删除中间的
             let index = 0;
             let previous = null;
             while(index < position) {
@@ -300,6 +290,15 @@ class DoublyLinkedList extends LinkedList {
 
         this.length--;
         return current;
+    }
+
+    update(position, data) {
+        // 删除 position 位置的节点
+        this.removeAt(position);
+
+        // 在 position 位置插入元素
+        const node = this.insert(position, data);
+        return node;
     }
 }
 ```

@@ -44,27 +44,6 @@ css-loader, style-loader, sass-loader, less-loader, url-loader, file-loader, bab
 * TerserPlugin： 压缩js代码, 一般用于optimization选项
 * OptimizeCSSAssetsPlugin： 压缩css代码，一般用于optimization选项
 
-## 如何编写一个plugin
-1. 创建一个类，包含apply方法
-2. 逻辑在apply中实现，可以监听webpack的各种钩子函数， 比如beforeRun, run, compile, emit, done等。
-3. tap，tapAsync方法可以用来同步或者异步执行。
-
-    ```js
-    class MyWebpackPlugin {
-    　　constructor(options){
-    　　　　this.options = options;
-    　　}
-    　　apply(compiler) {
-    　　    // compiler 很重要，是webpack的一个实例，这个实例存储了webpack各种信息，所有打包信息
-            compiler.hooks.run.tap('MyWebpackPlugin', (compiler) => {})
-            compiler.hooks.compile.tap('MyWebpackPlugin', (compilationParams) => {})
-            compiler.hooks.emit.tap('MyWebpackPlugin', (compilation) => {})
-            compiler.hooks.done.tap('MyWebpackPlugin', (stats) => {})
-    　　}
-    }
-    module.exports = webpackPlugin;
-    ```
-
 ## webpack的构建流程是什么?
 Webpack 的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：
 
