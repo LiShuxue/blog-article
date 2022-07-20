@@ -120,7 +120,7 @@ Object.is(NaN, 0/0) // true
 
 ## number的位数，最大/小值，最大/小安全整数
 JS的基础类型Number，遵循 IEEE 754 规范，采用双精度存储，占用 64 bit。其中 0 到 51 存储数字（占52位），52 到 62 存储指数（占11位），63 位存储符号，如图。
-![number](https://cdn.lishuxue.site/blog/image/面试/number.png)
+![number](https://raw.githubusercontent.com/LiShuxue/blog-article/master/面试/number.png)
 
 * Number.MAX_VALUE，
 * Number.MIN_VALUE，
@@ -415,7 +415,7 @@ var test = 1;
 }
 ```
 
-![v8](https://cdn.lishuxue.site/blog/image/面试/v8.png)
+![v8](https://raw.githubusercontent.com/LiShuxue/blog-article/master/面试/v8.png)
 
 ### js 到底是解释型还是编译型语言？
 V8 同时采用了解释执行和编译执行这两种方式，这种混合使用的方式称为 JIT (即时编译)。  
@@ -432,7 +432,7 @@ V8 同时采用了解释执行和编译执行这两种方式，这种混合使�
 当我们访问一个对象的属性或方法时，如果这个对象内部不存在这个属性，那么他就会去他的__proto__里找这个属性，也就是去父类的protorype上找，父类的prototype上如果没有，这个prototype又会去找他的__proto__，这个__proto__又会有自己的__proto__，于是就这样 一直找下去，也就是我们平时所说的原型链的概念。
 
 一张图总结：主要是每个部分都要明白__proto__和 constructor的指向。
-![proto](https://cdn.lishuxue.site/blog/image/面试/proto3.png)
+![proto](https://raw.githubusercontent.com/LiShuxue/blog-article/master/面试/proto3.png)
 
 __proto__有两条链，一条是实例对象的，一条是类的。类中有Function参与，实例的没有。
 ```js

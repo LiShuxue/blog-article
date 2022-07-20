@@ -42,11 +42,11 @@ hashFn(string, limit = 7) {
 
 ### 链地址法
 链地址法解决冲突的办法是每个数组单元中存储的不再是单个数据, 而是一个链条。常见的是数组或者链表。当一个数据被添加到同样的下标时，往这个项对应的数组或者链表后面插入。
-![链地址法](https://cdn.lishuxue.site/blog/image/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/lian-di-zhi-fa.png)
+![链地址法](https://raw.githubusercontent.com/LiShuxue/blog-article/master/数据结构与算法/lian-di-zhi-fa.png)
 
 ### 开放地址法
 开放地址法的主要工作方式是寻找空白的单元格来添加重复的数据。当下标中已经存在数据时，往后查找空白的单元格，并将内容放入。
-![开放地址法](https://cdn.lishuxue.site/blog/image/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/kai-fang-di-zhi-fa.png)
+![开放地址法](https://raw.githubusercontent.com/LiShuxue/blog-article/master/数据结构与算法/kai-fang-di-zhi-fa.png)
 
 根据探测空白单元格位置方式的不同，可分为三种方法：
 * 线性探测

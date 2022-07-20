@@ -20,11 +20,11 @@
 
 ### 邻接矩阵
 邻接矩阵让每个节点和一个整数向关联, 该整数作为数组的下标值。用一个二维数组来表示顶点之间的连接。
-![邻接矩阵](https://cdn.lishuxue.site/blog/image/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/linjiejuzhen.png)
+![邻接矩阵](https://raw.githubusercontent.com/LiShuxue/blog-article/master/数据结构与算法/linjiejuzhen.png)
 
 ### 邻接表
 邻接表由每个顶点以及和顶点相邻的顶点列表组成。这个列表有很多中方式来存储：数组/链表/字典(哈希表)都可以。
-![邻接表](https://cdn.lishuxue.site/blog/image/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/linjiebiao.png)
+![邻接表](https://raw.githubusercontent.com/LiShuxue/blog-article/master/数据结构与算法/linjiebiao.png)
 
 ## 图的遍历
 有两种算法可以对图进行遍历。广度优先搜索(Breadth-First Search, 简称 BFS)，深度优先搜索(Depth-First Search, 简称 DFS)，两种遍历算法，都需要明确指定第一个被访问的顶点。

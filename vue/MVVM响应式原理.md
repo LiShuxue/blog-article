@@ -40,7 +40,7 @@
     * 在订阅者初始化的时候去调用本数据的get方法，将订阅者的更新方法收集到本数据的事件处理中心，即为依赖收集。
     * 初始化渲染
 
-![mvvm](http://cdn.lishuxue.site/blog/image/Vue/mvvm.png)
+![mvvm](https://raw.githubusercontent.com/LiShuxue/blog-article/master/vue/mvvm.png)
 
 ```js
 class MVVM {
