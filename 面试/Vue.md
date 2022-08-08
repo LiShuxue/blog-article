@@ -219,6 +219,46 @@ is: 后面指定一个组件的名字
     若当前实例没有父实例则取根实例上的provides否则取父实例上的provides。
     拿到provides后，会遍历原型上的属性去取内容。
 
+## 自定义组件实现双向绑定v-model
+子组件中需要定义value props, 同时定义data innerValue, 作为子组件内部的表单组件的绑定值。
+
+初始化设置innerValue = value，同时watch value，给innerValue赋值
+
+innerValue变化后，要触发input事件。可以通过watch innerValue或者子组件内部组件的change事件。
+
+```js
+// 子组件
+<template>
+  <div>
+      <el-input v-model="innerValue"/>
+      {{value}}
+  </div>
+</template>
+
+<script>
+export default {
+    props: {
+        value: {
+            type: String
+        }
+    },
+    data() {
+        return {
+            innerValue: this.value
+        }
+    },
+    watch: {
+        value(val) {
+            this.innerValue = val;
+        },
+        innerValue(value) {
+            this.$emit('input', value);
+        }
+    }
+}
+</script>
+```
+
 ## template 和 jsx 的优缺点 
 ### template:  
 
@@ -310,6 +350,14 @@ v-for优先级高于v-if，这意味着 v-if 将分别重复运行于每个 v-fo
 如果data是函数,每次创建一个新实例后,调用data函数,从而返回初始数据的一个全新副本数据对象
 
 ## Vue的数据为什么频繁变化但只会更新一次DOM
+1：监听到数据变化
+
+2：开启一个变化后数据的队列
+
+3：在同一事件循环中缓冲所有数据改变
+
+4：队列去重重复的Watcher id，使其只更新一次
+
 Vue的dom更新是异步的，当数据发生变化，vue并不是直接去更新dom，而是开启一个队列。跟JavaScript原生的同步任务和异步任务相同。
 
 现在有这样的一种情况，mounted的时候test的值会被循环执行++1000次。 每次++时，都会根据响应式触发setter->Dep->Watcher->update->run。 如果这时候没有异步更新视图，那么每次++都会直接操作DOM更新视图，这是非常消耗性能的。 所以Vue实现了一个queue队列，在下一个tick（或者是当前tick的微任务阶段）统一执行queue中Watcher的run。同时，拥有相同id的Watcher不会被重复加入到该queue中去，所以不会执行1000次Watcher的run。最终更新视图只会直接将test对的DOM的0变成1000。 保证更新视图操作DOM的动作是在当前栈执行完以后下一个tick（或者是当前tick的微任务阶段）的时候调用，大大优化了性能。
@@ -334,6 +382,19 @@ watch: {
         this.emit('input', val)
     }
 }
+```
+
+## nextTick()
+获取更新后的DOM。  
+
+因为数据更新时，并不会立即更新 DOM。如果在更新数据之后的代码执行DOM操作，有可能达不到预想效果。
+```js
+this.msg = 'hello'
+// 此时dom还没有更新
+this.$nextTick(()=>{
+    // 此时dom已经更新
+    console.log(this.$refs.msg.innerHTML)
+})
 ```
 
 ## keep-alive
@@ -399,19 +460,6 @@ Vue.filter('test', value => { ... })
 filters: {
     test() { ... }
 }
-```
-
-## nextTick()
-nextTick一般用在，当我们想在更新数据后，获取被更新的DOM进行操作。  
-
-因为数据更新时，并不会立即更新 DOM。如果在更新数据之后的代码执行DOM操作，有可能达不到预想效果。
-```js
-this.msg = 'hello'
-// 此时dom还没有更新
-this.$nextTick(()=>{
-    // 此时dom已经更新
-    console.log(this.$refs.msg.innerHTML)
-})
 ```
 
 ## 路由鉴权
@@ -608,29 +656,6 @@ initWatch的过程中其实就是实例化new Watcher完成观察者的依赖收
 2. 一个on方法，来监听某事件，然后将对应的处理函数push进去。
 3. 一个off方法，来删除某事件的监听。
 4. 一个trigger方法， 来触发某事件的处理函数。
-
-```js
-class EventBus {
-    constructor() {
-        this.map = new Map();
-    }
-    on(topic, callback) {
-        if (this.map.get(topic)) {
-            this.map.get(topic).push(callback)
-        } else {
-            this.map.set(topic, [callback])
-        }   
-    }
-    off(topic) {
-        this.map.delete(topic)
-    }
-    trigger(topic){
-        if (this.map.get(topic)){
-            this.map.get(topic).forEach(fn => fn())
-        } 
-    }
-}
-```
 
 ## 虚拟DOM（Virtual Dom）原理
 虚拟dom只是一层对真实DOM树的抽象，对这颗抽象树进行创建节点,删除节点以及修改节点的操作， 经过diff算法得出一些需要修改的最小单位,再更新视图，减少了dom操作，提高了性能。

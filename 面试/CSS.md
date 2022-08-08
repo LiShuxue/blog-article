@@ -365,7 +365,7 @@ text4 ===> orange
 3. 父元素的下外边距和最后一个子元素的下外边距
 
 ### 解决方案：  
-1. 变为BFC。但overflow:hidden不能解决相邻元素外边距重叠问题。
+1. 变为BFC。但overflow: hidden不能解决相邻元素外边距重叠问题。
 2. 使用padding或者border取代margin间距效果
 
 ## 什么是BFC? 如何产生BFC? BFC作用
@@ -379,7 +379,7 @@ BFC:
 1. 弹性盒子元素，不是父元素（flex或inline-flex）
 1. 浮动float
 1. 根HTML元素
-1. 具有overflow 且值不是 visible 的块元素
+1. overflow属性是auto、hidden、scroll的元素
 1. display: inline-block, table-cell, table-caption
 
 BFC的作用：  
@@ -421,8 +421,8 @@ BFC的作用：
 ### 怎么比较
 两个元素比较先后顺序的时候，先看是否在同一个层叠上下文，如果是，按层叠顺序比较。如果不是，看他们的父元素层叠上下文的顺序。如果比较到后面，层叠顺序相等， 按照HTML出现的先后来判断，后出现的在上面。
 
-## 为什么有时候人们用translate来改变位置而不是定位
-改变transform或opacity不会触发浏览器重排或重绘，只会触发复合（compositions）。而改变绝对定位会触发重排，进而触发重绘和复合。
+## 为什么有时候人们用translate来改变位置而不是用position
+改变transform或opacity不会触发浏览器重排或重绘，只会触发复合（compositions）。而改变position定位会触发重排，进而触发重绘和复合。
 
 ## 渲染层，复合层，层叠上下文
 * 渲染层，是页面普通的文档流。绝对定位，相对定位，浮动定位虽然脱离文档流，但它仍然属于默认渲染层，共用同一个绘图上下文对象。普通文档流是由多个渲染层合成的。
@@ -439,14 +439,13 @@ BFC的作用：
 ## 文本显示行数控制
 单行：  
 ```css
-overflow:hidden;
-text-overflow:ellipsis;
-white-space:nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
 ```
 多行：  
 ```css
 overflow: hidden;
-text-overflow: ellipsis;
 display: -webkit-box;           // 将元素作为弹性伸缩盒子模型显示 。
 -webkit-line-clamp: 2;          // 用来限制在一个块元素显示的文本的行数
 -webkit-box-orient: vertical;   // 设置或检索伸缩盒对象的子元素的排列方式

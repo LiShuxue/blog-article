@@ -225,7 +225,21 @@ const target = {
     console.log(this === proxy);
   }
 };
-const handler = {};
+const handler = {
+    set(target, property, value, receiver) {
+        console.log(target);
+        console.log(property);
+        console.log(value);
+        console.log(receiver);
+        Reflect.set(target, property, value, receiver);
+    },
+    get(target, property, receiver) {
+        console.log(target);
+        console.log(property);
+        console.log(receiver);
+        return Reflect.get(target, property, receiver);
+    }
+};
 
 const proxy = new Proxy(target, handler);
 

@@ -184,7 +184,7 @@ ctx.drawImage(img,10,10);
 ```
 
 ## 判断元素是否在视窗内
-### Element.getBoundingClientRect()
+### 1. Element.getBoundingClientRect()
 返回元素的大小及其相对于视口的位置。该函数返回一个Object对象，该对象有6个属性：
 top,lef,right,bottom,width,height；
 这里的top、left和css中的理解很相似，width、height是元素自身的宽高，但是right，bottom和css中的理解有点不一样。right是指元素右边界距窗口最左边的距离，bottom是指元素下边界距窗口最上面的距离。
@@ -199,7 +199,7 @@ box.getBoundingClientRect().bottom;      // 元素下边距离页面上边的距
 
 box.getBoundingClientRect().left;        // 元素左边距离页面左边的距离
 ```
-### IntersectionObserver API
+### 2. IntersectionObserver API
 自动"观察"元素是否可见，当元素变的可见时，会自动触发callback
 ```js
 const callback = entries => {
@@ -219,60 +219,55 @@ entry对象的属性：
 * intersectionRatio：目标元素的可见比例，即intersectionRect占boundingClientRect的比例，完全可见时为1，完全不可见时小于等于0
 
 ## 各种宽高
-* document.body.clientWidth;        //网页可见区域宽(body)   
-* document.body.clientHeight;       //网页可见区域高(body)   
-* document.body.offsetWidth;        //网页可见区域宽(body)，包括border、margin等  
-* document.body.offsetHeight;       //网页可见区域宽(body)，包括border、margin等  
-* document.body.scrollWidth;        //网页正文全文宽，包括有滚动条时的未见区域   
-* document.body.scrollHeight;       //网页正文全文高，包括有滚动条时的未见区域  
-* document.body.scrollTop;          //网页被卷去的Top(滚动条)  
-* document.body.scrollLeft;         //网页被卷去的Left(滚动条)   
+* document.body.clientWidth;        // 宽度包含内边距（padding)
+* document.body.offsetWidth;        // 包括内边距（padding）和边框（border）和滚动条宽度
+* document.body.scrollWidth;        // 包括有滚动条时的未见区域   
+* document.body.scrollLeft;         // 网页被卷去的Left
+* document.body.scrollTop;          // 网页被卷去的Top  
 ---
-* window.screen.height;             //屏幕分辨率的高  
-* window.screen.width;              //屏幕分辨率的宽  
-* window.screen.availHeight;        //屏幕可用工作区的高  
-* window.screen.availWidth;         //屏幕可用工作区的宽  
+* window.screen.height;             // 屏幕分辨率的高  
+* window.screen.width;              // 屏幕分辨率的宽  
+* window.screen.availHeight;        // 屏幕可用工作区的高  
+* window.screen.availWidth;         // 屏幕可用工作区的宽  
 ---
-* window.innerHeight;               //视口的高度
-* window.screenTop;                 //浏览器窗口相对于整个屏幕Top的距离
-* window.screenLeft;                //浏览器窗口相对于整个屏幕Left的距离
+* window.innerHeight;               // 视口的高度
+* window.screenTop;                 // 浏览器窗口相对于整个屏幕Top的距离
+* window.screenLeft;                // 浏览器窗口相对于整个屏幕Left的距离
 
+![width-height](https://raw.githubusercontent.com/LiShuxue/blog-article/master/面试/widthheight.png)
 ## DOM渲染的过程中可能有哪些情况会阻塞渲染
 1. 加载js脚本。解决方法，放在body之后，或者加defer
 2. 加载CSS文件。解决方法，放在最前面，精简，压缩
 
-## DOM的事件模型是什么
-1. 脚本模型：  
-`<button onclick="javascrpt:alert('Hello')">Hello1</button>`
-2. 内联模型：  
-`<button onclick="showHello()">Hello2</button>`
-3. 动态绑定：
-```html
-<button id="btn3">Hello3</button>
-```
+## DOM绑定事件
 ```js
-// DOM0:同一个元素，同类事件只能添加一个，如果添加多个，后面添加的会覆盖之前添加的
-var btn3 = document.getElementById("btn3");
-btn3.onclick = function () {
+// onclick: 同一个元素，同类事件只能添加一个，如果添加多个，后面添加的会覆盖之前添加的
+dom.onclick = function () {
     alert("Hello");
 }
 
-// DOM2:可以给同一个元素添加多个同类事件
-btn3.addEventListener("click",function () {
+// addEventListener: 可以给同一个元素添加多个同类事件
+dom.addEventListener("click",function () {
     alert("hello1");
 });
-btn3.addEventListener("click",function () {
+dom.addEventListener("click",function () {
     alert("hello2");
 })
 ```
 
 ## DOM事件流，冒泡捕获
-冒泡：子节点一层层冒泡到根节点。  
-捕获：从document到触发事件的那个节点。  
-W3C标准：先捕获再冒泡。  
-element.addEventListener(event, function, useCapture)最后的参数，true代表捕获反之代表冒泡。  
-参数默认值是false，表示在事件冒泡阶段调用事件处理函数。如果参数为true，则表示在事件捕获阶段调用处理函数。
+冒泡：子节点一层层冒泡到根节点。    
 
-## 什么是事件委托?
-通俗地来讲，就是把一个元素响应事件（click、keydown......）的函数委托到另一个元素去处理，一般委托到它的父层或者更外层元素上。  
-事件委托就是利用事件冒泡的原理。
+捕获：从document到触发事件的那个节点。  
+
+W3C标准：先捕获再冒泡。
+
+element.addEventListener(event, function, useCapture) useCapture默认值是false，表示在事件冒泡阶段调用事件处理函数。如果为true，则表示在事件捕获阶段调用处理函数。
+
+## 如何实现先冒泡后捕获
+先捕获后冒泡这是机制问题，不可能改变的。可以改变的只有二者的回调函数的执行顺序。
+1. 可以通过定时器才实现；
+2. 可以用一个局部变量来实现，在捕获的回调中去修改这个局部变量，在冒泡的回调中判断这个局部变量是否被修改。冒泡的回调中可以是一个循环定时器，来不停地判断是否被修改，直到被修改为止。
+
+## 什么是事件委托
+事件委托就是利用事件冒泡的原理，把一个元素的事件委托到另一个元素去处理，一般委托到它的父层或者更外层元素上。
