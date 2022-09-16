@@ -171,7 +171,17 @@ align-items: center | flex-start | flex-end | base-line | stretch; /* 交叉轴�
 ### 子元素：  
 默认会缩小不会放大。 
 
-flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。
+flex属性是flex-grow, flex-shrink 和 flex-basis的简写。
+
+flex: 1;
+
+这个是单值语法：1代表的是flex-grow的值，其他两个值会被省略，被省略的时候，会有默认值
+
+flex-grow: 省略时默认值为 1。 (原本默认值为 0)
+flex-shrink: 省略时默认值为 1。 (原本默认值为 1)
+flex-basis: 省略时默认值为 0。 (原本默认值为 auto)
+
+所以flex: 1 等于 flex: 1 1 0，而不是felx: 1 1 auto
 
 ```css
 order: 0; /* 数值越小越靠前 */
