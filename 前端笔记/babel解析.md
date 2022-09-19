@@ -36,6 +36,11 @@ module.exports = {
 由于插件太多，Babel提供了预设功能，用于简化配置，预设是一系列插件的集合。常见的预设：
 
 * @babel/preset-env：基于你的目标浏览器及运行环境，自动的确定babel插件及polyfill，编译最新的ES6+语法。
+  * useBuiltIns: entry: 根据target中浏览器版本的支持，将polyfills拆分引入，仅引入有浏览器不支持的polyfill
+  * useBuiltIns: usage(新)：检测代码中ES6/7/8等的使用情况，仅仅加载代码中用到的polyfills
+  * corejs: `{ version: "3.25", proposals: true }`，指定core-js版本和是否支持提案语法。
+  * module: false, 是否把ES6的模块化语法改成其它模块化语法，默认import都被转码成require，设置成false不转换
+  > 使用useBuiltIns选项需要主动安装core-js包：`yarn add core-js@3`
 * @babel/preset-typescript：移除TypeScript语法，转换为标准的ES代码。没有ts类型校验。
 * @babel/preset-react：转换react的jsx语法等。
 
@@ -43,8 +48,8 @@ module.exports = {
 > * @babel/preset-env 简写 @babel/env 或 env, 可省略 preset-  
 > * @babel/plugin-transform-arrow-functions 简写 @babel/transform-arrow-functions，可省略 plugin-  
 > * 插件比预设先执行  
-> * 插件执行顺序是插件数组从前向后执行  
-> * 预设执行顺序是预设数组从后向前执行  
+> * 插件执行顺序：从前向后执行  
+> * 预设执行顺序：从后向前执行  
 
 ## core-js
 core-js 是关于 ES 标准最出名的 polyfill，包含所有ES6+的新特性，新版babel已经默认集成了core-js-compat。
@@ -59,18 +64,30 @@ polyfill 意指当浏览器不支持某一最新 API 时，它将帮你实现，
 
 在babel7之前，babel专门提供了一个库叫@babel/polyfill来做这件事情，在babel7之后，这个库被废弃了，因为polyfill有了新的使用方式。
 
-@babel/preset-env 有两种不同的模式，通过 useBuiltIns 选项：entry 和 usage 优化 core-js的导入。通过 corejs: 3.25 来指定corejs的版本。
-* entry: 根据target中浏览器版本的支持，将polyfills拆分引入，仅引入有浏览器不支持的polyfill
-* usage(新)：检测代码中ES6/7/8等的使用情况，仅仅加载代码中用到的polyfills
+@babel/preset-env 通过 useBuiltIns 选项导入core-js。通过 corejs 选项来指定corejs的版本。
 
 这种方式转换之后，会在每个文件上方导入corejs的polyfill。对于语法层面的转换，如class, async/await，该文件上方也会声明一大堆辅助函数，比如创建class的，创建generator的，来模拟ES6的操作。这些辅助函数在每个文件中都会出现，这就造成了代码冗余。
 
-@babel/preset-env 中可以设置：module: false, 是否把ES6的模块化语法改成其它模块化语法，默认import都被转码成require，设置成false不转换
-
-## @babel/plugin-transform-runtime 和 @babel/runtime
+## @babel/plugin-transform-runtime 和 @babel/runtime，@babel/runtime-corejs3
 @babel/runtime中包含了所有语法层面转义需要的辅助函数。
 
-@babel/plugin-transform-runtime, 这个插件会在babel编译过程中，将文件中声明的辅助函数，替换为@babel/runtime中的已经写好的辅助函数  
+@babel/plugin-transform-runtime, 这个插件会在babel编译过程中，将文件中声明的辅助函数，替换为@babel/runtime中的已经写好的辅助函数。
+
+除了解决代码冗余，@babel/plugin-transform-runtime还有另外一个重要的能力——解决全局污染。@babel/preset-env useBuiltIns 转译api层时，将core-js中的垫片直接导入进来，他们会挂载到全局，造成全局污染。我们可以将core-js交给transform-runtime来处理。
+
+在该插件下配置：（@babel/preset-env中的useBuiltIns和corejs选项就可以删除）
+```
+"plugins": [
+  [
+    "@babel/plugin-transform-runtime",
+    {
+      "corejs": { version: 3, proposals: true }
+    }
+  ]
+]
+```
+> @babel/plugin-transform-runtime 的corejs选项需要主动安装 @babel/runtime-corejs3包：`yarn add @babel/runtime-corejs3`  
+> @babel/runtime-corejs3 就是 @babel/runtime 和 core-js3 的结合
 
 ## targets
 指定我们编译完后的js需要支持的浏览器版本。没有指定targets会寻找项目的.browserslistrc中的配置代替。
@@ -98,22 +115,21 @@ const { ast, code } = babel.transformSync(esCode, options);
 
 ## 编译ES6+
 ### 安装依赖
-`yarn add @babel/core @babel/cli @babel/preset-env @babel/plugin-transform-runtime @babel/runtime`
+`yarn add @babel/core @babel/cli @babel/preset-env @babel/plugin-transform-runtime @babel/runtime-corejs3`
 ### 配置文件
 ```js
 // babel.config.js
 module.exports = {
   sourceType: 'unambiguous',
-  plugins: ['@babel/plugin-transform-runtime'],
-  presets: [
+  plugins: [
     [
-      '@babel/preset-env', 
+      '@babel/plugin-transform-runtime',
       {
-        useBuiltIns: 'usage',
-        corejs: '3.25',
+        corejs: { version: 3, proposals: true }
       }
-    ]
+    ] 
   ],
+  presets: ['@babel/preset-env'],
 };
 ```
 ### 源代码
@@ -121,26 +137,21 @@ module.exports = {
 
 ## 编译TypeScript
 ### 安装依赖
-`yarn add @babel/core @babel/cli @babel/preset-typescript @babel/preset-env @babel/plugin-transform-runtime @babel/runtime`
+`yarn add @babel/core @babel/cli @babel/preset-typescript @babel/preset-env @babel/plugin-transform-runtime @babel/runtime-corejs3`
 ### 配置文件
 ```js
 // babel.config.js
 module.exports = {
   sourceType: 'unambiguous',
-  plugins: ['@babel/plugin-transform-runtime'],
-  presets: [
+  plugins: [
     [
-      '@babel/preset-env', 
+      '@babel/plugin-transform-runtime',
       {
-        modules: false,
-        useBuiltIns: 'usage',
-        corejs: '3.25',
+        corejs: { version: 3, proposals: true }
       }
-    ],
-    [
-      '@babel/preset-typescript'
-    ],
+    ] 
   ],
+  presets: ['@babel/preset-env', '@babel/preset-typescript'],
 };
 ```
 ### 源代码
