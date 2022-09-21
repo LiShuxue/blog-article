@@ -159,16 +159,15 @@ module.exports = {
 
 ## babel包解析
 babel 的主要编译流程是 parse、traverse, transform、generate。
-1. 解析 (Parsing)：这个过程由编译器实现，会经过词法分析过程和语法分析过程，从而生成 AST。
-2. 读取/遍历 (Traverse)：深度优先遍历 AST ，访问树上各个节点的信息（Node）。
-3. 修改/转换 (Transform)：在遍历的过程中可对节点信息进行修改，生成新的 AST。
-4. 输出 (Printing)：对初始 AST 进行转换后，根据不同的场景，既可以直接输出新的 AST，也可以转译成新的代码块。
+1. 解析 (Parse)：这个过程由编译器实现，会经过词法分析过程和语法分析过程，从而生成 AST。
+2. 转换 (Transform)：在遍历的过程中可对节点信息进行修改，生成新的 AST。
+3. 生成 (Generate)：对初始 AST 进行转换后，根据不同的场景，既可以直接输出新的 AST，也可以转译成新的代码块。
 
 * @babel/core babel的核心，主要起串联的作用，功能包括加载配置、调用@babel/parser解析AST、调用@babel/traverse遍历并操作AST进行转换transform、调用@babel/generator生成代码。
 * @babel/parser babel解析器的实现。通过词法分析，生成tokens，语法分析根据tokens生成AST抽象语法树。
 * @babel/traverse 自动遍历抽象语法树的工具，它会访问树中的所有节点，开发者借用该函数可以对 AST 进行访问和修改。
-* @babel/types 包含手动构建 AST 和验证 AST 节点类型的方法
-* @babel/generate 打印 AST，生成目标代码和 sorucemap，对应 generate 阶段
+* @babel/types 它包含了构造、验证以及变换 AST 节点的方法。
+* @babel/generate 读取AST并将其转换为代码和源码映射，对应 generate 阶段
 * @babel/template 能直接将字符串代码片段（可在字符串代码中嵌入变量）转换为 AST 节点
 * @babel/runtime 包含了所有运行时需要的辅助函数。
 
@@ -178,63 +177,178 @@ https://astexplorer.net/
 https://esprima.org/demo/parse.html
 ```js
 // 源码
-var test = 1;
+function square(n) {
+  return n * n;
+}
 
 // Tokens
 [
     {
         "type": "Keyword",
-        "value": "var"
+        "value": "function"
     },
     {
         "type": "Identifier",
-        "value": "test"
+        "value": "square"
     },
     {
         "type": "Punctuator",
-        "value": "="
+        "value": "("
     },
     {
-        "type": "Numeric",
-        "value": "1"
+        "type": "Identifier",
+        "value": "n"
+    },
+    {
+        "type": "Punctuator",
+        "value": ")"
+    },
+    {
+        "type": "Punctuator",
+        "value": "{"
+    },
+    {
+        "type": "Keyword",
+        "value": "return"
+    },
+    {
+        "type": "Identifier",
+        "value": "n"
+    },
+    {
+        "type": "Punctuator",
+        "value": "*"
+    },
+    {
+        "type": "Identifier",
+        "value": "n"
     },
     {
         "type": "Punctuator",
         "value": ";"
+    },
+    {
+        "type": "Punctuator",
+        "value": "}"
     }
 ]
 
 // AST 抽象语法树
 {
-  "type": "Program",
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "id": {
-            "type": "Identifier",
-            "name": "test"
-          },
-          "init": {
-            "type": "Literal",
-            "value": 1,
-            "raw": "1"
-          }
+  type: "FunctionDeclaration",
+  id: {
+    type: "Identifier",
+    name: "square"
+  },
+  params: [{
+    type: "Identifier",
+    name: "n"
+  }],
+  body: {
+    type: "BlockStatement",
+    body: [{
+      type: "ReturnStatement",
+      argument: {
+        type: "BinaryExpression",
+        operator: "*",
+        left: {
+          type: "Identifier",
+          name: "n"
+        },
+        right: {
+          type: "Identifier",
+          name: "n"
         }
-      ],
-      "kind": "var"
-    }
-  ],
-  "sourceType": "script"
+      }
+    }]
+  }
 }
 ```
 
 ## 遍历或修改AST
+### 树状图
+上面的代码转换成AST后，即为以下树状结构：
+
+- FunctionDeclaration
+  - Identifier (id)
+  - Identifier (params[0])
+  - BlockStatement (body)
+    - ReturnStatement (body)
+      - BinaryExpression (argument)
+        - Identifier (left)
+        - Identifier (right)
+
+![树](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/babel-tree.png)
+
+### 深度优先遍历：
+当我们遍历这颗树的每一个分支时我们最终会走到尽头，于是我们需要往上遍历回去从而获取到下一个节点。 向下遍历这棵树我们进入每个节点，向上遍历回去时我们退出每个节点。
+
+* 进入 FunctionDeclaration
+  * 进入 Identifier (id)
+  * 走到尽头
+  * 退出 Identifier (id)
+  * 进入 Identifier (params[0])
+  * 走到尽头
+  * 退出 Identifier (params[0])
+  * 进入 BlockStatement (body)
+  * 进入 ReturnStatement (body)
+    * 进入 BinaryExpression (argument)
+    * 进入 Identifier (left)
+      * 走到尽头
+    * 退出 Identifier (left)
+    * 进入 Identifier (right)
+      * 走到尽头
+    * 退出 Identifier (right)
+    * 退出 BinaryExpression (argument)
+  * 退出 ReturnStatement (body)
+  * 退出 BlockStatement (body)
+* 退出 FunctionDeclaration
+
+所以当创建访问者时你实际上有两次机会来访问一个节点。enter 和 exist
+
+babel-traverse是一个对ast进行遍历的工具。基于访问者模式。babel 会采用深度优先搜索来访问每个 AST 的节点（node），你可以在visitor里上指定一个回调方法（可以通过节点名称指定回调方法），当遍历到当前节点时会调用该回调方法。
+
+### 访问者visitor
+简单的说它就是一个对象，定义了用于在一个树状结构中获取具体节点的方法。如下：
+```js
+import * as t from "@babel/types";
+const myVisitor = {
+  // 对所有的节点操作
+  enter(path) {
+    // 进入节点
+    if (t.isIdentifier(path.node, { name: "n" })) {
+      path.node.name = "x";
+    }
+  },
+  exit(path) {
+    // 退出节点
+    console.log(`exit ${path.type}(${path.key})`)
+  },
+  // 对导入语句进行操作
+  ImportDeclaration(path) {
+    console.log(path.node.source.value);
+  },
+  // 对所有的变量进行操作
+  Identifier(path) {
+    console.log(path.node.name);
+  },
+  // 对所有的function操作
+  FunctionDeclaration(path) {
+    console.log(path);
+  }
+};
+
+// 你也可以先创建一个访问者对象，并在稍后给它添加方法。
+let visitor = {};
+visitor.MemberExpression = function() {};
+visitor.FunctionDeclaration = function() {}
+```
+
+babel-traverse一般用于在babel plugin中对ast进行遍历和修改。当然我们也可以单独使用来做额外的处理。
 ```js
 import * as parser from '@babel/parser';
 import traverse from '@babel/traverse';
+import * as t from "@babel/types";
 
 const code = `
 function square(n) {
@@ -244,18 +358,28 @@ function square(n) {
 
 const ast = parser.parse(code);
 
-traverse(ast, {
-  // 遍历所有的导入语句
-  ImportDeclaration(path) {
-    console.log(path.node.source.value);
-  },
-  // 遍历所有的变量标识符
-  Identifier(path) {
-    console.log(path.node.name);
-  },
-});
+const myVisitor = {
+  // 同上 ...
+}
+traverse(ast, myVisitor);
 ```
 
+## 自定义babel插件
+将源码 `foo === bar` 替换左右变量名
 
-
-
+1. 默认导出一个接收babel对象的方法
+2. 方法中return一个对象，包含访问者对象
+3. 访问者中针对特定节点执行回调方法
+```js
+export default function (babel) {
+  const t = babel.types;
+  return {
+    visitor: {
+      BinaryExpression(path) {
+        path.node.left = t.identifier("sebmck");
+        path.node.right = t.identifier("dork");
+      }
+    }
+  }
+} 
+```
