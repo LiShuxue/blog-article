@@ -521,7 +521,11 @@ AST就是树，树的遍历可以是深度优先遍历或广度优先遍历。
 
 * 深度优先算法将会从第一个指定的顶点开始遍历图，每次遍历当前访问顶点的临界点，一直到访问的顶点没有未被访问过的临界点为止。然后采用依次回退的方式，查看来的路上每一个顶点是否有其它未被访问的临界点。访问完成后，判断图中的顶点是否已经全部遍历完成，如果没有，以未访问的顶点为起始点，重复上述过程。
 
+  ![DFS](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/DFS-Ex.gif)
+
 * 广度优先算法会从指定的第一个顶点开始遍历图，遍历每一个顶点时，依次遍历其所有的邻接点，然后再从这些邻接点出发，同样依次访问它们的邻接点。按照此过程，直到图中所有被访问过的顶点的邻接点都被访问到。最后还需要做的操作就是查看图中是否存在尚未被访问的顶点，若有，则以该顶点为起始点，重复上述遍历的过程。
+
+  ![BFS](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/BFS-Ex.gif)
 
 前序、中序、后序遍历是对二叉树进行深度优先遍历的几种方式。
 
@@ -998,3 +1002,201 @@ const addTryCatchPlugin = (babel) => {
 
 module.exports =  addTryCatchPlugin;
 ```
+
+## 6）手写简易babel
+
+手写plugin有点太简单了，今天我们搞点高端的，手写babel。
+
+需求：实现一个简易的babel来编译：let a = 1;
+
+思路：
+
+1. 先看Tokens 和 AST语法树在线AST转换
+
+1. 编写一个生成Tokens的分词器tokenizer
+
+1. 编写一个生成AST的编译器parser
+
+1. 编写一个生成AST转换器transformer
+
+1. 编写一个代码生成器codeGenerator
+
+```js
+// 简易编译器，编译 let a = 1;
+const compiler = (input) => {
+  const tokens = tokenizer(input);
+  const ast = parser(tokens);
+  const newAst = transformer(ast);
+  const output = codeGenerator(newAst);
+  console.log(output);
+  return output;
+};
+
+const tokenizer = (input) => {
+  let current = 0;
+  let tokens = [];
+
+  while (current < input.length) {
+    let char = input[current];
+    if (char === "=" || char === ";") {
+      tokens.push({
+        type: "Punctuator",
+        value: char,
+      });
+      current++;
+      continue;
+    }
+
+    let WHITESPACE = /\s/;
+    if (WHITESPACE.test(char)) {
+      current++;
+      continue;
+    }
+
+    let LETTERS = /[a-z]/i;
+    if (LETTERS.test(char)) {
+      let value = "";
+
+      while (LETTERS.test(char)) {
+        value += char;
+        char = input[++current];
+      }
+
+      if (value === "let") {
+        tokens.push({ type: "Keyword", value });
+      } else {
+        tokens.push({ type: "Identifier", value });
+      }
+
+      continue;
+    }
+
+    let NUMBERS = /[0-9]/;
+    if (NUMBERS.test(char)) {
+      let value = "";
+
+      while (NUMBERS.test(char)) {
+        value += char;
+        char = input[++current];
+      }
+      tokens.push({ type: "Number", value });
+
+      continue;
+    }
+  }
+  console.log(tokens);
+  return tokens;
+};
+
+const parser = (tokens) => {
+  let current = 0;
+  let ast = {
+    type: "Program",
+    body: [],
+  };
+
+  const walk = () => {
+    let token = tokens[current];
+
+    if (token.type === "Number") {
+      current++;
+      return {
+        type: "Literal",
+        value: token.value,
+      };
+    }
+
+    if (token.type === "Identifier") {
+      current++;
+      return {
+        type: "Identifier",
+        name: token.value,
+      };
+    }
+
+    if (token.type === "Keyword" && token.value === "let") {
+      let node = {
+        type: "VariableDeclaration",
+        kind: token.value,
+        declarations: [
+          {
+            type: "VariableDeclarator",
+            id: {},
+            init: {},
+          },
+        ],
+      };
+
+      current++;
+      const node1 = walk();
+      if (node1 && node1.type === "Identifier") {
+        node.declarations[0].id = node1;
+      }
+      current++;
+      const node2 = walk();
+      if (node2 && node2.type === "Literal") {
+        node.declarations[0].init = node2;
+      }
+
+      current++;
+      return node;
+    }
+
+    if (token.type === "Punctuator") {
+      current++;
+    }
+  };
+
+  while (current < tokens.length) {
+    ast.body.push(walk());
+  }
+
+  console.log(JSON.stringify(ast));
+  return ast;
+};
+
+const transformer = (ast) => {
+  return ast;
+};
+
+const codeGenerator = (node) => {
+  switch (node.type) {
+    case "Program":
+      return node.body.map(codeGenerator).join("\n");
+
+    case "VariableDeclaration":
+      if (node.kind === "let") {
+        let key = "var";
+        return key + " " + node.declarations.map(codeGenerator);
+      }
+
+    case "VariableDeclarator":
+      return codeGenerator(node.id) + " = " + codeGenerator(node.init) + ";";
+
+    case "Identifier":
+      return node.name;
+
+    case "Literal":
+      return node.value;
+    default:
+      throw new TypeError(node.type);
+  }
+};
+
+module.exports = compiler;
+
+```
+
+## 7）参考
+
+https://babel.dev/docs/en/
+
+https://github.com/zloirock/core-js
+
+https://webpack.js.org/guides/
+
+https://baike.baidu.com/item/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/4194
+
+https://github.com/estree/estree
+
+https://github.com/jamiebuilds/the-super-tiny-compiler
