@@ -315,11 +315,19 @@ methods:{
 ### vue3的v-modal和自定义组件
 vue3中v-modal可以在一个组件使用多次，同时绑定多个props为双向绑定。
 
+同时绑定多个
 ```js
 <UserName
   v-model:first-name="first"
   v-model:last-name="last"
 />
+// 定义多个
+props: {
+    firstName: String,
+    lastName: String
+},
+emits: ['update:firstName', 'update:lastName']
+
 ```
 v-modal只是语法糖。类似vue2中的.sync操作符。
 ```js
