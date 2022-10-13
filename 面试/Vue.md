@@ -368,20 +368,31 @@ Vue的dom更新是异步的，当数据发生变化，vue并不是直接去更�
 
 ## v-model 的原理
 v-modal只是一个语法糖，相当于执行了两步：  
-1. 将组件的value绑定为一个值
-2. 组件内部数据的变化，触发input事件更新。
-```html
+1. 在组件上面定义一个名为value的props
+2. 组件内部数据的变化，触发input事件更新绑定的值。
+```js
+// 自定义组件
 <child v-model="msg">
 // 相当于
-<child :value="msg" @input="msg=$event.target.value"/>
-watch: {
-    value(val) {
-        this.innerValue = val
-    }
-    innerValue(val) {
-        this.emit('input', val)
-    }
+<child :value="msg" @input="msg = $event"/>
+// 规定组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，所以自定义组件为：
+<template>
+    <div class="text">
+        <input type="text" :value="value" @input="changeVal">
+    </div>
+</template>
+<script>
+export default {
+  props: {
+    value,
+  },
+  methods:{
+      changeVal(e){
+          this.$emit('input', e.target.value)
+      }
+  }
 }
+</script>
 ```
 
 ## nextTick()

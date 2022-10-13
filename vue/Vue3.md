@@ -254,6 +254,103 @@ const { x, y } = useMouse()
 <template>Mouse position is at: {{ x }}, {{ y }}</template>
 ```
 
+## vue3 的 v-modal和自定义组件
+### vue2中的自定义组件v-modal
+v-modal实现双向绑定，子组件更新的同时，父组件也更新。
+```js
+// 自定义组件
+<child v-model="msg">
+// 相当于
+<child :value="msg" @input="msg = $event"/>
+// 规定组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，所以自定义组件为：
+<template>
+    <div class="text">
+        <input type="text" :value="value" @input="changeVal">
+    </div>
+</template>
+<script>
+export default {
+  props: {
+    value,
+  },
+  methods:{
+      changeVal(e){
+          this.$emit('input', e.target.value)
+      }
+  }
+}
+</script>
+```
+
+### vue2的.sync 修饰符
+在Vue中，props属性是单向数据传输的，父级的prop的更新会向下流动到子组件中，但是反过来不行。可是有些情况，我们需要对prop进行“双向绑定”。上文中，我们提到了使用v-model实现双向绑定。但有时候我们希望一个组件可以实现多个数据的“双向绑定”，而v-model一个组件只能有一个，这时候就需要使用到.sync。
+```js
+<com1 :a.sync="num" :b.sync="num2"></com1> 
+// 它等价于
+<com1 
+  :a="num" @update:a="val=>num=val"
+  :b="num2" @update:b="val=>num2=val">
+</com1> 
+
+// 子组件内：
+methods:{
+    changeVal(e){
+        this.$emit('update:a', a)
+        this.$emit('update:b', b)
+    }
+}
+```
+
+### .sync与v-model的异同
+相同点:
+
+* 两者的本质都是语法糖，目的都是实现组件与外部数据的双向绑定
+* 两个都是通过属性+事件来实现的
+
+不同点:
+
+* 一个组件只能定义一个v-model,但可以定义多个.sync
+* v-model与.sync对于的事件名称不同，v-model默认事件为input,可以通过配置model来修改，.sync事件名称固定为update:属性名
+
+### vue3的v-modal和自定义组件
+vue3中v-modal可以在一个组件使用多次，同时绑定多个props为双向绑定。
+
+```js
+<UserName
+  v-model:first-name="first"
+  v-model:last-name="last"
+/>
+```
+v-modal只是语法糖。类似vue2中的.sync操作符。
+```js
+<CustomInput v-model="searchText" />
+// 相当于
+<CustomInput
+  :modelValue="searchText"
+  @update:modelValue="newValue => searchText = newValue"
+/>
+```
+默认情况下，v-model 在组件上都是使用 modelValue 作为 prop，并以 update:modelValue 作为对应的事件。
+```js
+<script setup>
+const props = defineProps({
+  modelValue: {
+    type: String,
+    required: true
+  }
+})
+
+const emit = defineEmits(['update:modelValue'])
+</script>
+
+<template>
+  <input
+    :value="modelValue"
+    @input="emit('update:modelValue', $event.target.value)"
+  />
+</template>
+```
+
 ## 其他差异
 template支持多节点，类似react fragments。
 
