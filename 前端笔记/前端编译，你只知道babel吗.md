@@ -29,6 +29,8 @@ Babel 解析器根据 [Babel AST](https://github.com/babel/babel/blob/main/packa
 
 [@babel/eslint-parser](https://github.com/babel/babel/tree/main/eslint/babel-eslint-parser) 就是除 Espree 之外专门用于ESLint的一个自定义解析器，内部使用@babel/parser来解析代码（使用你项目中的babel配置），返回ESLint需要的结果，输出的AST也是基于ESTree规范的。相比于Espree只支持最终的标准，babel解析器支持实验性的语法和typescript的语法。
 
+eslint运行流程和原理可以参考：https://juejin.cn/post/7025256331120476197
+
 ## @typescript-eslint/parser
 [@typescript-eslint/parser](https://typescript-eslint.io/architecture/parser) 也是用于eslint的一个自定义解析器，主要用来解析ts代码。
 
