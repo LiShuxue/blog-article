@@ -37,6 +37,7 @@ node --inspect-brk test.js
 
 ### Launch模式
 1. 创建一个.vscode/launch.json配置文件，点击右下角的“Add Configuration”按钮添加配置。
+
     ```js
     {
       "name": "Launch",
