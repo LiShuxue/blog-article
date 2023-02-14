@@ -10,6 +10,13 @@ useState 就是一个 Hook ，可以给函数式组件里添加一些内部 stat
 useState() 方法里面唯一的参数就是初始 state。
 
 useState 会返回一对值：当前状态和一个让你更新它的函数，你可以在事件处理函数中或其他一些地方调用这个函数。它类似 class 组件的 this.setState，但是它不会把新的 state 和旧的 state 进行合并。
+
+在初始化渲染期间，返回的状态 (state) 与传入的第一个参数 (initialState) 值相同。setState 函数用于更新 state。它接收一个新的 state 值并将组件的一次重新渲染加入队列。
+
+在后续的重新渲染中，useState 返回的第一个值将始终是更新后最新的 state。
+
+尽量不要直接在组件顶层 block 中调用 setState。
+
 ```jsx
 function ExampleWithManyStates() {
   // 声明多个 state 变量！
@@ -56,6 +63,23 @@ function FriendStatusWithCounter(props) {
   // ...
 }
 ```
+
+所有组件内部状态的转换都应该归于纯函数中，不要把 useEffect 当成 watch 来用。如
+```js
+useEffect(() => {
+  const dep2 = compute(dep1);
+  setDep2(dep2);
+},[dep1]);
+```
+我们可能会习惯性的把 useEffect 当成一个 watch 来用，但每次我们 setState 过后，函数组件又会重新执行一遍，useEffect 也会重新跑一遍。所以对于这种，直接可以将dep2的计算放到组件外层执行。
+```js
+const Demo = () => {
+  const [dep1,setDep1] = useState(0);
+  const dep2 = compute(dep1); // 因为dep1更新后，这段代码肯定重新执行，而且此时dep1是更新后的值。
+}
+```
+
+不要同时使用一堆依赖项 和 多个 useEffect。这样的代码非常容易造成循环依赖的问题，而且一旦出了问题，非常难排查很解决，整个 state 的更新很难预测。
 
 ## useContext
 接收一个 context 对象（React.createContext 的返回值）并返回该 context 的当前值。当前的 context 值由上层组件中距离当前组件最近的 <MyContext.Provider> 的 value prop 决定。
