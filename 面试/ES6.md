@@ -328,6 +328,15 @@ Reflect.apply(a.say, b, []) //b
 * `Promise.prototype.catch()` 如果异步操作抛出错误，状态就会变为rejected，就会调用catch方法指定的回调函数，处理这个错误。另外，then方法指定的成功或者失败的回调函数，如果运行中抛出错误，也会被catch方法捕获。
 * `Promise.prototype.finally()` 用于指定不管 Promise 对象最后状态如何，都会执行的操作。
 
+## then 参数
+then 方法接受的参数是函数，而如果传递的并非是一个函数，它实际上会将其解释为 then(null)，相当于忽略了，直接执行后面的，这就会导致前一个 Promise 的结果会穿透下面。
+```js
+Promise.resolve(1)
+  .then(2)
+  .then(Promise.resolve(3))
+  .then(console.log)  // 1
+```
+
 ## Promise的执行顺序
 1. 同步代码最先执行  
 2. Promise 新建后立即执行, Promise.resolve()也是立即执行
