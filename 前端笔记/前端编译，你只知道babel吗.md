@@ -46,7 +46,9 @@ eslint运行流程和原理可以参考：https://juejin.cn/post/702525633112047
 [eslint-plugin-vue](https://eslint.vuejs.org/user-guide/#installation) 中定义了一些vue中特有的rule
 
 ## vue-template-compiler
-[vue-template-compiler](https://www.npmjs.com/package/vue-template-compiler) 可将 Vue 2.0 `<template>`预编译为渲染函数（template => ast => render）。vue-template-compiler 的代码是从 vue 源码中抽离的。
+[vue-template-compiler](https://www.npmjs.com/package/vue-template-compiler) 可将 Vue 2.0 `<template>`预编译为渲染函数（template => ast => render）。也可以将vue单文件组件接卸为template，script，style三块。vue-template-compiler 的代码是从 vue 源码中抽离的，一般用在vue-loader中，处理vue2的代码。
+
+从vue3开始，有了一个同样的工具：@vue/compiler-sfc
 
 ## prettier中的parser 
 prettier的原理
