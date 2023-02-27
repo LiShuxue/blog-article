@@ -94,3 +94,21 @@ node --inspect-brk test.js
 2. 在命令行工具中打上断点，在vscode中调试面板运行Launch via NPM脚本即可
 
 把 console 配置为 integratedTerminal 之后，日志会输出到 terminal，和平时直接跑 npm run xx 就没区别了。而且还可以断点看看执行逻辑。
+
+### Launch via Yarn 模式
+跟上面的npm使用基本一致
+```js
+{
+  "name": "Launch via Yarn",
+  "request": "launch",
+  "runtimeArgs": [
+      "lint-staged" // 自己需要run的命令
+  ],
+  "runtimeExecutable": "yarn",
+  "console": "integratedTerminal", // 输出在terminal，跟正常启动没啥两样，且可以调试
+  "skipFiles": [
+      "<node_internals>/**"
+  ],
+  "type": "node"
+}
+```
