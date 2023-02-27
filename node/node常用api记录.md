@@ -1,11 +1,13 @@
-```js
-const fs = require("fs");
-const path = require("path");
-const child_process = require("child_process");
 
+## 1. 文件操作
+写node程序，可能经常用到的文件的操作，或者文件夹的操作。
+
+```js
 /**
  * 文件操作: fs
  */
+
+const fs = require("fs");
 
 // 读一个文件夹，返回文件夹下的内容 files
 fs.readdirSync(path1);
@@ -45,10 +47,16 @@ fs.renameSync("./test1", "./test/test2");
 
 // 复制文件
 fs.copyFileSync("./1.js", "./2.js");
+```
 
+## 2. 路径path操作
+写node程序，可能经常用到的路径的操作或者判断。
+```js
 /**
  * 路径操作: path
  */
+
+const path = require("path");
 
 // 当前模块的目录名，不受node执行命令的所属路径影响
 console.log(__dirname);
@@ -93,21 +101,30 @@ console.log(path.isAbsolute("/Users/lishuxue/Documents/study/journey/test.js"));
 //   name: 'test'
 // }
 console.log(path.parse("/Users/lishuxue/Documents/study/journey/test.js"));
+```
 
+## 3. 进程操作
+进程：进程是计算机中的程序关于某数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位，是操作系统结构的基础，进程是线程的容器。比如 node app.js 开启一个node进程
+
+线程：一个线程只能隶属于一个进程，但是一个进程是可以拥有多个线程的。
+
+单线程：就是一个进程只开一个线程。
+
+浏览器中js执行是单线程的：https://www.ruanyifeng.com/blog/2014/10/event-loop.html
+
+nodejs中js执行也是单线程的。
+
+单线程的指的是 JavaScript 的执行是单线程的，但 Javascript 的宿主环境并非单线程。也就是浏览器或者node本身并不是单线程。
+
+nodejs特点：异步非阻塞，事件驱动，I/O密集型
+
+```js
 /**
- * node进程程操作：process当前 Node.js 进程的信息，child_process子进程
- *
- * 进程：进程是计算机中的程序关于某数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位，是操作系统结构的基础，进程是线程的容器。比如 node app.js 开启一个node进程
- * 线程：一个线程只能隶属于一个进程，但是一个进程是可以拥有多个线程的。
- * 单线程：就是一个进程只开一个线程。
- *
- * 浏览器中js执行是单线程的：https://www.ruanyifeng.com/blog/2014/10/event-loop.html
- * nodejs中js执行也是单线程的。
- * 单线程的指的是 JavaScript 的执行是单线程的，但 Javascript 的宿主环境并非单线程。
- *
- * nodejs特点：异步非阻塞，事件驱动，I/O密集型
+ * node进程程操作。process：当前 Node.js 进程的信息，child_process：子进程
  */
 
+
+const child_process = require("child_process");
 // 系统环境变量
 process.env;
 
@@ -166,7 +183,10 @@ child_process.execFile();
 
 // 开启一个新的 Node.js 进程
 child_process.fork();
+```
 
+## 4. 编写cli交互常用工具库
+```js
 /**
  * nodejs交互工具库
  */
