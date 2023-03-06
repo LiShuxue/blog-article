@@ -355,67 +355,14 @@ foo.call(obj) // 10
 ```
 
 ## v8执行原理
-1. 初始化堆栈空间，全局上下文，全局作用域，事件循环系统。
-2. 输入全局的js代码，解析器(Parser)通过词法分析，生成tokens，语法分析根据tokens生成AST抽象语法树。
-3. 解释器(Ignition) 会将 AST 转换为字节码，一边解释一边执行。（解释执行）
-4. 在解释执行字节码的过程中，如果发现一段代码被多次重复执行，就会将其标记为热点（Hot）代码。V8 会将这段热点代码丢给优化编译器 TurboFan 编译为机器码（二进制代码）。如果下次再执行时，就会直接执行机器码，提高执行速度。（编译执行）
-5. 如果遇到普通函数，只会对其进行预解析(Pre-Parser)，验证函数的语法是否有效、解析函数声明以及确定函数作用域，并不会生成 AST，当函数被调用时，才会对其完全解析。
-```js
-// 源码
-var test = 1;
-
-// Tokens
-[
-    {
-        "type": "Keyword",
-        "value": "var"
-    },
-    {
-        "type": "Identifier",
-        "value": "test"
-    },
-    {
-        "type": "Punctuator",
-        "value": "="
-    },
-    {
-        "type": "Numeric",
-        "value": "1"
-    },
-    {
-        "type": "Punctuator",
-        "value": ";"
-    }
-]
-
-// AST 抽象语法树
-{
-  "type": "Program",
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "id": {
-            "type": "Identifier",
-            "name": "test"
-          },
-          "init": {
-            "type": "Literal",
-            "value": 1,
-            "raw": "1"
-          }
-        }
-      ],
-      "kind": "var"
-    }
-  ],
-  "sourceType": "script"
-}
-```
-
 ![v8](https://raw.githubusercontent.com/LiShuxue/blog-article/master/面试/v8.png)
+* 初始化堆栈空间，事件循环系统。
+* 解析源码生成 AST 和 全局上下文（作用域），全局上下文入栈；
+* 依据 AST 和作用域生成字节码；
+* 解释执行字节码，遇见函数，解析函数AST，创建函数上下文（作用域），函数上下文入栈；
+* 监听热点代码；
+* 优化热点代码为机器代码；
+* 反优化生成的机器代码。
 
 ### js 到底是解释型还是编译型语言？
 V8 同时采用了解释执行和编译执行这两种方式，这种混合使用的方式称为 JIT (即时编译)。  

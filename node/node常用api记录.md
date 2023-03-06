@@ -2,39 +2,51 @@
 ## 1. 文件操作
 写node程序，可能经常用到的文件的操作，或者文件夹的操作。
 
+不需要用原生的fs模块，用更好的fs-extra包：https://www.npmjs.com/package/fs-extra
+
 ```js
 /**
- * 文件操作: fs
+ * 文件操作: fs，fs-extra
  */
 
+const fse = require("fs-extra");
 const fs = require("fs");
 
 // 读一个文件夹，返回文件夹下的内容 files
 fs.readdirSync(path1);
 
 // 判断文件或者目录是否存在
-fs.existsSync(path1);
+fse.pathExistsSync(path1);
+// 确保文件存在(文件目录结构没有会新建)
+fse.ensureFile(path1);
+// 确保文件夹存在(文件夹目录结构没有会新建)
+fse.ensureDir(path1);
 
-// 创建一个文件夹目录
-fs.mkdirSync(path1);
-
+// 清空文件夹（文件夹目录不删，内容清空）
+fse.emptyDir(path1) 
 // 删除空目录，不是空目录会报错
 fs.rmdirSync(path1);
-
+// 删除文件或文件夹，类似rm -rf
+fse.remove(path1);
 // 删除文件
 fs.unlinkSync(path2);
 
 // 判断路径是否是目录
 fs.statSync(path1).isDirectory();
-
 // 判断路径是否是文件
 fs.statSync(path1).isFile();
 
+// 写文件(目录结构没有会新建)
+fse.outputFileSync(path1, 'test');
 // 写文件，文件不存在自动创建
 fs.writeFileSync(path2, "测试数据");
 
 // 读取文件，返回buffer
 fs.readFileSync(path2, "utf8");
+// 读取JSON文件，将其解析为对象
+fse.readJson()
+// 将对象写入JSON文件
+fse.writeJson()
 
 // 文件末尾添加
 fs.appendFileSync(path2, "拼接数据");
@@ -44,9 +56,13 @@ fs.renameSync("./test1", "./test2");
 
 // 移动目录或者文件
 fs.renameSync("./test1", "./test/test2");
+// 移动文件或文件夹
+fse.move()
 
 // 复制文件
 fs.copyFileSync("./1.js", "./2.js");
+// 复制文件或文件夹
+fse.copy() 
 ```
 
 ## 2. 路径path操作
