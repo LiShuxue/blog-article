@@ -234,7 +234,7 @@ entry对象的属性：
 * window.screenTop;                 // 浏览器窗口相对于整个屏幕Top的距离
 * window.screenLeft;                // 浏览器窗口相对于整个屏幕Left的距离
 
-![width-height](https://raw.githubusercontent.com/LiShuxue/blog-article/master/面试/widthheight.png)
+![width-height](https://cdn.lishuxue.site/blog/image/面试/widthheight.png)
 ## DOM渲染的过程中可能有哪些情况会阻塞渲染
 1. 加载js脚本。解决方法，放在body之后，或者加defer
 2. 加载CSS文件。解决方法，放在最前面，精简，压缩

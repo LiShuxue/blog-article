@@ -275,7 +275,7 @@ Babel 的编译流程主要分为三个部分：解析（parse），转换（tra
 1. 转换 (transform)：在遍历的过程中可对节点信息进行修改，生成新的 AST。
 1. 生成 (generate)：将AST转译成新的代码块。
 
-![babel-parse](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/babel-parse.png)
+![babel-parse](https://cdn.lishuxue.site/blog/image/前端笔记/babel-parse.png)
 
 ## 2）babel包解析
 
@@ -296,7 +296,7 @@ babel 仓库是monorepo形式，采用yarn workspaces管理，所有的核心包
 
 18年尤大曾说过，懂编译原理真的可以为所欲为。作为前端开发，我们没必要对这些编译器或者底层的编译原理了如指掌，但是如果能对编译原理有一些基本的认识，也能够对今后的日常开发很有帮助。
 
-![为所欲为](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/youda.png)
+![为所欲为](https://cdn.lishuxue.site/blog/image/前端笔记/youda.png)
 
 一般高级语言的编译可以分为五个阶段：
 
@@ -317,7 +317,7 @@ Babel 是没有语义分析和中间代码生成/优化阶段的。但是我们�
 1. 解释器(Ignition) 会将 AST 转换为字节码，一边解释一边执行。（解释执行）
 1. 在解释执行字节码的过程中，如果发现一段代码被多次重复执行，就会将其标记为热点（Hot）代码。V8 会将这段热点代码丢给优化编译器 TurboFan 编译为机器码（二进制代码）。如果下次再执行时，就会直接执行机器码，提高执行速度。（编译执行）
 
-![v8](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/v8.png)
+![v8](https://cdn.lishuxue.site/blog/image/前端笔记/v8.png)
 
 接下来我们主要介绍babel词法分析和语法分析。
 
@@ -511,7 +511,7 @@ AST节点数据结构：
 
 树状图：
 
-![ast](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/ast.png)
+![ast](https://cdn.lishuxue.site/blog/image/前端笔记/ast.png)
 
 ## 4）遍历AST
 
@@ -521,11 +521,11 @@ AST就是树，树的遍历可以是深度优先遍历或广度优先遍历。
 
 * 深度优先算法将会从第一个指定的顶点开始遍历图，每次遍历当前访问顶点的临界点，一直到访问的顶点没有未被访问过的临界点为止。然后采用依次回退的方式，查看来的路上每一个顶点是否有其它未被访问的临界点。访问完成后，判断图中的顶点是否已经全部遍历完成，如果没有，以未访问的顶点为起始点，重复上述过程。
 
-  ![DFS](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/DFS-Ex.gif)
+  ![DFS](https://cdn.lishuxue.site/blog/image/前端笔记/DFS-Ex.gif)
 
 * 广度优先算法会从指定的第一个顶点开始遍历图，遍历每一个顶点时，依次遍历其所有的邻接点，然后再从这些邻接点出发，同样依次访问它们的邻接点。按照此过程，直到图中所有被访问过的顶点的邻接点都被访问到。最后还需要做的操作就是查看图中是否存在尚未被访问的顶点，若有，则以该顶点为起始点，重复上述遍历的过程。
 
-  ![BFS](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/BFS-Ex.gif)
+  ![BFS](https://cdn.lishuxue.site/blog/image/前端笔记/BFS-Ex.gif)
 
 前序、中序、后序遍历是对二叉树进行深度优先遍历的几种方式。
 
@@ -564,11 +564,11 @@ babel中采用深度优先遍历AST。
 
 比如 " a + b " 这个 BinaryExpression，需要遍历 left、right 属性：
 
-![a+b](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/a+b.png)
+![a+b](https://cdn.lishuxue.site/blog/image/前端笔记/a+b.png)
 
 比如 " if (a === 1) " {} 这个 IfStatement，需要遍历 test、consequece 属性：
 
-![if](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/if.png)
+![if](https://cdn.lishuxue.site/blog/image/前端笔记/if.png)
 
 所以我们记录下每种 AST 怎么遍历，然后从根结点开始递归的遍历就可以了。
 

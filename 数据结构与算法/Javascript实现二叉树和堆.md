@@ -78,7 +78,7 @@ B树的优化。
 每一个子树遍历时依然按照此时的遍历顺序。
 
 如下图：
-![二叉树](https://raw.githubusercontent.com/LiShuxue/blog-article/master/数据结构与算法/sorttree.png)
+![二叉树](https://cdn.lishuxue.site/blog/image/数据结构与算法/sorttree.png)
 
 先序遍历：FCADBEHGM  
 中序遍历：ACBDFHEMG  

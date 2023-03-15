@@ -6,7 +6,7 @@ node --inspect test.js
 // 以调式模式运行，并停在第一行断点
 node --inspect-brk test.js
 ```
-![terminal](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/terminal.png)
+![terminal](https://cdn.lishuxue.site/blog/image/前端笔记/terminal.png)
 
 可以看到，node 启动了一个 web socket 的 server，地址是：ws://127.0.0.1:9229/f9519489-5363-47f8-bdf6-f194e6173102，这是一个websocket server，这时候只要启动一个 websocket client 连接上这个 server 就可以调试 nodejs 代码了。
 
@@ -33,7 +33,7 @@ node --inspect-brk test.js
 
     在vscode中调试面板运行Attach脚本即可，会看见vscode调式面板且自动停在第一行。
 
-    ![vscode](https://raw.githubusercontent.com/LiShuxue/blog-article/master/前端笔记/vscode.png)
+    ![vscode](https://cdn.lishuxue.site/blog/image/前端笔记/vscode.png)
 
 ### Launch模式
 1. 创建一个.vscode/launch.json配置文件，点击右下角的“Add Configuration”按钮添加配置。
