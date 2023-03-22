@@ -676,11 +676,13 @@ initWatch的过程中其实就是实例化new Watcher完成观察者的依赖收
     * 节点名称 tag
     * 节点属性 props 对象
     * 子节点 children 数组
-    ```js
+    ```html
     <div id="app">
         <p class="text">hello world!!!</p>
     </div>
-    // 转化为虚拟dom
+    ```
+    转化为虚拟dom
+    ```js
     {
         tag: 'div',
         props: {
