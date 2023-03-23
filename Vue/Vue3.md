@@ -481,7 +481,7 @@ customElements.define('my-vue-element', MyVueElement)
 * 之前在created中写的代码，都可以在最外层写。包括初始化数据，从后台获取数据等。
 * 组件中的生命周期，参考生命周期部分，变为onMounted等。
 * watch computed就分别用watch()和computed()
-* 父子通讯：父给子传递参数，子组件需要用defineProps。子组件触发事件，可以用defineEmits来实现以前的emit。父组件获取子组件的属性，需要子组件显示的暴露defineExpose
+* 父子通讯：父给子传递参数，子组件需要用defineProps。子组件触发事件，可以用defineEmits来实现以前的emit。父组件获取子组件的属性，需要子组件显式的暴露defineExpose
 * 默认setup中无法使用 this 对象，如果想用可以通过getCurrentInstance获取。`const { proxy }  = getCurrentInstance()`
 
 ## 路由

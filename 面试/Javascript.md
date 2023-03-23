@@ -147,16 +147,24 @@ o[b] = 2;
 console.log(o[a]); // 2
 ```
 
-## function.length可以获取函数的参数个数，arguments.length也可以
+## function.length和arguments.length的区别
+function.length是形参的个数，arguments.length是实参的个数
+
+箭头函数中没有arguments 和 this
+
 ```js
-const sum = (a, b, c) => a + b + c
-sum.length // 3
+const sum = function(a, b, c){
+    console.log(arguments.length)
+}
+console.log(sum.length) // 3
+sum(1,2) // 2
+sum(1,2,3,4) // 4
 ```
 
 ## 函数柯里化
 柯里化是指把接收多个参数的函数变换成接收单一参数的函数，嵌套返回直到所有参数都被使用并返回最终结果。
 
-更简单地说，柯里化是一个函数变换的过程，是将函数从调用方式：f(a,b,c)变换成调用方式：f(a)(b)(c)的过程。柯里化不会调用函数，它只是对函数进行转换。
+更简单地说，柯里化是一个函数变换的过程，是将函数从调用方式：`f(a,b,c)`变换成调用方式：`f(a)(b)(c)`的过程。柯里化不会调用函数，它只是对函数进行转换。
 
 ## 基本数据类型和引用类型存储在哪里
 * 基本数据类型：变量标识符和变量的值存放于栈内存。占用固定大小的空间。  

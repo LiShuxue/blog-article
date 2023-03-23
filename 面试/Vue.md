@@ -115,21 +115,6 @@ is: 后面指定一个组件的名字
 <component v-bind:is="currentTabComponent"></component>
 ```
 
-## 直接给一个数组项赋值，Vue 能检测到变化吗？怎么解决？
-不能检测到以下变化：  
-当你利用索引直接设置一个数组项时，例如：`vm.items[indexOfItem] = newValue`  
-当你修改数组的长度时，例如：`vm.items.length = newLength`  
-
-解决方法：  
-* 解决第一种问题：  
-`vm.$set(vm.items, indexOfItem, newValue)`  
-`vm.items.splice(indexOfItem, 1, newValue)`  
-* 解决第二种问题：  
-`vm.items.splice(newLength)` 
-
-## Vue 如何实现的数组的监听，为什么 Vue 没有对数组下标修改做劫持 
-重写数组的方法。不对数组下标做劫持就是因为性能问题。
-
 ## 组件通信
 1. props/$emit 父子通信  
     如果子组件需要修改父组件传进来的props，可以用.sync来减少父组件监听和修改的代码
@@ -365,6 +350,21 @@ Vue的dom更新是异步的，当数据发生变化，vue并不是直接去更�
 ## Vue 框架怎么实现对象和数组的监听？
 * 通过递归遍历对象，利用 Object.defineProperty() 也能对对象进行监听
 * 通过重写数组的方法， push, pop....实现对数组的监听。
+
+## 直接给一个数组项赋值，Vue 能检测到变化吗？怎么解决？
+不能检测到以下变化：  
+当你利用索引直接设置一个数组项时，例如：`vm.items[indexOfItem] = newValue`  
+当你修改数组的长度时，例如：`vm.items.length = newLength`  
+
+解决方法：  
+* 解决第一种问题：  
+`vm.$set(vm.items, indexOfItem, newValue)`  
+`vm.items.splice(indexOfItem, 1, newValue)`  
+* 解决第二种问题：  
+`vm.items.splice(newLength)` 
+
+## Vue 如何实现的数组的监听，为什么 Vue 没有对数组下标修改做劫持 
+重写数组的方法。不对数组下标做劫持就是因为性能问题。
 
 ## v-model 的原理
 v-modal只是一个语法糖，相当于执行了两步：  
@@ -723,6 +723,7 @@ initWatch的过程中其实就是实例化new Watcher完成观察者的依赖收
 ### hash模式和history模式的区别
 * 一般使用场景没啥区别，他们俩也都可以使用浏览器的前进后退按钮。
 * hisotry 模式需要配置服务器， 否则刷新页面可能会导致404
+* hisotry 不支持IE9以下
 * hash 模式带#号，一般不能用来做分享的url，因为有的app里面url是不允许带有#号的
 
 ## vuex state、getter、mutation、action、module
