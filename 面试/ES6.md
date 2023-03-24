@@ -189,7 +189,7 @@ var proxy = new Proxy(target, {
         console.log(property);
         console.log(value);
         console.log(receiver);
-        Reflect.set(target, property, value, receiver);
+        return Reflect.set(target, property, value, receiver);
     },
     get(target, property, receiver) {
         console.log(target);

@@ -366,6 +366,7 @@ Vue的dom更新是异步的，当数据发生变化，vue并不是直接去更�
 ## Vue 如何实现的数组的监听，为什么 Vue 没有对数组下标修改做劫持 
 重写数组的方法。不对数组下标做劫持就是因为性能问题。
 
+初始化data时数组的元素，如果是对象，也会监听。如果是普通数组，需要用提供的数组方法或者this.$set才会变。
 ## v-model 的原理
 v-modal只是一个语法糖，相当于执行了两步：  
 1. 在组件上面定义一个名为value的props
@@ -407,6 +408,76 @@ this.$nextTick(()=>{
     console.log(this.$refs.msg.innerHTML)
 })
 ```
+
+## nextTick底层是怎么实现的？跟事件循环是什么关系
+nextTick会接收回调函数，先放入一个数组中，然后定义一个批次清空数组的函数。这个批次清空的函数会被放入浏览器的微任务队列中。
+
+将这个函数放入微任务或则宏任务队列，主要借助Promise.resolve().then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0)。
+
+当微任务执行到这个方法时，就会执行所有的nextTick接收的回调函数。
+```js
+// 模拟 nextTick
+let callbacks = [];
+let pending = false;
+let timerFunc;
+
+// 当微任务或者宏任务队列，执行到这个方法时，会清空所有的回调
+const flushCallbacks = () => {
+    pending = false;
+    const copy = callbacks.slice(0);
+    callbacks.length = 0;
+    for(let i=0; i < copy.length; i++) {
+        copy[i]();
+    }
+}
+
+if (typeof Promise === 'function' && /native code/.test(Promise.toString())) { // 原生有Promise，用then的微任务执行
+    timerFunc = () => {
+        Promise.resolve().then(flushCallbacks) // Promise.resolve()会立即执行，将then的回调放入微任务队列
+    }
+} else if(typeof MutationObserver === 'function' && /native code/.test(MutationObserver.toString())) { // 没有Promise就用MutationObserver，也是微任务
+    const observer = new MutationObserver(flushCallbacks) // 监控DOM节点的变化，监听到变化后的将回调放入微任务队列
+    const textNode = document.createTextNode(String(counter)) // 创建一个需要监听的节点
+    observer.observe(textNode, { // 监控这个节点
+        characterData: true
+    })
+    let counter = 0;
+    timerFunc = () => {
+        counter = (counter + 1) % 2 // 主动触发变化，然后会将回调的flushCallbacks放入微任务队列
+        textNode.data = String(counter)
+    }
+} else { // 实在不行就用setTimeout，宏任务
+    timerFunc = setTimeout(flushCallbacks, 0);
+}
+
+const nextTick = (cb, ctx) => {
+    if (cb) {
+        // push一个函数，函数中再去执行这个真正的回调cb
+        callbacks.push(() => { cb.call(ctx) });
+    }
+    if (!pending) {
+        pending = true;
+        timerFunc();
+    }
+}
+
+window.$nextTick = function(cb) {
+    nextTick(cb, this);
+}
+```
+
+## 清空nextTick收集的回调时，为啥会拿到更新后的Dom呢
+首先明确首先是数据变化，引起的DOM更新。说数据改变之后，dom 不是同步改变的，所以我们不能直接拿到最新的 dom。如果想拿，需要使用nextTick。
+
+1. 修改响应式数据
+2. 触发 Object.defineProperty 中的 set
+3. 发布通知
+4. 触发 Watcher 中的 update 方法，
+5. update 方法中把 Watcher 缓冲到一个队列
+6. 刷新队列的方法(其实就是更新 dom 的方法)传到 nextTick 方法中
+7. nextTick 方法中把传进来的 callback 都放在一个数组 callbacks 中，然后放在异步队列中去执行
+
+然后这时你又调用了 $nextTick 方法，传进来一个获取最新 dom 的回调，这个回调也会推到那个数组 callbacks 中，此时遍历 callbacks 并执行所有回调的动作已经放到了异步队列中，到这（假设你后面没有其他的代码了）所有的同步代码就执行完了，然后开始执行异步队列中的任务，更新 dom 的方法是最先被推进去的，所以就先执行，你传进来的获取最新 dom 的回调是最后传进来的所以最后执行，显而易见，当执行到你的回调的时候，前面更新 dom 的动作都已经完成了，所以现在你的回调就能获取到最新的 dom 了。
 
 ## keep-alive
 * `<keep-alive>` 是 Vue 内置的一个组件，可以使被包含的组件保留状态，避免重新渲染。
