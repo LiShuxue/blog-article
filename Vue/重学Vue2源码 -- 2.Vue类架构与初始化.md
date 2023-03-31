@@ -102,6 +102,7 @@ init 方法中会给该实例逐步添加很多属性，比如$options, $events,
 最后渲染整个 DOM 树到 el 节点。
 
 ```js
+// src/core/instance/init.ts
 let uid = 0;
 Vue.prototype._init = function (options) {
   const vm = this;
