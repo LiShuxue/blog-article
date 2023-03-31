@@ -283,7 +283,7 @@ export function initRender(vm) {
 }
 ```
 
-createElement 的时候，会判断这个是否是是定义组件（不是 html 的 tag），如果是的话，获取到自定义组件（就是注册的那个对象），然后调用创建组件的方法 createComponent 去创建该组件。
+createElement 的时候，会判断这个是否是自定义组件（不是 html 的 tag），如果是的话，获取到自定义组件（就是注册的那个对象），然后调用创建组件的方法 createComponent 去创建该组件。
 
 ```js
 // src/core/vdom/create-element.ts
