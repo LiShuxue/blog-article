@@ -2,6 +2,16 @@
 * ==：比较值，类型不同的时候，先进行类型转换，再比较值；1 == "1"  true  
 * ===：比较类型和值，不做类型转换，类型不同就是不等；1 === "1"  false
 
+## Object.is(value1, value2)
+`Object.is()`是在ES6中定义的一个新方法，它与‘===’相比，特别针对-0、+0、NaN做了处理。
+```js
++0 === -0 // true
+NaN === NaN // false
+Object.is(+0, -0) // false
+Object.is(NaN, NaN) // true
+Object.is(NaN, 0/0) // true
+```
+
 ## == 比较时的隐式转换
 * 基本数据类型比较，比较值
     * null == undefined比较结果是true，除此之外，null、undefined和其他任何结果的比较值都为false。
@@ -17,6 +27,18 @@
     * {}.valueOf().toString() === '[object Object]'，转number是NaN 
     * [] == false // true
     * {} == false // false
+
+## + 一元加运算符
+一元加对其操作数会执行强制数字转换。意味着调用它的 valueOf()。然而，如果对象没有一个自定义的 valueOf() 方法，基本的实现将会导致 valueOf() 被忽略，转而使用 toString() 的返回值。
+```js
++new Date(); // the current timestamp; same as new Date().getTime()
++{}; // NaN (toString() returns "[object Object]")
++[]; // 0 (toString() returns an empty string list)
++[1]; // 1 (toString() returns "1")
++[1, 2]; // NaN (toString() returns "1,2")
++new Set([1]); // NaN (toString() returns "[object Set]")
++{ valueOf: () => 42 }; // 42
+```
 
 ## 与或非优先级运算
 1. 与或非混合时，非>与>或。 
@@ -96,16 +118,29 @@ number.toString(2)
 * 如果输入的 string 以任何其他值开头， radix 是 10 (十进制)。
 
 如果第一个字符不能转换为数字，parseInt会返回 NaN。
-
-## Object.is(value1, value2)
-`Object.is()`是在ES6中定义的一个新方法，它与‘===’相比，特别针对-0、+0、NaN做了处理。
 ```js
-+0 === -0 // true
-NaN === NaN // false
-Object.is(+0, -0) // false
-Object.is(NaN, NaN) // true
-Object.is(NaN, 0/0) // true
+['1','2','3'].map(parseInt)// 输出
+
+// 相当于执行了三次parseInt
+parseInt('1', 0); // 1
+parseInt('2', 1); // NaN
+parseInt('3', 2); // NaN
+
+// 如果我们需要返回1，2，3需要怎么办？
+function parseIntFun(item) {
+    return parseInt(item, 10)
+}
+['1','2','3'].map(parseIntFun)
 ```
+
+## number的位数，最大/小值，最大/小安全整数
+JS的基础类型Number，遵循 IEEE 754 规范，采用双精度存储，占用 64 bit。其中 0 到 51 存储数字（占52位），52 到 62 存储指数（占11位），63 位存储符号，如图。
+![number](https://cdn.lishuxue.site/blog/image/面试/number.png)
+
+* Number.MAX_VALUE，
+* Number.MIN_VALUE，
+* Number.MAX_SAFE_INTEGER，
+* Number.MIN_SAFE_INTEGER
 
 ## 6种基本数据类型和3种引用类型
 * number, boolean, string, null, undefined, Symbol  
@@ -117,16 +152,6 @@ Object.is(NaN, 0/0) // true
 ## null和undefined有什么区别
 * null表示空对象  
 * undefined表示未初始化的变量
-
-## number的位数，最大/小值，最大/小安全整数
-JS的基础类型Number，遵循 IEEE 754 规范，采用双精度存储，占用 64 bit。其中 0 到 51 存储数字（占52位），52 到 62 存储指数（占11位），63 位存储符号，如图。
-![number](https://cdn.lishuxue.site/blog/image/面试/number.png)
-
-* Number.MAX_VALUE，
-* Number.MIN_VALUE，
-* Number.MAX_SAFE_INTEGER，
-* Number.MIN_SAFE_INTEGER
-
 
 ## Object 和 Map 有什么区别
 * Object 键（key）的类型只能是字符串，数字或者 Symbol；而 Map 可以是任何类型。
@@ -806,6 +831,7 @@ a===b // false
 concat, [...a, ...b]扩展运算符
 
 ## 数组循环中删除元素
+一定要给下标重新赋值，减一
 ```js
 for (let i=0; i<arr.length; i++) {
     if (arr[i] === target) {

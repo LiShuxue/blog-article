@@ -607,7 +607,7 @@ const resetRoute = () => {
 ## Vue响应式原理(数据绑定原理)
 Vue 采用数据劫持结合发布—订阅模式的方法，通过 Object.defineProperty() 来劫持各个属性的 setter，getter，在set时通知订阅者更新，get的时候收集订阅者。模板编译的时候，生成对应的订阅者，调用这个属性的get，主动去完成这个订阅者收集。所以一共分为4部分：
 
-1. 对数据对象进行遍历，包括子属性对象的属性，利用 Object.defineProperty() 对属性都加上 setter 和 getter。调用getter的时候，进行依赖收集，将Observer存起来。调用setter的时候通知更新。每一个对象属性都有自己的任务中心。
+1. 对数据对象进行遍历，包括子属性对象的属性，利用 Object.defineProperty() 对属性都加上 setter 和 getter。调用getter的时候，进行依赖收集，将Observer存起来。调用setter的时候通知更新。
 
 2. 模板编译的时候，对模板上的每一个属性，生成对应的订阅者，这样数据变化时，可以通知模板视图的更新。
 
@@ -627,7 +627,7 @@ class Vue {
   walkData(data) {
     Object.keys(data).forEach((key) => {
       let val = data[key];
-      let eventCenter = new EventCenter(); // 每一个属性都有一个任务中心
+      let eventCenter = new EventCenter();
       Object.defineProperty(data, key, {
         set(value) {
           val = value;
