@@ -77,6 +77,7 @@ Vue.delete = function () {};
 Vue.nextTick = function () {};
 Vue.observable = function () {};
 Vue.options;
+Vue.options._base = Vue;
 Vue.use = function () {};
 Vue.mixin = function () {};
 Vue.cid;
@@ -145,4 +146,184 @@ Vue.prototype._init = function (options) {
     vm.$mount(vm.$options.el);
   }
 };
+```
+
+## 组件的初始化
+
+Vue 定义组件的方式有两种，全局注册组件，或者局部注册组件。
+
+单文件组件是一种常见的局部组件实现方式，但是局部组件并不一定要使用单文件组件的方式来实现，可以直接定义对象。
+
+```js
+// 全局注册
+Vue.component("my-component-name", {
+  /* ... */
+});
+
+// 局部注册
+const ComponentA = {
+  /* ... */
+};
+
+new Vue({
+  el: "#app", // el 只在用 new 创建实例时生效，局部组件中不能有 el，只能是 template。
+  components: {
+    "component-a": ComponentA,
+  },
+});
+```
+
+### 全局组件初始化
+
+所以组件的初始化入口也会有两个。我们先看下全局的 Vue.component 方法。
+
+在 initGlobalAPI 函数中，有下面两个代码。
+
+```js
+// src/core/global-api/index.ts
+Vue.options._base = Vue;
+initExtend(Vue);
+initAssetRegisters(Vue);
+```
+
+initAssetRegisters 方法就是给 Vue 类添加注册全局组件，指令，过滤器的方法。
+
+```js
+// src/core/global-api/assets.ts
+export function initAssetRegisters(Vue) {
+  ["component", "directive", "filter"].forEach((type) => {
+    Vue[type] = function (id, definition) {
+      if (type === "component" && isPlainObject(definition)) {
+        definition.name = definition.name || id;
+        // this.options._base.extend 即为 Vue.extend
+        definition = this.options._base.extend(definition);
+      }
+      if (type === "directive" && isFunction(definition)) {
+        definition = { bind: definition, update: definition };
+      }
+      this.options[type + "s"][id] = definition;
+      return definition;
+    };
+  });
+}
+```
+
+可以看到 Vue.component 方法就是调用的 Vue.extend 方法。在这个方法中声明了一个 Vue 子类 VueComponent，继承自 Vue。以后子类实例化的时候，也会调\_init 方法，这个方法会从父级 Vue 中继承过来。所以后面的逻辑跟我们上面分析的 Vue 初始化时的基本一致了。
+
+```js
+// src/core/global-api/extend.ts
+Vue.extend = function (extendOptions) {
+  extendOptions = extendOptions || {};
+  // Vue调用的extend，所以当前this指向Vue
+  const Super = this;
+
+  // 创建Vue的子类Sub
+  const Sub = function VueComponent(options) {
+    this._init(options);
+  };
+  // 子类Sub继承Vue原型链上的方法
+  Sub.prototype = Object.create(Super.prototype);
+  Sub.prototype.constructor = Sub;
+
+  // 子类添加静态属性options 和 super。 合并子类接收的options和Vue的全局方法。
+  Sub.options = mergeOptions(Super.options, extendOptions);
+  Sub["super"] = Super;
+
+  // 将子类的props 和 computed属性全部挂在Sub.prototype上，为了以后实例化子类的时候，可以从实例上取出来这些属性。
+  if (Sub.options.props) {
+    initProps(Sub);
+  }
+  if (Sub.options.computed) {
+    initComputed(Sub);
+  }
+
+  // 继承Vue的方法
+  Sub.extend = Super.extend;
+  Sub.mixin = Super.mixin;
+  Sub.use = Super.use;
+
+  // 子类的compnents，filter, directive方法也继承父类
+  ASSET_TYPES.forEach(function (type) {
+    Sub[type] = Super[type];
+  });
+
+  return Sub;
+};
+```
+
+### 局部组件初始化
+
+当我们写了局部组件并在 template 中使用的时候
+
+```html
+<div>
+  <my-other-comp />
+</div>
+```
+
+渲染的时候 template 最会被转换成 render 函数，render 函数执行后会生成虚拟 DOM。render 函数精简以后
+
+```js
+function anonymous() {
+  with (this) {
+    return _c("div", [_c("my-other-comp")], 1);
+  }
+}
+```
+
+\_c 其实就是 createElement 方法，这被定义在 initRender 方法中
+
+```js
+// src/core/instance/render.ts
+export function initRender(vm) {
+  // ...
+  vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false);
+  // ...
+}
+```
+
+createElement 的时候，会判断这个是否是是定义组件（不是 html 的 tag），如果是的话，获取到自定义组件（就是注册的那个对象），然后调用创建组件的方法 createComponent 去创建该组件。
+
+```js
+// src/core/vdom/create-element.ts
+export function createElement(
+  context,
+  tag,
+  data,
+  children,
+  normalizationType,
+  alwaysNormalize
+) {
+  // ...
+  return _createElement(context, tag, data, children, normalizationType);
+  // ...
+}
+
+export function _createElement(
+  context,
+  tag,
+  data,
+  children,
+  normalizationType
+) {
+  // ...
+  // 获取到自定义组件那个大对象 { /* ... */ }
+  Ctor = resolveAsset(context.$options, "components", tag);
+  vnode = createComponent(Ctor, data, context, children, tag);
+  // ...
+}
+```
+
+createComponent 方法内部最终也是调用 Vue.extend 方法来初始化这个局部组件。Vue.extend方法上面已经介绍过了。
+
+```js
+// src/core/vdom/create-component.ts
+export function createComponent(Ctor, data, context, children, tag) {
+  // ...
+  // 获取到Vue类
+  const baseCtor = context.$options._base;
+  // 调用Vue.extend方法
+  Ctor = baseCtor.extend(Ctor);
+  // ...
+}
 ```
