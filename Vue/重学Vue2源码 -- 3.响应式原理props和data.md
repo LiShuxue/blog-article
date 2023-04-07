@@ -301,7 +301,7 @@ Watcher 就是订阅者，new Watcher 的构造方法中，调用 get，来收�
 
 订阅者基本就是三个：
 
-- mountComponent 方法中会 new Watcher 实例，用来更新页面
+- mount 的时候，mountComponent 方法中会 new Watcher 实例，用来更新页面
 - watch 的属性会创建 watcher 实例
 - 计算属性会创建 watcher 实例
 
@@ -446,7 +446,74 @@ export default class Watcher {
 }
 ```
 
-### $set  
+### queueWatcher
+
+当数据改变时，通知 watcher 更新，update 的时候并不是每次都立即执行真正的更新，比如 DOM 渲染，或者 watch 的回调，而是先推到一个队列中
+
+```js
+export function queueWatcher(watcher) {
+  const id = watcher.id;
+  // has是一个对象 {}，如果没有当前的watcher，再将watcher放到queue队列
+  if (has[id] == null) {
+    has[id] = true;
+    if (!flushing) {
+      // 如果当前watcher队列没有在执行，就放进队列
+      queue.push(watcher);
+    } else {
+      // 如果当前watcher队列正在执行
+      let i = queue.length - 1;
+      while (i > index && queue[i].id > watcher.id) {
+        // index代表正在执行的队列中的watcher的位置，如果准备插入的位置的id大于当前watcher id，就往前移一位。
+        i--;
+      }
+      queue.splice(i + 1, 0, watcher); // 将watcher插入到合适的位置，就是队列中正在执行的watcher的后面，如果没有找到合适位置，就是插入到队列的尾部。方便一会儿执行。
+    }
+    // waiting变量是为了保证当前只执行一次flushSchedulerQueue逻辑。
+    if (!waiting) {
+      waiting = true;
+      nextTick(flushSchedulerQueue);
+    }
+  }
+}
+```
+
+### flushSchedulerQueue
+
+在事件循环中，一次性执行队列中所有的 watcher，如果再执行 watcher 队列的过程中增加了新的 watcher，就添加到后面
+
+```js
+function flushSchedulerQueue() {
+  flushing = true;
+  let watcher, id;
+
+  // 将所有watcher按从小到大排序（先创建的watcher id最小），可以保证
+  // 1. 父组件先更新，子组件后更新
+  // 2. watch 的执行先于 render方法
+  // 4. 如果组件watcher 执行的时候，子组件销毁了的话，子组件的watcher可以跳过
+  queue.sort((a, b) => a.id - b.id);
+
+  for (index = 0; index < queue.length; index++) {
+    watcher = queue[index];
+    if (watcher.before) {
+      watcher.before(); // 执行beforeUpdate方法
+    }
+    id = watcher.id;
+    has[id] = null; // 清掉watcher
+    watcher.run(); // 执行更新或者watch回调
+  }
+
+  // 清空一些状态和存储
+  index = queue.length = 0;
+  has = {};
+  waiting = flushing = false;
+
+  // 触发一些hoos
+  callActivatedHooks(activatedQueue);
+  callUpdatedHooks(updatedQueue);
+}
+```
+
+### $set
 
 通过 set，去改变数组的话，内部通过调用重写的数组方法来触发更新，改变对象的话，内部主要通过主动触发 notify，来通知更新。
 
