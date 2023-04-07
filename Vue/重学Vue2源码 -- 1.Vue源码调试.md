@@ -1,25 +1,23 @@
-> 基于vue@2.7.14源码
+> 基于vue@2.6.14源码，最后一个纯 vue2 版本源码，2.7 开始集成了 v3 相关 Composition API
 
 ## Vue 源码构建
 
-1、下载 vue2.7.14 源码或者 `git clone https://github.com/vuejs/vue.git`
+1、下载 vue2.6.14 源码 `https://codeload.github.com/vuejs/vue/zip/refs/tags/v2.6.14`
 
-2、源码 .github/CONTRIBUTING.md 文件中有描述怎么安装依赖，使用 `pnpm install`，yarn 不行
+2、源码 .github/CONTRIBUTING.md 文件中有描述怎么安装依赖，使用 yarn
 
 3、在 package.json 中的 scripts 中修改 dev 和添加 prod，主要是添加 `--sourcemap` 来输出 map 文件。另外 dev 和 prod 的区别就是打包的 vue 是否在控制台输出一些信息。
 
 ```bash
-"dev": "rollup -w -c scripts/config.js --environment TARGET:full-dev --sourcemap",
-"prod": "rollup -w -c scripts/config.js --environment TARGET:full-prod --sourcemap",
+"dev": "rollup -w -c scripts/config.js --environment TARGET:web-full-dev --sourcemap",
+"prod": "rollup -w -c scripts/config.js --environment TARGET:web-full-prod --sourcemap",
 ```
 
-4、在入口文件 src/platforms/web/entry-runtime-with-compiler.ts 中注释掉 v3 相关的东西，保留第一行和最后一行。
-
-5、执行 `pnpm run prod`，会在 dist 文件夹下生成 `vue.min.js` 和 `vue.min.js.map`，接下来就可以直接使用了。
+4、执行 `yarn prod`，会在 dist 文件夹下生成 `vue.min.js` 和 `vue.min.js.map`，接下来就可以直接使用了。
 
 ## Vue 使用和调试
 
-1、在 examples/classic 文件夹下创建 debug 文件夹，并且在 debug 文件夹下创建 index.html
+1、在 examples 文件夹下创建 debug 文件夹，并且在 debug 文件夹下创建 index.html
 
 2、将下面的代码复制到 index.html 中
 
@@ -33,7 +31,7 @@
 
 <head>
   <title>debug</title>
-  <script src="../../../dist/vue.min.js"></script>
+  <script src="../../dist/vue.min.js"></script>
 </head>
 
 <body>

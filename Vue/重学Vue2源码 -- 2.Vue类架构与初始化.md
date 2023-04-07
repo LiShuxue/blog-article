@@ -1,18 +1,16 @@
-> 基于vue@2.7.14源码
+> 基于vue@2.6.14源码，最后一个纯 vue2 版本源码，2.7 开始集成了 v3 相关 Composition API
 
 ## Vue 类
 
 从打包入口来，我们一步步分析 Vue 类都做了什么
 
-1. src/platforms/web/entry-runtime-with-compiler.ts 是整个 Vue 打包的入口，导出了整个 Vue 类
+1. src/platforms/web/entry-runtime-with-compiler.js 是整个 Vue 打包的入口，导出了整个 Vue 类。这个文件中对 Vue 类也做了简单的修改，重写实例方法 `$mount` 和增加静态方法 `compile`。
 
-2. 入口中导出的 Vue 类是从 src/platforms/web/runtime-with-compiler.ts 导入的。这个文件中对 Vue 类简单的修改，重写实例方法 `$mount` 和增加静态方法 `compile`。
+2. 入口中导出的 Vue 类是从 src/platforms/web/runtime/index.js 导入的。这个文件中对 Vue 进行了一系列的修改，增加实例方法 `__patch__` 和 `$mount`，修改静态属性 `Vue.options` 和 `Vue.config`
 
-3. runtime-with-compiler.ts 中修改的 Vue 是从 src/platforms/web/runtime/index.ts 导入的。这个文件中对 Vue 进行了一系列的修改，增加实例方法 `__patch__` 和 `$mount`，修改静态属性 `Vue.options` 和 `Vue.config`
+3. src/platforms/web/runtime/index.js 中修改的 Vue 是从 src/core/index.js 中导入的。这个文件中又对 Vue 进行了一系列修改。比如 `initGlobalAPI(Vue)` ，会给 Vue 类添加大量的静态方法和属性。
 
-4. src/platforms/web/runtime/index.ts 中修改的 Vue 是从 src/core/index.ts 中导入的。这个文件中又对 Vue 进行了一系列修改。比如 `initGlobalAPI(Vue)` ，会给 Vue 类添加大量的静态方法和属性。
-
-5. src/core/index.ts 中的 Vue 又是从 src/core/instance/index.ts 中导入的。这个文件中定义了 Vue 类，并且给 Vue 类的原型链上挂载了一系列方法和属性，通过五个方法，逐步对 Vue 类的 prototype 进行修改，`initMixin(Vue)`，`stateMixin(Vue)`，`eventsMixin(Vue)`，`lifecycleMixin(Vue)`，`renderMixin(Vue)`。
+4. src/core/index.js 中的 Vue 又是从 src/core/instance/index.js 中导入的。这个文件中定义了 Vue 类，并且给 Vue 类的原型链上挂载了一系列方法和属性，通过五个方法，逐步对 Vue 类的 prototype 进行修改，`initMixin(Vue)`，`stateMixin(Vue)`，`eventsMixin(Vue)`，`lifecycleMixin(Vue)`，`renderMixin(Vue)`。
 
 但是 Vue 真正加载的时候，不是按上面的顺序，而是上面反过来的顺序。也就是先创建了 Vue 类，对原型 prototype 进行一系列修改，然后增加一系列静态方法和属性，接着又增加或者修改一些属性。最终导出整个 Vue 类。
 
@@ -21,7 +19,7 @@
 创建 Vue 类，在实例化的时候，调用 `_init` 方法。
 
 ```js
-// src/core/instance/index.ts
+// src/core/instance/index.js
 function Vue(options) {
   this._init(options);
 }
@@ -29,38 +27,39 @@ function Vue(options) {
 
 ## Vue 实例方法 和 实例属性
 
-Vue 类的实例方法和属性，通过实例或者 this 来调用，在 src/core/instance/index.ts 文件中，通过多个方法来添加实例方法或者属性，`initMixin(Vue)`，`stateMixin(Vue)`，`eventsMixin(Vue)`，`lifecycleMixin(Vue)`，`renderMixin(Vue)`
+Vue 类的实例方法和属性，通过实例或者 this 来调用，在 src/core/instance/index.js 文件中，通过多个方法来添加实例方法或者属性，`initMixin(Vue)`，`stateMixin(Vue)`，`eventsMixin(Vue)`，`lifecycleMixin(Vue)`，`renderMixin(Vue)`
 
 ```js
-// initMixin(Vue) src/core/instance/init.ts
+// initMixin(Vue) src/core/instance/init.js
 Vue.prototype._init = function(options) {}
 
-// stateMixin(Vue) src/core/instance/state.ts
+// stateMixin(Vue) src/core/instance/state.js
 Vue.prototype.$data
 Vue.prototype.$props
 Vue.prototype.$set = function() {}
 Vue.prototype.$delete = function() {}
 Vue.prototype.$watch = function() {}
 
-// eventsMixin(Vue) src/core/instance/events.ts
+// eventsMixin(Vue) src/core/instance/events.js
 Vue.prototype.$on = function() {}
 Vue.prototype.$once = function() {}
 Vue.prototype.$off = function() {}
 Vue.prototype.$emit = function() {}
 
-// lifecycleMixin(Vue) src/core/instance/lifecycle.ts
+// lifecycleMixin(Vue) src/core/instance/lifecycle.js
 Vue.prototype._update = function() {}
 Vue.prototype.$forceUpdate = function() {}
 Vue.prototype.$destroy = function() {}
 
-// renderMixin(Vue) src/core/instance/render.ts
+// renderMixin(Vue) src/core/instance/render.js
+installRenderHelpers() // 将render方法中使用到的工具方法全部挂在Vue.prototype上
 Vue.prototype.$nextTick = function() {}
 Vue.prototype._render = function() {}
 
-// src/platforms/web/runtime/index.ts
+// src/platforms/web/runtime/index.js
 Vue.prototype.__patch__ = = function() {}
 
-// src/platforms/web/runtime-with-compiler.ts 和 src/platforms/web/runtime/index.ts
+// src/platforms/web/entry-runtime-with-compiler.js 和 src/platforms/web/runtime/index.js
 Vue.prototype.$mount = function() {}
 ```
 
@@ -69,7 +68,7 @@ Vue.prototype.$mount = function() {}
 Vue 类的静态方法和属性，通过 Vue 类直接调用，无需实例化。其中大部分是由 `initGlobalAPI` 方法挂载
 
 ```js
-// initGlobalAPI(Vue)  src/core/global-api/index.ts
+// initGlobalAPI(Vue)  src/core/global-api/index.js
 Vue.config;
 Vue.util;
 Vue.set = function () {};
@@ -80,16 +79,15 @@ Vue.options;
 Vue.options._base = Vue;
 Vue.use = function () {};
 Vue.mixin = function () {};
-Vue.cid;
 Vue.extend = function () {};
 Vue.component = function () {};
 Vue.directive = function () {};
 Vue.filter = function () {};
 
-// src/core/index.ts
+// src/core/index.js
 Vue.version;
 
-// src/platforms/web/runtime-with-compiler.ts
+// src/platforms/web/entry-runtime-with-compiler.js
 Vue.compile = function () {};
 ```
 
@@ -102,7 +100,7 @@ init 方法中会给该实例逐步添加很多属性，比如$options, $events,
 最后渲染整个 DOM 树到 el 节点。
 
 ```js
-// src/core/instance/init.ts
+// src/core/instance/init.js
 let uid = 0;
 Vue.prototype._init = function (options) {
   const vm = this;
@@ -121,6 +119,8 @@ Vue.prototype._init = function (options) {
     );
   }
 
+  vm._renderProxy = vm;
+  vm._self = vm;
   // 创建用于判断生命周期的一些标志位和一些实例属性，方便后面的代码使用
   initLifecycle(vm);
   // 创建用于存储事件的实例属性，用于this.on或者组件模板上的on事件监听
@@ -181,7 +181,7 @@ new Vue({
 在 initGlobalAPI 函数中，有下面两个代码。
 
 ```js
-// src/core/global-api/index.ts
+// src/core/global-api/index.js
 Vue.options._base = Vue;
 initExtend(Vue);
 initAssetRegisters(Vue);
@@ -190,7 +190,7 @@ initAssetRegisters(Vue);
 initAssetRegisters 方法就是给 Vue 类添加注册全局组件，指令，过滤器的方法。
 
 ```js
-// src/core/global-api/assets.ts
+// src/core/global-api/assets.js
 export function initAssetRegisters(Vue) {
   ["component", "directive", "filter"].forEach((type) => {
     Vue[type] = function (id, definition) {
@@ -212,7 +212,7 @@ export function initAssetRegisters(Vue) {
 可以看到 Vue.component 方法就是调用的 Vue.extend 方法。在这个方法中声明了一个 Vue 子类 VueComponent，继承自 Vue。以后子类实例化的时候，也会调\_init 方法，这个方法会从父级 Vue 中继承过来。所以后面的逻辑跟我们上面分析的 Vue 初始化时的基本一致了。
 
 ```js
-// src/core/global-api/extend.ts
+// src/core/global-api/extend.js
 Vue.extend = function (extendOptions) {
   extendOptions = extendOptions || {};
   // Vue调用的extend，所以当前this指向Vue
@@ -275,7 +275,7 @@ function anonymous() {
 \_c 其实就是 createElement 方法，这被定义在 initRender 方法中
 
 ```js
-// src/core/instance/render.ts
+// src/core/instance/render.js
 export function initRender(vm) {
   // ...
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false);
@@ -286,7 +286,7 @@ export function initRender(vm) {
 createElement 的时候，会判断这个是否是自定义组件（不是 html 的 tag），如果是的话，获取到自定义组件（就是注册的那个对象），然后调用创建组件的方法 createComponent 去创建该组件。
 
 ```js
-// src/core/vdom/create-element.ts
+// src/core/vdom/create-element.js
 export function createElement(
   context,
   tag,
@@ -315,10 +315,10 @@ export function _createElement(
 }
 ```
 
-createComponent 方法内部最终也是调用 Vue.extend 方法来初始化这个局部组件。Vue.extend方法上面已经介绍过了。
+createComponent 方法内部最终也是调用 Vue.extend 方法来初始化这个局部组件。Vue.extend 方法上面已经介绍过了。
 
 ```js
-// src/core/vdom/create-component.ts
+// src/core/vdom/create-component.js
 export function createComponent(Ctor, data, context, children, tag) {
   // ...
   // 获取到Vue类
