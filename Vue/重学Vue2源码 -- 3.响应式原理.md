@@ -295,6 +295,115 @@ export function popTarget() {
 }
 ```
 
+## computed 的初始化
+
+遍历 computed options 中的每一个属性，获取到其 get 方法，并对应生成一个 watcher 实例。watcher 实例生成的时候，会调用 get 方法进行依赖收集。对于 vue 实例的计算属性，重新定义在实例上，且是带有缓存性的。
+
+将这些计算属性的 watcher 用\_computedWatchers 来存储。
+
+```js
+// src/core/instance/state.js
+function initComputed (vm, computed)
+  // 将计算属性的watcher用_computedWatchers来存储
+  const watchers = vm._computedWatchers = Object.create(null)
+
+  for (const key in computed) {
+    const userDef = computed[key]
+    const getter = typeof userDef === 'function' ? userDef : userDef.get
+    const computedWatcherOptions = { lazy: true }
+
+    // 创建watcher，在watcher实例化的时候，会
+    watchers[key] = new Watcher(
+      vm,
+      getter || noop,
+      noop,
+      computedWatcherOptions
+    )
+
+    // 将计算属性都直接挂在实例上，方便this.xxx调用，而子组件的计算属性，在创建子组件类的时候就挂在了Sub.prototype上
+    if (!(key in vm)) {
+      defineComputed(vm, key, userDef) // 只有vue实例初始化才会执行这个
+    }
+  }
+}
+
+// 只有vue实例初始化才会执行这个
+export function defineComputed (target, key, userDef) {
+  sharedPropertyDefinition.get = createComputedGetter(key) // 创建一个getter
+  sharedPropertyDefinition.set = userDef.set || noop
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+
+function createComputedGetter (key) {
+  return function computedGetter () {
+    const watcher = this._computedWatchers && this._computedWatchers[key]
+    if (watcher) {
+      if (watcher.dirty) { // 当watcher执行过一次之后，下次再获取值的时候，不再重新执行，这就是compute缓存
+        watcher.evaluate() // 执行获取value
+      }
+      if (Dep.target) { // 如果当前有任务调度中心，也会收集依赖，也就是计算属性第一次访问getter时的依赖收集
+        watcher.depend()
+      }
+      return watcher.value
+    }
+  }
+}
+```
+
+## watch 的初始化
+
+遍历 watch options 中的每一个属性，对 watch 中的每一个属性创建一个 watcher，expOrFn 就是监听的属性，cb 就是 watch 的回调
+
+```js
+function initWatch(vm, watch) {
+  for (const key in watch) {
+    const handler = watch[key];
+    createWatcher(vm, key, handler);
+  }
+}
+
+function createWatcher(vm, expOrFn, handler, options) {
+  // watch的两种写法
+  /*
+  watch: {
+    message: 'handler'
+  },
+  methods: {
+    handler (newVal, oldVal) { ... }
+  }
+  */
+  /*
+  watch: {
+    message: function (newVal, oldVal) { ... }
+  }
+  */
+  // 如果handler是对象，直接取对象中的
+  if (isPlainObject(handler)) {
+    options = handler;
+    handler = handler.handler;
+  }
+  // 如果是字符串，取实例上的，methods中的方法都会挂在实例上
+  if (typeof handler === "string") {
+    handler = vm[handler];
+  }
+  return vm.$watch(expOrFn, handler, options);
+}
+
+Vue.prototype.$watch = function (expOrFn, cb, options) {
+  const vm = this;
+  options = options || {};
+  options.user = true; // watch 的 watcher 设置user是true
+  const watcher = new Watcher(vm, expOrFn, cb, options); // 创建watcher，依赖收集
+  if (options.immediate) {
+    pushTarget();
+    invokeWithErrorHandling(cb, vm, [watcher.value], vm, info);
+    popTarget();
+  }
+};
+```
+
+## 其他
+
 ### Watcher
 
 Watcher 就是订阅者，new Watcher 的构造方法中，调用 get，来收集依赖，并且移除旧的 watcher。当数据被改变后，触发 watcher 的 update 方法，使订阅者做出相应的动作。
@@ -319,7 +428,7 @@ export default class Watcher {
   newDepIds;
   before; // 渲染前执行beforeUpdated
   lazy; // lazy是true表示是计算属性
-  dirty; // 用于计算属性
+  dirty; // 用于计算属性，表示是否已经获取过一次值了，如果是，下次获取的时候，直接取值
   getter; // getter方法用来获取当前时刻下 expOrFn 获取到的值
   value; // 存储这个 expOrFn 获取到的值，主要用于计算属性
 
@@ -409,7 +518,7 @@ export default class Watcher {
   // 当数据被赋值的时候，执行dep.notify，notify中遍历所有的watcher，执行update方法
   update() {
     if (this.lazy) {
-      this.dirty = true; // 对于计算属性的，将dirty置为true，只有下次访问这个计算属性的值时，才计算
+      this.dirty = true; // 数据变化之后，对于计算属性的，将dirty置为true，下次访问这个计算属性的值时，再重新计算
     } else {
       queueWatcher(this); // 并不是每次update时都要立即更新模板，我们会先将这个watcher推入到队列，然后在 nextTick 后执行 flushSchedulerQueue。
     }
@@ -473,6 +582,66 @@ export function queueWatcher(watcher) {
       waiting = true;
       nextTick(flushSchedulerQueue);
     }
+  }
+}
+```
+
+### nextTick
+
+nextTick 会接收回调函数，先放入一个数组中，然后定义一个批次清空数组的函数。这个批次清空的函数会被放入浏览器的微任务队列中。
+
+将这个函数放入微任务或则宏任务队列，主要借助 Promise.resolve().then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0)。
+
+当微任务执行到这个方法时，就会执行所有的 nextTick 接收的回调函数。
+
+```js
+const callbacks = [];
+let pending = false;
+let timerFunc;
+
+if (typeof Promise === "function" && /native code/.test(Promise.toString())) {
+  // 原生有Promise，用then的微任务执行
+  timerFunc = () => {
+    Promise.resolve().then(flushCallbacks); // Promise.resolve()会立即执行，将then的回调放入微任务队列
+  };
+} else if (
+  typeof MutationObserver === "function" &&
+  /native code/.test(MutationObserver.toString())
+) {
+  // 没有Promise就用MutationObserver，也是微任务
+  const observer = new MutationObserver(flushCallbacks); // 监控DOM节点的变化，监听到变化后的将回调放入微任务队列
+  const textNode = document.createTextNode(String(counter)); // 创建一个需要监听的节点
+  observer.observe(textNode, {
+    // 监控这个节点
+    characterData: true,
+  });
+  let counter = 0;
+  timerFunc = () => {
+    counter = (counter + 1) % 2; // 主动触发变化，然后会将回调的flushCallbacks放入微任务队列
+    textNode.data = String(counter);
+  };
+} else {
+  // 实在不行就用setTimeout，宏任务
+  timerFunc = setTimeout(flushCallbacks, 0);
+}
+
+function flushCallbacks() {
+  pending = false;
+  const copies = callbacks.slice(0);
+  callbacks.length = 0; // 清空
+  for (let i = 0; i < copies.length; i++) {
+    copies[i]();
+  }
+}
+
+export function nextTick(cb, ctx) {
+  // push一个函数，函数中再去执行这个真正的回调cb
+  callbacks.push(() => {
+    cb.call(ctx);
+  });
+  if (!pending) {
+    pending = true;
+    timerFunc();
   }
 }
 ```

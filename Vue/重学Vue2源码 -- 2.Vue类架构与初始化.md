@@ -234,6 +234,7 @@ Vue.extend = function (extendOptions) {
   if (Sub.options.props) {
     initProps(Sub);
   }
+  // 计算属性initComputed时会通过defineComputed来声明计算属性的getter，带有缓存性，详见：响应式原理计算属性分析那篇。
   if (Sub.options.computed) {
     initComputed(Sub);
   }
