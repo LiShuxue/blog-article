@@ -301,6 +301,7 @@ export function popTarget() {
 
 将这些计算属性的 watcher 用\_computedWatchers 来存储。
 
+缓存的实现主要通过dirty属性，当数据被访问时，如果dirty是true，就重新计算，否则就直接返回值。当数据被更新时，dirty会被赋值为true，当数据计算完后，又被赋值为false。
 ```js
 // src/core/instance/state.js
 function initComputed (vm, computed)

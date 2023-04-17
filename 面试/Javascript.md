@@ -19,7 +19,7 @@ Object.is(NaN, 0/0) // true
     * String和Number比较，先将String转换为Number类型( parseInt或者Number() )。除了数字型string可以转成number，其他都是NaN。Number('') 是 0
     * NaN和其他任何类型比较永远返回false。
 * 两个引用类型比较，引用地址不一样，直接false。
-* 原始类型和引用类型做比较时，引用类型会依照ToPrimitive规则转换为原始类型。
+* 原始类型和引用类型做比较时，引用类型会依照ToPrimitive规则转换为原始类型(依次去调用对象的valueOf,toString方法)。
     * 引用类型先调用valueOf()，如果是基本类型，直接返回
     * 不是基本类型，再调用toString
     * String再转Number，
@@ -28,6 +28,17 @@ Object.is(NaN, 0/0) // true
     * [] == false // true
     * {} == false // false
 
+## 让 a==1&&a==2&&a==3 成立
+a如果是基础类型，不可能成立，a只能是对象，重写对象的valueOf方法
+```js
+var a = {
+    value: 0,
+    valueOf () {
+        this.value++;
+        return this.value
+    }
+}
+```
 ## + 一元加运算符
 一元加对其操作数会执行强制数字转换。意味着调用它的 valueOf()。然而，如果对象没有一个自定义的 valueOf() 方法，基本的实现将会导致 valueOf() 被忽略，转而使用 toString() 的返回值。
 ```js

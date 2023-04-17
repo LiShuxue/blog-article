@@ -125,7 +125,7 @@ Vue.prototype._init = function (options) {
   initLifecycle(vm);
   // 创建用于存储事件的实例属性，用于this.on或者组件模板上的on事件监听
   initEvents(vm);
-  // 创建用于存储渲染后的节点的实例属性，给实例添加$attrs和$listeners
+  // 创建用于存储渲染后的节点的实例属性vm._vnode和vm.$vnode，以及创建VNode的函数。给实例添加$attrs和$listeners
   initRender(vm);
   // 执行options中的beforeCreate方法
   callHook(vm, "beforeCreate");
@@ -142,7 +142,7 @@ Vue.prototype._init = function (options) {
   // 执行options中的created方法
   callHook(vm, "created");
 
-  // 只有整个vue实例的时候，才需要渲染，子组件其实都在虚拟dom树中了
+  // 只有是vue实例的时候，才需要mount挂载，当是子组件init的时候，没有el，但是会在组件内部主动调mount
   if (vm.$options.el) {
     vm.$mount(vm.$options.el);
   }
@@ -279,7 +279,8 @@ function anonymous() {
 // src/core/instance/render.js
 export function initRender(vm) {
   // ...
-  vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false);
+  vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
+  vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
   // ...
 }
 ```
