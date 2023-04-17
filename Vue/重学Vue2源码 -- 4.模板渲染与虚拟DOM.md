@@ -798,3 +798,7 @@ function updateChildren(
   }
 }
 ```
+
+## 参考：
+
+https://ustbhuangyi.github.io/vue-analysis/
