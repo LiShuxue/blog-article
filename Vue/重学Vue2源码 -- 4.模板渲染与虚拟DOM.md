@@ -471,10 +471,12 @@ Vue.prototype.__patch__ = patch;
 
 回到 patch 方法本身，它将 vnode 转换为真实的 DOM。它的参数，oldVnode 表示旧的 VNode 节点，也可以不存在或者是一个 已存在的 DOM 对象（比如 Vue 实例初始化渲染时），vnode 表示执行 \_render 后返回的最新的 VNode 的节点。
 
-- 新节点不存在，老节点存在，调用 destroy，销毁老节点
-- 老节点不存在，新节点存在，这种情况会在一个组件初次渲染的时候出现，创建这个新节点的 DOM
-- 如果 oldVnode 是真实元素，则表示 vue 实例首次渲染，创建新节点，并插入 body，然后移除老节点
-- 如果 oldVnode 不是真实元素，则表示更新阶段，执行 patchVnode
+- 如果旧的 VNode 不存在，就将新的 VNode 渲染成真实的 DOM，并插入到父元素中。
+- 如果新的 VNode 不存在，就将旧的 VNode 对应的真实 DOM 元素从父元素中移除。
+- 如果旧的 VNode 和新的 VNode 是相同的节点，就对比它们的属性和子节点，如果有变化就更新对应的 DOM 元素。
+- 如果旧的 VNode 和新的 VNode 不是相同的节点，就将旧的 VNode 对应的真实 DOM 元素替换成新的 VNode 对应的真实 DOM 元素。
+
+在进行对比和更新的过程中，patch 方法会调用一系列的钩子函数，比如 create、update、destroy 等等。这些钩子函数会在特定的时机被调用，用来执行一些特殊的操作，比如创建新的 DOM 元素、更新 DOM 元素的属性、监听事件等等
 
 ```js
 // src/core/vdom/patch.js
