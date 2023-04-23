@@ -1,11 +1,13 @@
 ## tsconfig.json
-tsconfig.json 是用typescript 的 `tsc` 命令 来编译ts项目所需的配置文件。
+
+tsconfig.json 是用 typescript 的 `tsc` 命令 来编译 ts 项目所需的配置文件。
 
 在调用 tsc 命令并且没有其它输入文件参数时，编译器将由当前目录开始向父级目录寻找包含 tsconfig 文件的目录。
 
 可以在 [github.com/tsconfig/bases](https://github.com/tsconfig/bases/) 上寻找一个合适的基本配置
 
 ## 配置项说明
+
 ```js
 {
   "compilerOptions": {
@@ -18,7 +20,7 @@ tsconfig.json 是用typescript 的 `tsc` 命令 来编译ts项目所需的配置
     "allowJs": true,                               // 允许引入js文件，而不是仅仅允许 .ts 和 .tsx 文件
     "checkJs": true,                               // 检测js语法
     "typeRoots": [                                 // 指定声明文件types的路径，当我们项目中定义了一些声明文件的时候使用
-        "./node_modules/@types/", 
+        "./node_modules/@types/",
         "./src/types/"
     ],
     "strict": true,                                // 严格模式
@@ -52,8 +54,12 @@ tsconfig.json 是用typescript 的 `tsc` 命令 来编译ts项目所需的配置
 }
 ```
 
-## 编译ts
-### 安装typescript
-`yarn add typescript` 
+## 编译 ts
+
+### 安装 typescript
+
+`yarn add typescript`
+
 ### 编译
-运行 `tsc` 命令，编译器将寻找 tsconfig 文件，根据tsconfig的配置项进行编译。
+
+运行 `tsc` 命令，编译器将寻找 tsconfig 文件，根据 tsconfig 的配置项进行编译。
