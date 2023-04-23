@@ -504,6 +504,28 @@ const cats: Record<CatName, CatInfo> = {
 
 用于构造一个类型，它是从 Type 类型里面提取了所有可以赋给 Union 的类型。
 
+### ReturnType<Type>
+
+用于构造一个含有 Type 函数的返回值的类型。
+
+```js
+declare function f1(): { a: number; b: string };
+
+type T0 = ReturnType<() => string>;
+// type T0 = string
+
+type T1 = ReturnType<(s: string) => void>;
+// type T1 = void
+
+type T2 = ReturnType<<T>() => T>;
+// type T2 = unknown
+
+type T3 = ReturnType<<T extends U, U extends number[]>() => T>;
+// type T3 = number[]
+
+type T4 = ReturnType<typeof f1>;
+```
+
 ## 命名空间
 
 命名空间，可以作为一个模块来维护一些类型声明或者接口，类等，内部可以用 export 导出，外部可以通过 xxx.yyy 使用。
