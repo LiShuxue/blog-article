@@ -160,19 +160,71 @@ React 会在重复渲染时保留这个 state，也就是说后续渲染时，us
 
 ### useRef
 
-- ref 用来获取类组件实例，或者 DOM 对象
 - useRef 用来创建 ref 对象
-- 通过 ref={myRef} 绑定在 DOM 对象或者 React 组件上
-- 通过 this.myRef.current 访问 DOM 对象或者 class 组件的实例
-- useRef()可以用来保存一个不变的值。简单来说，我们可以将 useRef 返回值看作一个组件内部全局共享变量，它会在多次渲染内部共享一个相同的值。
+- 通过 ref={myRef} 绑定在 html 标签或者 React 组件上（组件需要配合 forwardRef 使用），来获取 DOM 对象
+- useRef()也可以用来保存一个不变的值。简单来说，我们可以将 useRef 返回值看作一个组件内部全局共享变量，它会在多次渲染内部共享一个相同的值。
+
+### useContext
+
+用来在多个组件中共享数据。
+
+1. 使用 createContext 来创建 Context
+2. 使用 Context.Provider 来提供数据
+3. 使用 useContext 来获取数据
+
+### useReducer
+
+useReducer 可以替代 useState，多一个页面使用很多 useState 时，而一些状态之间也是有关联的，可以用 useRedcuer 来重构。
+
+1、定义 reducer
+
+```js
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "xxx":
+      return { ...state, ...action.payload };
+    case "yyy":
+      return { ...state, yyy };
+  }
+};
+```
+
+2、使用 useReducer 来初始化 state 和改变 state 的方法
+
+```jsx
+const initState = { a: "a", b: "b" };
+const [state, dispatch] = useReducer(reducer, initState);
+```
+
+3、使用 state 和 dispatch
+
+```js
+// state可以直接解构
+const [{ a, b }, dispatch] = useReducer(reducer, initState);
+
+// 改变state
+const changeState = () => {
+  dispatch({ type: "xxx", payload: { test: "test" } });
+};
+<div onClick={changeState}>{a}</div>;
+```
 
 ## hooks 为什么不能用在循环或条件中
 
-## 如何创建 refs
+hooks 是在函数式组件中引申出来的，函数本身不能保存状态，为了在函数式组件中有状态，我们需要额外维护一个有序的链表，在初始化 useState 之类的 hook 时，将它们保存到这个链表里，之后 setState 也是更新这个表。
+
+比如第一次执行函数组件时，我们用 useState 设置状态 count（初始值为 0 ）和 isDone（初始值为 false），它们其实被保存到一个有序链表中，它们的值会记录下来： [0, false] 。
+
+我们执行 setIsDone(true)来更新 state 的值，则表中数据变为[0,true]，同时导致组件重新渲染。
+
+第二次重新渲染时，useState 会 按顺序 从这个表中拿出 0 和 true，赋值给 count 和 isDone。
+
+如果你把 hook 写到判断条件下，初始化表的时候顺序会有问题，后续执行会出现问题。所以要求每次函数组件的 hook 执行的位置相同，数量正确，否则会导致错位，不能拿到预期的状态值。
+
+## 如何创建 ref
 
 - 类组件中： `this.myRef = React.createRef();`
 - 函数式组件中： `const ref = useRef();`
-- 或者在类组件中通过回调函数： `<input type='text' ref={(input) => this.input = input} />`
 
 ## 用 React hook 实现一个计数器组件
 
@@ -272,6 +324,13 @@ jsx 将 html 和 js 混在一起编写，需要通过 babel 和 webpack 编译�
 - JSX 可以赋值给变量，也可以把 JSX 当作参数传入，以及从函数中返回 JSX
 - 组件名称必须以大写字母开头，React 会将以小写字母开头的组件视为原生 DOM 标签
 - 注释也要用{}包裹
+
+## 组件什么时候会重新渲染
+
+1. 组件内部 state 变化，组件重新渲染，函数组件重新开始执行，但是 state 保留的最新的。
+2. 父组件渲染，子组件也会重新渲染
+3. Context.Provider 提供的 value 变化时，所有使用这个 value 的都会重新渲染。
+4. 组件的 props 变化。其实 props 是由父组件传下去的，父组件重新渲染，子组件肯定也会渲染，如果不想子组件渲染，可以用 memo 包裹。
 
 ## 如何避免组件的重新渲染？
 
