@@ -10,10 +10,10 @@ Nikto 是一个开源的网络服务器扫描程序，它针对网络服务器�
 
 执行：`perl nikto.pl -h https://lishuxue.site -o result.html -F html` 会开始扫描，并将结果输出到 result.html 中。
 
-![scan](https://cdn.lishuxue.site/blog/image/ECS/scanstep.png)
+![scanstep](https://cdn.lishuxue.site/blog/image/ECS/scanstep.png)
 
 ## 结果
 
 根据扫描结果，一个个处理问题。
 
-![scan](https://cdn.lishuxue.site/blog/image/ECS/result.png)
+![result](https://cdn.lishuxue.site/blog/image/ECS/result.png)
