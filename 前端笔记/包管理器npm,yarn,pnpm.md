@@ -72,6 +72,27 @@ npm config set registry https://registry.npmmirror.com
 npm config delete registry
 ```
 
+### npm init / npm create / npm exec / npm x / npx
+
+- `npm init` 用来初始化一个项目，后面可以跟一个包名 `npm init xxx`，包名必须是 `create-xxx` 形式的。`npm init foo@latest` 用最新的 foo 包初始化项目。这个包会被 `npm exec` 执行。
+
+- `npm create` 跟上面一样。
+
+  ```sh
+  npm create foo -> npm init foo -> npm exec create-foo
+  ```
+
+- `npm exec` 从本地或远程 npm 包中运行命令的。别名`npm x`。`npm exec create-foo` 跟 `npm exec -- create-foo` 结果是一样的。
+
+  ```sh
+  npm exec -- <pkg>[@<version>] [args...]
+  npm exec --package=<pkg>[@<version>] -- <cmd> [args...]
+  npm exec -c '<cmd> [args...]'
+  npm exec --package=foo -c '<cmd> [args...]'
+  ```
+
+- `npx` 跟上面差不多，也是通过远程运行命令。
+
 ## yarn1.x 用法
 
 ```sh
