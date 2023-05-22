@@ -135,6 +135,12 @@ align-self: flex-start; /* 自己单独的对齐方式，可覆盖align-items属
 
 子元素最终尺寸会受到 min-width 和 max-width 属性影响。
 
+### flex-grow 和 flex-shrink 的计算规则
+
+放大：就是等比例放大。主要就是根据 flex-basis 的值计算出容器是否有剩余空间，如果有剩余空间，并且该容器中某个子元素是可以放大的，那么用该子元素的 flex-grow 值比上容器中所有子元素的 flex-grow 值之和计算出该容器子元素的放大系数，然后乘以剩余空间的大小即是该容器子元素需要放大的像素值。
+
+缩小：不是等比例的。缩小的情况也是先根据 flex-basis 的值计算出容器超出容器多少空间，但是其不是简单的根据 flex-shrink 的值计算出缩放比例，而是根据容器中某个元素的 flex-basis 值乘以 flex-shrink 的值占容器中所有子元素的 flex-basis 乘以 flex-shrink 的值之和来计算缩放比例的。
+
 ## 隐藏页面元素
 
 - opacity=0：不会影响页面布局，还可以触发点击事件
