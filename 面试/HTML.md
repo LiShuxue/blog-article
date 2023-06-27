@@ -28,22 +28,22 @@ const ctx = canvasDom.getContext('2d');
 // 使用canvas标签
 <canvas id="myCanvas" width="200" height="100"></canvas>;
 // 获取canvas元素
-var canvas = document.getElementById("myCanvas");
+var canvas = document.getElementById('myCanvas');
 // 创建 context 对象
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext('2d');
 // 绘制矩形
 ctx.fillRect(0, 0, 150, 75);
 // 填充颜色
-ctx.fillStyle = "#FF0000";
+ctx.fillStyle = '#FF0000';
 // 绘制线条 定义开始坐标(0,0), 和结束坐标 (200,100)。然后使用 stroke() 方法来绘制线条
 ctx.moveTo(0, 0);
 ctx.lineTo(200, 100);
 ctx.stroke();
 // 绘制文本
-ctx.font = "30px Arial";
-ctx.fillText("Hello World", 10, 50);
+ctx.font = '30px Arial';
+ctx.fillText('Hello World', 10, 50);
 // 绘制图像
-var img = document.getElementById("img");
+var img = document.getElementById('img');
 ctx.drawImage(img, 10, 10);
 ```
 
@@ -58,15 +58,15 @@ data-属性不应该包含任何大写字母，并且在 data-后必须最少拥
 ```
 
 ```js
-const getId = document.getElementById("getId");
+const getId = document.getElementById('getId');
 
 // 取值
-console.log(getId.getAttribute("data-id")); // 122
+console.log(getId.getAttribute('data-id')); // 122
 console.log(getId.dataset.id); // 112
 
 // 赋值
-getId.setAttribute("data-id", "48");
-getId.dataset.id = "113";
+getId.setAttribute('data-id', '48');
+getId.dataset.id = '113';
 ```
 
 ## meta 标签作用是什么，有哪些属性
@@ -150,7 +150,7 @@ img.onload = function() { ... }
 ```js
 // <img id="test" src="xxx/loading.png" data-src="xxx/real.png">
 
-const dom = document.getElementById("test");
+const dom = document.getElementById('test');
 const distance = dom.getBoundingClientRect(); // 元素据视口的距离
 const clientHeight = window.innerHeight; // 视口的高度
 // distance.top <= clientHeight 时，图片是在可视区域内的。
@@ -189,10 +189,7 @@ sizes 定义了一组媒体条件（例如屏幕宽度）并且指明当某些�
 
 ```html
 <picture>
-  <source
-    srcset="/media/examples/surfer-240-200.jpg"
-    media="(min-width: 800px)"
-  />
+  <source srcset="/media/examples/surfer-240-200.jpg" media="(min-width: 800px)" />
   <img src="/media/examples/painted-hand-298-332.jpg" />
 </picture>
 ```
@@ -206,7 +203,7 @@ top,lef,right,bottom,width,height；
 这里的 top、left 和 css 中的理解很相似，width、height 是元素自身的宽高，但是 right，bottom 和 css 中的理解有点不一样。right 是指元素右边界距窗口最左边的距离，bottom 是指元素下边界距窗口最上面的距离。
 
 ```js
-const box = document.getElementById("box"); // 获取元素
+const box = document.getElementById('box'); // 获取元素
 
 box.getBoundingClientRect().top; // 元素上边距离页面上边的距离
 
@@ -226,7 +223,7 @@ const callback = (entries) => {
   console.log(entries);
 };
 const io = new IntersectionObserver(callback, option);
-io.observe(document.getElementById("example"));
+io.observe(document.getElementById('example'));
 ```
 
 callback 一般会触发两次。一次是目标元素刚刚进入视口（开始可见），另一次是完全离开视口（开始不可见）。
@@ -261,15 +258,15 @@ defer（延迟执行），async（立即执行）
 ```js
 // onclick: 同一个元素，同类事件只能添加一个，如果添加多个，后面添加的会覆盖之前添加的
 dom.onclick = function () {
-  alert("Hello");
+  alert('Hello');
 };
 
 // addEventListener: 可以给同一个元素添加多个同类事件
-dom.addEventListener("click", function () {
-  alert("hello1");
+dom.addEventListener('click', function () {
+  alert('hello1');
 });
-dom.addEventListener("click", function () {
-  alert("hello2");
+dom.addEventListener('click', function () {
+  alert('hello2');
 });
 ```
 

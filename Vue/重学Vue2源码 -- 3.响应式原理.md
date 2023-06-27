@@ -35,8 +35,8 @@ const propsDef = {};
 propsDef.get = function () {
   return this._props;
 };
-Object.defineProperty(Vue.prototype, "$data", dataDef);
-Object.defineProperty(Vue.prototype, "$props", propsDef);
+Object.defineProperty(Vue.prototype, '$data', dataDef);
+Object.defineProperty(Vue.prototype, '$props', propsDef);
 ```
 
 在\_init 方法中合并 options 的时候，会将 props 中的数据，挂在实例的$options.propsData 中，值是传进来的值。
@@ -72,8 +72,7 @@ function initProps(vm, propsOptions) {
 // src/core/instance/state.js
 function initMethods(vm, methods) {
   for (const key in methods) {
-    vm[key] =
-      typeof methods[key] !== "function" ? noop : bind(methods[key], vm);
+    vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm);
   }
 }
 ```
@@ -88,7 +87,7 @@ function initMethods(vm, methods) {
 // src/core/instance/state.js
 function initData(vm) {
   let data = vm.$options.data;
-  data = vm._data = typeof data === "function" ? getData(data, vm) : data || {};
+  data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
   const keys = Object.keys(data);
   let i = keys.length;
   while (i--) {
@@ -301,7 +300,8 @@ export function popTarget() {
 
 将这些计算属性的 watcher 用\_computedWatchers 来存储。
 
-缓存的实现主要通过dirty属性，当数据被访问时，如果dirty是true，就重新计算，否则就直接返回值。当数据被更新时，dirty会被赋值为true，当数据计算完后，又被赋值为false。
+缓存的实现主要通过 dirty 属性，当数据被访问时，如果 dirty 是 true，就重新计算，否则就直接返回值。当数据被更新时，dirty 会被赋值为 true，当数据计算完后，又被赋值为 false。
+
 ```js
 // src/core/instance/state.js
 function initComputed (vm, computed)
@@ -384,7 +384,7 @@ function createWatcher(vm, expOrFn, handler, options) {
     handler = handler.handler;
   }
   // 如果是字符串，取实例上的，methods中的方法都会挂在实例上
-  if (typeof handler === "string") {
+  if (typeof handler === 'string') {
     handler = vm[handler];
   }
   return vm.$watch(expOrFn, handler, options);
@@ -456,7 +456,7 @@ export default class Watcher {
     // updateComponent = () => {
     //   vm._update(vm._render())
     // }
-    if (typeof expOrFn === "function") {
+    if (typeof expOrFn === 'function') {
       this.getter = expOrFn;
     } else {
       // parsePath会将表达式转换为目标对象调用该属性的方法，返回这个方法
@@ -600,13 +600,13 @@ const callbacks = [];
 let pending = false;
 let timerFunc;
 
-if (typeof Promise === "function" && /native code/.test(Promise.toString())) {
+if (typeof Promise === 'function' && /native code/.test(Promise.toString())) {
   // 原生有Promise，用then的微任务执行
   timerFunc = () => {
     Promise.resolve().then(flushCallbacks); // Promise.resolve()会立即执行，将then的回调放入微任务队列
   };
 } else if (
-  typeof MutationObserver === "function" &&
+  typeof MutationObserver === 'function' &&
   /native code/.test(MutationObserver.toString())
 ) {
   // 没有Promise就用MutationObserver，也是微任务

@@ -28,7 +28,7 @@ type b = string | number;
 字符串或者数字等字面量，也可以用来表示类型。表示只能是这些字面量中的一个。
 
 ```js
-type A = "left" | "right" | "center";
+type A = 'left' | 'right' | 'center';
 type B = 1 | 0 | -1;
 ```
 
@@ -219,10 +219,10 @@ type I2 = Person[keyof Person];
 作为索引的只能是类型，不能是值。所以下面是错误的，但换成类型别名可以。
 
 ```js
-const key = "age";
+const key = 'age';
 type Age = Person[key]; // 错误
 
-type key = "age";
+type key = 'age';
 type Age = Person[key]; // 正确
 ```
 
@@ -356,7 +356,7 @@ function useKey<T, K extends keyof T>(o: T, k: K) {
 js 中本来就有 typeof 关键字，用来获取某个变量的类型。也可以用在 ts 中。
 
 ```js
-const person = { name: "kevin", age: "18" };
+const person = { name: 'kevin', age: '18' };
 type Kevin = typeof person;
 
 // type Kevin = {
@@ -434,7 +434,7 @@ const req = {
 Uppercase 把每个字符转为大写形式
 
 ```js
-type Greeting = "Hello, world";
+type Greeting = 'Hello, world';
 type ShoutyGreeting = Uppercase<Greeting>;
 // type ShoutyGreeting = "HELLO, WORLD"
 ```
@@ -442,7 +442,7 @@ type ShoutyGreeting = Uppercase<Greeting>;
 Lowercase 把每个字符转为小写形式
 
 ```js
-type Greeting = "Hello, world";
+type Greeting = 'Hello, world';
 type QuietGreeting = Lowercase<Greeting>;
 // type QuietGreeting = "hello, world"
 ```
@@ -450,7 +450,7 @@ type QuietGreeting = Lowercase<Greeting>;
 Capitalize 把字符串的第一个字符转为大写形式
 
 ```js
-type LowercaseGreeting = "hello, world";
+type LowercaseGreeting = 'hello, world';
 type Greeting = Capitalize<LowercaseGreeting>;
 // type Greeting = "Hello, world"
 ```
@@ -479,12 +479,12 @@ interface CatInfo {
   breed: string;
 }
 
-type CatName = "miffy" | "boris" | "mordred";
+type CatName = 'miffy' | 'boris' | 'mordred';
 
 const cats: Record<CatName, CatInfo> = {
-  miffy: { age: 10, breed: "Persian" },
-  boris: { age: 5, breed: "Maine Coon" },
-  mordred: { age: 16, breed: "British Shorthair" },
+  miffy: { age: 10, breed: 'Persian' },
+  boris: { age: 5, breed: 'Maine Coon' },
+  mordred: { age: 16, breed: 'British Shorthair' },
 };
 ```
 

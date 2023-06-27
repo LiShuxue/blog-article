@@ -112,11 +112,7 @@ Vue.prototype._init = function (options) {
     initInternalComponent(vm, options);
   } else {
     // 对于vue实例的，会将我们直接挂在vue类上的一些东西合并进来
-    vm.$options = mergeOptions(
-      resolveConstructorOptions(vm.constructor),
-      options || {},
-      vm
-    );
+    vm.$options = mergeOptions(resolveConstructorOptions(vm.constructor), options || {}, vm);
   }
 
   vm._renderProxy = vm;
@@ -128,7 +124,7 @@ Vue.prototype._init = function (options) {
   // 创建用于存储渲染后的节点的实例属性vm._vnode和vm.$vnode，以及创建VNode的函数。给实例添加$attrs和$listeners
   initRender(vm);
   // 执行options中的beforeCreate方法
-  callHook(vm, "beforeCreate");
+  callHook(vm, 'beforeCreate');
   // 将inject的数据挂在实例上，且变为响应式的
   initInjections(vm); // resolve injections before data/props
   // 初始化methods, data, computed 和 watch
@@ -140,7 +136,7 @@ Vue.prototype._init = function (options) {
   // 将父级的provide和本身的provide结合
   initProvide(vm); // resolve provide after data/props
   // 执行options中的created方法
-  callHook(vm, "created");
+  callHook(vm, 'created');
 
   // 只有是vue实例的时候，才需要mount挂载，当是子组件init的时候，没有el，但是会在组件内部主动调mount
   if (vm.$options.el) {
@@ -157,7 +153,7 @@ Vue 定义组件的方式有两种，全局注册组件，或者局部注册组�
 
 ```js
 // 全局注册
-Vue.component("my-component-name", {
+Vue.component('my-component-name', {
   /* ... */
 });
 
@@ -167,9 +163,9 @@ const ComponentA = {
 };
 
 new Vue({
-  el: "#app", // el 只在用 new 创建实例时生效，局部组件中不能有 el，只能是 template。
+  el: '#app', // el 只在用 new 创建实例时生效，局部组件中不能有 el，只能是 template。
   components: {
-    "component-a": ComponentA,
+    'component-a': ComponentA,
   },
 });
 ```
@@ -192,17 +188,17 @@ initAssetRegisters 方法就是给 Vue 类添加注册全局组件，指令，�
 ```js
 // src/core/global-api/assets.js
 export function initAssetRegisters(Vue) {
-  ["component", "directive", "filter"].forEach((type) => {
+  ['component', 'directive', 'filter'].forEach((type) => {
     Vue[type] = function (id, definition) {
-      if (type === "component" && isPlainObject(definition)) {
+      if (type === 'component' && isPlainObject(definition)) {
         definition.name = definition.name || id;
         // this.options._base.extend 即为 Vue.extend
         definition = this.options._base.extend(definition);
       }
-      if (type === "directive" && isFunction(definition)) {
+      if (type === 'directive' && isFunction(definition)) {
         definition = { bind: definition, update: definition };
       }
-      this.options[type + "s"][id] = definition;
+      this.options[type + 's'][id] = definition;
       return definition;
     };
   });
@@ -228,7 +224,7 @@ Vue.extend = function (extendOptions) {
 
   // 子类添加静态属性options 和 super。 合并子类接收的options和Vue的全局方法。
   Sub.options = mergeOptions(Super.options, extendOptions);
-  Sub["super"] = Super;
+  Sub['super'] = Super;
 
   // 将子类的props 和 computed属性全部挂在Sub.prototype上，为了以后实例化子类的时候，可以从实例上取出来这些属性。
   if (Sub.options.props) {
@@ -268,7 +264,7 @@ Vue.extend = function (extendOptions) {
 ```js
 function anonymous() {
   with (this) {
-    return _c("div", [_c("my-other-comp")], 1);
+    return _c('div', [_c('my-other-comp')], 1);
   }
 }
 ```
@@ -279,8 +275,8 @@ function anonymous() {
 // src/core/instance/render.js
 export function initRender(vm) {
   // ...
-  vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
-  vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
+  vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false);
+  vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true);
   // ...
 }
 ```
@@ -289,29 +285,16 @@ createElement 的时候，会判断这个是否是自定义组件（不是 html 
 
 ```js
 // src/core/vdom/create-element.js
-export function createElement(
-  context,
-  tag,
-  data,
-  children,
-  normalizationType,
-  alwaysNormalize
-) {
+export function createElement(context, tag, data, children, normalizationType, alwaysNormalize) {
   // ...
   return _createElement(context, tag, data, children, normalizationType);
   // ...
 }
 
-export function _createElement(
-  context,
-  tag,
-  data,
-  children,
-  normalizationType
-) {
+export function _createElement(context, tag, data, children, normalizationType) {
   // ...
   // 获取到自定义组件那个大对象 { /* ... */ }
-  Ctor = resolveAsset(context.$options, "components", tag);
+  Ctor = resolveAsset(context.$options, 'components', tag);
   vnode = createComponent(Ctor, data, context, children, tag);
   // ...
 }

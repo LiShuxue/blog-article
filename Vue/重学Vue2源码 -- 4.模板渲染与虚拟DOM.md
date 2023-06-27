@@ -14,14 +14,14 @@
 ```js
 // 使用template的写法
 new Vue({
-  el: "#app",
+  el: '#app',
   components: { App },
-  template: "<app/>",
+  template: '<app/>',
 });
 
 // 使用render函数的写法
 new Vue({
-  el: "#app",
+  el: '#app',
   render: (h) => h(App), // h 就是 createElement
 });
 ```
@@ -54,8 +54,8 @@ Vue.prototype.$mount = function (el) {
   if (!options.render) {
     let template = options.template; // 获取对应的template选项
     if (template) {
-      if (typeof template === "string") {
-        if (template.charAt(0) === "#") {
+      if (typeof template === 'string') {
+        if (template.charAt(0) === '#') {
           // 如果template是一个dom id，找到这个id对应的模板
           template = idToTemplate(template);
         }
@@ -72,7 +72,7 @@ Vue.prototype.$mount = function (el) {
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {
-          outputSourceRange: process.env.NODE_ENV !== "production",
+          outputSourceRange: process.env.NODE_ENV !== 'production',
           shouldDecodeNewlines,
           shouldDecodeNewlinesForHref,
           delimiters: options.delimiters,
@@ -106,7 +106,7 @@ export function mountComponent(vm, el) {
     vm.$options.render = createEmptyVNode;
   }
   // 触发beforeMount生命周期
-  callHook(vm, "beforeMount");
+  callHook(vm, 'beforeMount');
 
   // 调用vm._render()方法生成该组件的vnode
   // 再调用vm._update()方法将vnode转化成DOM渲染在浏览器上
@@ -122,7 +122,7 @@ export function mountComponent(vm, el) {
     {
       before() {
         if (vm._isMounted && !vm._isDestroyed) {
-          callHook(vm, "beforeUpdate");
+          callHook(vm, 'beforeUpdate');
         }
       },
     },
@@ -135,7 +135,7 @@ export function mountComponent(vm, el) {
   // 当$vnode是null时，表示没有父组件了，即是Vue实例
   if (vm.$vnode == null) {
     vm._isMounted = true;
-    callHook(vm, "mounted");
+    callHook(vm, 'mounted');
   }
 
   return vm;
@@ -278,13 +278,13 @@ export default class VNode {
 // 手写render函数
 const render = (h) => h(App); // render函数可以直接传入组件
 const render = (h) => {
-  return h("h1", "test msg"); // render函数也可以传入html标签名
+  return h('h1', 'test msg'); // render函数也可以传入html标签名
 };
 
 // 模板编译后的render匿名函数
 const render = function anonymous() {
   with (this) {
-    return _c("div", [_c("my-other-comp")], 1);
+    return _c('div', [_c('my-other-comp')], 1);
   }
 };
 ```
@@ -325,14 +325,7 @@ createElement 参数是 context，tag，data，children，normalizationType 和 
 
 ```js
 // src/core/vdom/create-element.js
-export function createElement(
-  context,
-  tag,
-  data,
-  children,
-  normalizationType,
-  alwaysNormalize
-) {
+export function createElement(context, tag, data, children, normalizationType, alwaysNormalize) {
   // 如果data是数组，或者string，number，boolean等进入if，如果data是对象，表示是手写的render，不进入if
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children; // 手写的一般没有这个值，但是模板编译后调用的可能会传这个值。
@@ -354,13 +347,7 @@ export function createElement(
 
 ```js
 // src/core/vdom/create-element.js
-export function _createElement(
-  context,
-  tag,
-  data,
-  children,
-  normalizationType
-) {
+export function _createElement(context, tag, data, children, normalizationType) {
   // 动态组件
   if (isDef(data) && isDef(data.is)) {
     tag = data.is;
@@ -379,14 +366,14 @@ export function _createElement(
   // 下面就是创建一个vnode实例
   let vnode;
   // 如果tag参数是字符串，需要根据这个tag创建vnode
-  if (typeof tag === "string") {
+  if (typeof tag === 'string') {
     let Ctor;
     if (config.isReservedTag(tag)) {
       // 内置的标签，就创建普通的vnode
       vnode = new VNode(tag, data, children, undefined, undefined, context);
     } else if (
       (!data || !data.pre) &&
-      isDef((Ctor = resolveAsset(context.$options, "components", tag)))
+      isDef((Ctor = resolveAsset(context.$options, 'components', tag)))
     ) {
       // 如果tag名是已经注册的组件
       // 创建这个组件的vnode
@@ -429,7 +416,7 @@ export function createComponent(Ctor, data, context, children, tag) {
   // 创建vnode节点，注意：组件的 vnode 是没有 children 的
   const name = Ctor.options.name || tag;
   const vnode = new VNode(
-    `vue-component-${Ctor.cid}${name ? `-${name}` : ""}`,
+    `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data,
     undefined,
     undefined,
@@ -549,15 +536,7 @@ export function createPatchFunction(backend) {
 createElm 通过虚拟节点创建真实的 DOM 并插入到它的父节点中
 
 ```js
-function createElm(
-  vnode,
-  insertedVnodeQueue,
-  parentElm,
-  refElm,
-  nested,
-  ownerArray,
-  index
-) {
+function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested, ownerArray, index) {
   // 尝试创建子组件，如果不是子组件它的返回值为 false
   if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
     return;
@@ -592,14 +571,7 @@ patchVnode 的作用就是把新的 vnode patch 到旧的 vnode 上
 - 如果新旧节点都有 children，则执行 updateChildren 方法。
 
 ```js
-function patchVnode(
-  oldVnode,
-  vnode,
-  insertedVnodeQueue,
-  ownerArray,
-  index,
-  removeOnly
-) {
+function patchVnode(oldVnode, vnode, insertedVnodeQueue, ownerArray, index, removeOnly) {
   // 如果新旧node一样，直接返回
   if (oldVnode === vnode) {
     return;
@@ -624,15 +596,14 @@ function patchVnode(
   // 真正的patch过程
   if (isUndef(vnode.text)) {
     if (isDef(oldCh) && isDef(ch)) {
-      if (oldCh !== ch)
-        updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly);
+      if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly);
     } else if (isDef(ch)) {
-      if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, "");
+      if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, '');
       addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
     } else if (isDef(oldCh)) {
       removeVnodes(oldCh, 0, oldCh.length - 1);
     } else if (isDef(oldVnode.text)) {
-      nodeOps.setTextContent(elm, "");
+      nodeOps.setTextContent(elm, '');
     }
   } else if (oldVnode.text !== vnode.text) {
     nodeOps.setTextContent(elm, vnode.text);
@@ -665,13 +636,7 @@ diff 过程的实现主要是在 updateChildren 函数中。diff 过程：
 - 经过前面的移动之后，剩下的节点都被移动到了中间，如果新 vnode 有剩余，那就批量的新增，如果旧 vnode 有剩余那就批量的删除。
 
 ```js
-function updateChildren(
-  parentElm,
-  oldCh,
-  newCh,
-  insertedVnodeQueue,
-  removeOnly
-) {
+function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
   let oldStartIdx = 0;
   let newStartIdx = 0;
   let oldEndIdx = oldCh.length - 1;
@@ -690,58 +655,29 @@ function updateChildren(
       oldEndVnode = oldCh[--oldEndIdx];
     } else if (sameVnode(oldStartVnode, newStartVnode)) {
       // 头头
-      patchVnode(
-        oldStartVnode,
-        newStartVnode,
-        insertedVnodeQueue,
-        newCh,
-        newStartIdx
-      );
+      patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx);
       oldStartVnode = oldCh[++oldStartIdx];
       newStartVnode = newCh[++newStartIdx];
     } else if (sameVnode(oldEndVnode, newEndVnode)) {
       // 尾尾
-      patchVnode(
-        oldEndVnode,
-        newEndVnode,
-        insertedVnodeQueue,
-        newCh,
-        newEndIdx
-      );
+      patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx);
       oldEndVnode = oldCh[--oldEndIdx];
       newEndVnode = newCh[--newEndIdx];
     } else if (sameVnode(oldStartVnode, newEndVnode)) {
       // 头尾
-      patchVnode(
-        oldStartVnode,
-        newEndVnode,
-        insertedVnodeQueue,
-        newCh,
-        newEndIdx
-      );
-      nodeOps.insertBefore(
-        parentElm,
-        oldStartVnode.elm,
-        nodeOps.nextSibling(oldEndVnode.elm)
-      );
+      patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx);
+      nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm));
       oldStartVnode = oldCh[++oldStartIdx];
       newEndVnode = newCh[--newEndIdx];
     } else if (sameVnode(oldEndVnode, newStartVnode)) {
       // 尾头
-      patchVnode(
-        oldEndVnode,
-        newStartVnode,
-        insertedVnodeQueue,
-        newCh,
-        newStartIdx
-      );
+      patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx);
       nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
       oldEndVnode = oldCh[--oldEndIdx];
       newStartVnode = newCh[++newStartIdx];
     } else {
       // 如果双端都没有可复用节点，那就在旧节点数组中找，找到了就把它移动过来
-      if (isUndef(oldKeyToIdx))
-        oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
+      if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
       idxInOld = isDef(newStartVnode.key)
         ? oldKeyToIdx[newStartVnode.key]
         : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx);
@@ -759,13 +695,7 @@ function updateChildren(
       } else {
         vnodeToMove = oldCh[idxInOld];
         if (sameVnode(vnodeToMove, newStartVnode)) {
-          patchVnode(
-            vnodeToMove,
-            newStartVnode,
-            insertedVnodeQueue,
-            newCh,
-            newStartIdx
-          );
+          patchVnode(vnodeToMove, newStartVnode, insertedVnodeQueue, newCh, newStartIdx);
           oldCh[idxInOld] = undefined;
           nodeOps.insertBefore(parentElm, vnodeToMove.elm, oldStartVnode.elm);
         } else {
@@ -787,14 +717,7 @@ function updateChildren(
   // 如果新 vnode 有剩余，那就批量的新增，如果旧 vnode 有剩余那就批量的删除。
   if (oldStartIdx > oldEndIdx) {
     refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
-    addVnodes(
-      parentElm,
-      refElm,
-      newCh,
-      newStartIdx,
-      newEndIdx,
-      insertedVnodeQueue
-    );
+    addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
   } else if (newStartIdx > newEndIdx) {
     removeVnodes(oldCh, oldStartIdx, oldEndIdx);
   }

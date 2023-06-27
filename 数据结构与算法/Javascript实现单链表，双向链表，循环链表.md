@@ -53,12 +53,7 @@ class LinkedList {
 
   insert(position, data) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position > this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position > this.length) {
       return;
     }
 
@@ -90,12 +85,7 @@ class LinkedList {
 
   get(position) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position >= this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position >= this.length) {
       return;
     }
 
@@ -126,12 +116,7 @@ class LinkedList {
 
   update(position, data) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position >= this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position >= this.length) {
       return;
     }
 
@@ -150,12 +135,7 @@ class LinkedList {
 
   removeAt(position) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position >= this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position >= this.length) {
       return;
     }
 
@@ -241,12 +221,7 @@ class DoublyLinkedList extends LinkedList {
 
   insert(position, data) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position > this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position > this.length) {
       return;
     }
 
@@ -292,12 +267,7 @@ class DoublyLinkedList extends LinkedList {
 
   removeAt(position) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position >= this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position >= this.length) {
       return;
     }
 
@@ -394,12 +364,7 @@ class CircularLinkedList extends LinkedList {
 
   insert(position, data) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position > this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position > this.length) {
       return;
     }
 
@@ -457,12 +422,7 @@ class CircularLinkedList extends LinkedList {
 
   removeAt(position) {
     // 越界判断
-    if (
-      position === null ||
-      position === undefined ||
-      position < 0 ||
-      position >= this.length
-    ) {
+    if (position === null || position === undefined || position < 0 || position >= this.length) {
       return;
     }
 

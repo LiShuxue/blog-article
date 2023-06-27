@@ -153,7 +153,7 @@ workspace：在项目根目录中新建 pnpm-workspace.yaml 文件，并声明�
 ```yaml
 packages:
   # 所有在 packages/ 子目录下的 package
-  - "packages/**"
+  - 'packages/**'
 ```
 
 ```sh

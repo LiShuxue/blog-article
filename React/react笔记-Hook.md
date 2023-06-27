@@ -23,8 +23,8 @@ useState 会返回一对值：当前状态和一个让你更新它的函数，�
 function ExampleWithManyStates() {
   // 声明多个 state 变量！
   const [age, setAge] = useState(42);
-  const [fruit, setFruit] = useState("banana");
-  const [todos, setTodos] = useState([{ text: "Learn Hooks" }]);
+  const [fruit, setFruit] = useState('banana');
+  const [todos, setTodos] = useState([{ text: 'Learn Hooks' }]);
   // ...
 }
 ```
@@ -92,7 +92,7 @@ const Demo = () => {
 1、父组件导入并调用 createContext 方法，得到 Context 对象，并导出
 
 ```js
-import { createContext } from "react";
+import { createContext } from 'react';
 export const MyContext = createContext();
 ```
 
@@ -189,9 +189,9 @@ const initialState = { count: 0 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case "increment":
+    case 'increment':
       return { count: state.count + 1 };
-    case "decrement":
+    case 'decrement':
       return { count: state.count - 1 };
     default:
       throw new Error();
@@ -203,8 +203,8 @@ function Counter() {
   return (
     <>
       Count: {state.count}
-      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
-      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
     </>
   );
 }
@@ -253,10 +253,10 @@ function Child = memo(({ callback }) => {
 ```jsx
 function WithoutMemo() {
   const [count, setCount] = useState(1);
-  const [val, setValue] = useState("");
+  const [val, setValue] = useState('');
 
   function expensive() {
-    console.log("compute");
+    console.log('compute');
     let sum = 0;
     for (let i = 0; i < count * 100; i++) {
       sum += i;
@@ -283,10 +283,10 @@ function WithoutMemo() {
 ```jsx
 function WithMemo() {
   const [count, setCount] = useState(1);
-  const [val, setValue] = useState("");
+  const [val, setValue] = useState('');
 
   const expensive = useMemo(() => {
-    console.log("compute");
+    console.log('compute');
     let sum = 0;
     for (let i = 0; i < count * 100; i++) {
       sum += i;
@@ -359,7 +359,7 @@ const Child = forwardRef((props, ref) => {
 自定义 Hook 是一个函数，其名称以 “use” 开头，函数内部可以调用其他的 Hook。
 
 ```jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 function useFriendStatus(friendID) {
   const [isOnline, setIsOnline] = useState(null);

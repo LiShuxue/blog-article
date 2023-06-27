@@ -21,6 +21,7 @@ $ ssh -T git@github.com
 ```
 
 ## 4. 修改已有仓库的 url
+
 ```shell
 # 1. 查看当前的url
 git remote -v
@@ -32,6 +33,7 @@ git remote set-url origin git@github.com:LiShuxue/xxx.git
 ## 5. 或者一开始 clone 项目的时候就用 SSH 的方式克隆
 
 ## 6. 拉取提交代码时候报错
-如果突然某一天拉代码或者push代码的时候报下图的错，主要是.ssh/known_hosts中记录的github的信息不是正确的信息，原因可能是github远程修改了，比如修改了公钥等。我们删掉这一条就行，或者删掉整个known_host。
+
+如果突然某一天拉代码或者 push 代码的时候报下图的错，主要是.ssh/known_hosts 中记录的 github 的信息不是正确的信息，原因可能是 github 远程修改了，比如修改了公钥等。我们删掉这一条就行，或者删掉整个 known_host。
 
 ![failed](https://cdn.lishuxue.site/blog/image/Github/failed.png)

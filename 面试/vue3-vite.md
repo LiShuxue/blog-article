@@ -62,7 +62,7 @@
 
 ```js
 // bar.js
-export const bar = "bar";
+export const bar = 'bar';
 ```
 
 ### vite 如何处理 ESM

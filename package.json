@@ -1,0 +1,13 @@
+{
+  "name": "blog-article",
+  "version": "1.0.0",
+  "repository": "git@github.com:LiShuxue/blog-article.git",
+  "author": "LiShuxue <1149926505@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^2.8.8"
+  }
+}

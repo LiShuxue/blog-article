@@ -1,68 +1,78 @@
-## FingerprintManager API介绍
+## FingerprintManager API 介绍
 
 ### Google Doc：
+
 > https://developer.android.google.cn/reference/kotlin/android/hardware/fingerprint/FingerprintManager
 
 ### 公共方法：
+
 设备是否支持指纹识别
+
 > `isHardwareDetected()`
 
 手机是否已经注册了指纹
+
 > `hasEnrolledFingerprints()`
 
 开启指纹扫描
-* 参数1： 一个加密对象，可以为null
-* 参数2： 一个取消对象，可以用它来取消指纹扫描操作。可以为null
-* 参数3： 一个flag, 默认传0
-* 参数4： 一个回调对象，里面会实现成功，失败，错误，帮助等回调方法，当指纹扫描完成会进入不同的回调
-* 参数5： FingerprintManager将会使用这个handler中的looper来处理来自指纹识别硬件的消息。通常来讲，开发者不用提供这个参数，可以直接置为null
-> `authenticate(crypto: FingerprintManager.CryptoObject?, cancel: CancellationSignal?, flags: Int, callback: FingerprintManager.AuthenticationCallback, handler: Handler?)` 
+
+- 参数 1： 一个加密对象，可以为 null
+- 参数 2： 一个取消对象，可以用它来取消指纹扫描操作。可以为 null
+- 参数 3： 一个 flag, 默认传 0
+- 参数 4： 一个回调对象，里面会实现成功，失败，错误，帮助等回调方法，当指纹扫描完成会进入不同的回调
+- 参数 5： FingerprintManager 将会使用这个 handler 中的 looper 来处理来自指纹识别硬件的消息。通常来讲，开发者不用提供这个参数，可以直接置为 null
+  > `authenticate(crypto: FingerprintManager.CryptoObject?, cancel: CancellationSignal?, flags: Int, callback: FingerprintManager.AuthenticationCallback, handler: Handler?)`
 
 ### 子类：
-> `FingerprintManager.CryptoObject`
->> `getCipher()`,  `getMac()`,  `getSignature()`
 
-可以传入Signature, Cipher 和 Mac 来生成一个加密对象，这个加密对象可以传入authenticate方法。稍后介绍为什么传它。
+> `FingerprintManager.CryptoObject`
+>
+> > `getCipher()`, `getMac()`, `getSignature()`
+
+可以传入 Signature, Cipher 和 Mac 来生成一个加密对象，这个加密对象可以传入 authenticate 方法。稍后介绍为什么传它。
 
 > `FingerprintManager.AuthenticationCallback`
->> `onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult)` // 指纹识别成功
+>
+> > `onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult)` // 指纹识别成功
 
->> `onAuthenticationFailed()` // 指纹识别失败
+> > `onAuthenticationFailed()` // 指纹识别失败
 
->> `onAuthenticationError()` // 指纹识别过程中出错，或者用户取消了指纹识别操作
+> > `onAuthenticationError()` // 指纹识别过程中出错，或者用户取消了指纹识别操作
 
->> `onAuthenticationHelp()` // 指纹识别过程中出错，但错误是可修复的，如指纹扫描器脏了，提示“Sensor dirty, please clean it.”
+> > `onAuthenticationHelp()` // 指纹识别过程中出错，但错误是可修复的，如指纹扫描器脏了，提示“Sensor dirty, please clean it.”
 
-生成一个回调对象来传入authenticate方法，这个回调对象包含4个回调方法。
+生成一个回调对象来传入 authenticate 方法，这个回调对象包含 4 个回调方法。
 
 > `FingerprintManager.AuthenticationResult`
->> `getCryptoObject()`
+>
+> > `getCryptoObject()`
 
-指纹识别成功的回调方法里会传入一个AuthenticationResult对象，用这个result对象可以获得指纹扫描时传进来的CryptoObject对象：getCryptoObject
+指纹识别成功的回调方法里会传入一个 AuthenticationResult 对象，用这个 result 对象可以获得指纹扫描时传进来的 CryptoObject 对象：getCryptoObject
 
 ### 相关概念
+
 > KeyStore
 
-安卓中用来存储公钥、私钥或者密钥的一个系统级的东西，有不同类型如：BKS， BouncyCastle， AndroidKeyStore， AndroidCAStore等
+安卓中用来存储公钥、私钥或者密钥的一个系统级的东西，有不同类型如：BKS， BouncyCastle， AndroidKeyStore， AndroidCAStore 等
 
 > KeyGenerator
 
-用来生成公钥、私钥或者密钥的类，生成的时候提供一个KeyStore类型，生成后可以自动存进对应的KeyStore中
+用来生成公钥、私钥或者密钥的类，生成的时候提供一个 KeyStore 类型，生成后可以自动存进对应的 KeyStore 中
 
 > KeyGenParameterSpec
 
-用来设定一系列的规则来初始化KeyGenerator对象
+用来设定一系列的规则来初始化 KeyGenerator 对象
 
 > Cipher
 
 用来执行加密、解密的一个对象
 
-
 ## 简单实现指纹认证
 
-Google官方提供的api很简单，我们通过这个只需两步即可实现
+Google 官方提供的 api 很简单，我们通过这个只需两步即可实现
 
-* Step 1: 检测硬件设备是否支持，以及设备是否已经注册了指纹。(需要权限 `<uses-permission android:name="android.permission.USE_FINGERPRINT" />`)
+- Step 1: 检测硬件设备是否支持，以及设备是否已经注册了指纹。(需要权限 `<uses-permission android:name="android.permission.USE_FINGERPRINT" />`)
+
 ```java
 FingerprintManager fingerprintManager = getSystemService(FingerprintManager.class);
 
@@ -72,7 +82,8 @@ private void checkDeviceFingerprintStatus() {
 }
 ```
 
-* Step 2: 开启指纹扫描，并传入回调对象
+- Step 2: 开启指纹扫描，并传入回调对象
+
 ```java
 private void fingerprintAuthenticate() {
     fingerprintManager.authenticate(null, null, 0, new FingerprintManager.AuthenticationCallback() {
@@ -90,18 +101,21 @@ private void fingerprintAuthenticate() {
     }, null);
 }
 ```
-上面这样就已经实现指纹认证了，是不是很简单。你如果有做demo，发现现在已经可以看到日志输出了。
+
+上面这样就已经实现指纹认证了，是不是很简单。你如果有做 demo，发现现在已经可以看到日志输出了。
 
 但是你发现没有弹出框告诉用户按指纹，很不友好，接下来我们加上弹窗提示。
 
 ## 添加用户提示信息
-先封装一个弹窗方法，用AlertDialog。当然更好的可以用DialogFragment，那样可以定制UI。
+
+先封装一个弹窗方法，用 AlertDialog。当然更好的可以用 DialogFragment，那样可以定制 UI。
+
 ```java
 private AlertDialog.Builder builder;
 private AlertDialog dialog;
 
-private void showDialog(String str, 
-    @Nullable DialogInterface.OnClickListener positiveBtnListener, 
+private void showDialog(String str,
+    @Nullable DialogInterface.OnClickListener positiveBtnListener,
     @Nullable DialogInterface.OnClickListener negativeBtnListener) {
     if (dialog!= null && dialog.isShowing()) {
         dialog.dismiss();
@@ -121,6 +135,7 @@ private void showDialog(String str,
 ```
 
 然后在指纹扫描之前，提示用户开始扫描了，请触摸指纹
+
 ```java
 private void fingerprintAuthenticate() {
     showDialog("please confirm your fingerprint", null, null);
@@ -141,11 +156,13 @@ private void fingerprintAuthenticate() {
 ```
 
 ## 取消指纹监听
+
 上面基本上完成了指纹识别的应用，但是是及其简单的，不能适用于生产。
 
 首先一点就是，如果我们没有验证指纹，这个进程就一直在运行状态，指纹识别传感器就会一直被占用。如果其他应用使用指纹传感器，就会失败。
 
-所以我们要在不用的时候，将指纹识别取消掉。通过上面提到的CancellationSignal类
+所以我们要在不用的时候，将指纹识别取消掉。通过上面提到的 CancellationSignal 类
+
 ```java
 private CancellationSignal cancellationSignal;
 
@@ -196,11 +213,12 @@ protected void onPause() {
 ```
 
 ## 用户注册了新的指纹怎么办？
+
 上面我们已经实现了验证本地的指纹，而且如果你添加了新的指纹，也可以通过验证。
 
-但是从业务角度来说，如果设备注册了新的指纹，在我们的app中，应该提示用户，并重新验证。
+但是从业务角度来说，如果设备注册了新的指纹，在我们的 app 中，应该提示用户，并重新验证。
 
-这个怎么实现呢？这个就需要用到我们之前提到的KeyStore、密钥、加密相关的内容了。
+这个怎么实现呢？这个就需要用到我们之前提到的 KeyStore、密钥、加密相关的内容了。
 
 ```java
 ...
@@ -287,7 +305,8 @@ private boolean initCipher() {
 }
 ```
 
-接下来我们在调用指纹扫描的时候，先判断key是否失效，如果失效，用户需要重新验证。
+接下来我们在调用指纹扫描的时候，先判断 key 是否失效，如果失效，用户需要重新验证。
+
 ```java
 private void fingerprintAuthenticate() {
     // 我们每次使用 crypto 对象之前都需要init cipher， 因为cipher对象只能doFinal一次。
@@ -344,7 +363,8 @@ private void fingerprintAuthenticate() {
     }
 }
 ```
-这样我们就实现了监测用户是否添加了新的指纹，并做相应的操作。当然，真实场景是需要用户重新输入密码来重新生成key的。这样才可以保证不是陌生人添加的指纹。
+
+这样我们就实现了监测用户是否添加了新的指纹，并做相应的操作。当然，真实场景是需要用户重新输入密码来重新生成 key 的。这样才可以保证不是陌生人添加的指纹。
 
 目前我们基本实现了本地指纹的验证，也保证了一定的安全性。但是对于一些高风险的操作，比如支付，仅仅凭指纹验证成功，服务器端是不可以相信是真的成功的。
 
@@ -354,7 +374,7 @@ private void fingerprintAuthenticate() {
 
 ## 指纹扫描成功之后再次加密验证
 
-上面提到的，authenticate的时候，传入的一个crypto对象，就派上用场了。
+上面提到的，authenticate 的时候，传入的一个 crypto 对象，就派上用场了。
 
 这个对象可以在指纹验证成功的回调中获得：`result.getCryptoObject()`
 
@@ -373,4 +393,5 @@ try {
 ```
 
 ## 代码
-本demo的所有代码可以在我的github中找到：https://github.com/LiShuxue/Fingerprint-Demo/tree/fingerprint
+
+本 demo 的所有代码可以在我的 github 中找到：https://github.com/LiShuxue/Fingerprint-Demo/tree/fingerprint

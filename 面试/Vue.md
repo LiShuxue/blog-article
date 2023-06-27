@@ -166,8 +166,8 @@ is: 后面指定一个组件的名字
 3.  EventBus 父子，兄弟，隔代都可以用
     ```js
     const EventBus = new Vue();
-    EventBus.$emit("aMsg", "来自A页面的消息");
-    EventBus.$on("aMsg", (msg) => {
+    EventBus.$emit('aMsg', '来自A页面的消息');
+    EventBus.$on('aMsg', (msg) => {
       this.msg = msg;
     });
     ```
@@ -176,10 +176,10 @@ is: 后面指定一个组件的名字
     ```js
     // 祖先
     provide: {
-      test: "demo";
+      test: 'demo';
     }
     // 子孙
-    inject: ["test"];
+    inject: ['test'];
     ```
 5.  `$attrs/$listeners` 隔代通信
 
@@ -319,7 +319,7 @@ export default {
 
 判断两个节点是否为同一节点（也就是是否可复用），标准是 key 相同且 tag 相同。
 
-如果循环渲染某个数组，数组项不变的话，用index没问题，数组项改变的话，用index可能会导致下列不必要的更新。如果只是最后push不会有问题。
+如果循环渲染某个数组，数组项不变的话，用 index 没问题，数组项改变的话，用 index 可能会导致下列不必要的更新。如果只是最后 push 不会有问题。
 
 1. 用 index 作为 key，如果数组元素都变了，比如 arr.reverse()，所有列表项会重新创建渲染，不会复用。
 2. 用 index 作为 key，如果删除了数组第一个元素，虚拟 diff 的结果会是删除了最后一个元素，其他元素内容改变，导致所有列表项会重新创建渲染，不会复用。
@@ -417,7 +417,7 @@ export default {
 因为数据更新时，并不会立即更新 DOM。如果在更新数据之后的代码执行 DOM 操作，有可能达不到预想效果。
 
 ```js
-this.msg = "hello";
+this.msg = 'hello';
 // 此时dom还没有更新
 this.$nextTick(() => {
   // 此时dom已经更新
@@ -449,13 +449,13 @@ const flushCallbacks = () => {
   }
 };
 
-if (typeof Promise === "function" && /native code/.test(Promise.toString())) {
+if (typeof Promise === 'function' && /native code/.test(Promise.toString())) {
   // 原生有Promise，用then的微任务执行
   timerFunc = () => {
     Promise.resolve().then(flushCallbacks); // Promise.resolve()会立即执行，将then的回调放入微任务队列
   };
 } else if (
-  typeof MutationObserver === "function" &&
+  typeof MutationObserver === 'function' &&
   /native code/.test(MutationObserver.toString())
 ) {
   // 没有Promise就用MutationObserver，也是微任务
@@ -904,7 +904,7 @@ state 对象可以包含本应用全部的状态。在组件中通过 this.$stor
 
 ```js
 const state = {
-  testState: "this is a state",
+  testState: 'this is a state',
 };
 ```
 
@@ -915,7 +915,7 @@ getter 可以认为是 store 的计算属性。在组件中通过 this.$store.ge
 ```js
 const getters = {
   testGetter: (state) => {
-    return state.testState + " testGetters";
+    return state.testState + ' testGetters';
   },
 };
 ```
@@ -934,8 +934,8 @@ const mutations = {
   },
 };
 
-this.$store.commit("TEST_MUTATION_CHANGE_STATE", {
-  newState: "this is new state",
+this.$store.commit('TEST_MUTATION_CHANGE_STATE', {
+  newState: 'this is new state',
 });
 ```
 

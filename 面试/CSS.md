@@ -89,7 +89,7 @@
 - 在父元素使用伪类：
   ```css
   .parent::after {
-    content: "";
+    content: '';
     display: block;
     clear: left;
   }
@@ -549,10 +549,8 @@ grid-column-gap: 5px; /* 声明列间距 */
 
 grid-auto-flow: row; /* row或者column， 默认row， "先行后列"，即先填满第一行，再开始放入第二行 */
 
-justify-content: start | end | center | stretch | space-around | space-between |
-  space-evenly; /* 水平方向的对齐方式 */
-align-content: start | end | center | stretch | space-around | space-between |
-  space-evenly; /* 垂直方向的对齐方式 */
+justify-content: start | end | center | stretch | space-around | space-between | space-evenly; /* 水平方向的对齐方式 */
+align-content: start | end | center | stretch | space-around | space-between | space-evenly; /* 垂直方向的对齐方式 */
 
 justify-items: start | end | center | stretch; /* 单元格水平方向的对齐方式 */
 align-items: start | end | center | stretch; /* 单元格垂直方向的对齐方式 */

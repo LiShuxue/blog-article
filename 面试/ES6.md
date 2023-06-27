@@ -69,11 +69,11 @@ rest 参数形式为(...变量名)，用于获取函数的多余参数。
 ## 表达式作为属性名或方法名
 
 ```js
-obj["a" + "bc"] = 123;
+obj['a' + 'bc'] = 123;
 
 let obj = {
   [propKey]: true,
-  ["a" + "bc"]: 123,
+  ['a' + 'bc']: 123,
 };
 ```
 
@@ -92,8 +92,8 @@ console.log(s); // Symbol()
 Symbol 函数可以接受一个字符串作为参数，表示对 Symbol 实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。
 
 ```js
-let s1 = Symbol("foo");
-let s2 = Symbol("bar");
+let s1 = Symbol('foo');
+let s2 = Symbol('bar');
 
 s1; // Symbol(foo)
 s2; // Symbol(bar)
@@ -102,7 +102,7 @@ s2; // Symbol(bar)
 ES2019 提供了一个实例属性 description，直接返回 Symbol 的描述。
 
 ```js
-const sym = Symbol("foo");
+const sym = Symbol('foo');
 sym.description; // "foo"
 ```
 
@@ -114,11 +114,11 @@ let mySymbol = Symbol();
 
 // 第一种写法
 let a = {};
-a[mySymbol] = "Hello!";
+a[mySymbol] = 'Hello!';
 
 // 第二种写法
 let a = {
-  [mySymbol]: "Hello!",
+  [mySymbol]: 'Hello!',
 };
 ```
 
@@ -176,11 +176,11 @@ Map 类似于对象，也是键值对的集合，但是“键”的范围不限�
 ### WeakSet/WeakMap 的 key 被垃圾处理器回收了，访问 get 会是什么表现
 
 ```js
-var obj = { a: "a" };
+var obj = { a: 'a' };
 var ws = new WeakSet();
 var map = new WeakMap();
 ws.add(obj);
-map.set(obj, "test");
+map.set(obj, 'test');
 obj = null; // 模拟垃圾回收，或者手动在chrom > devtools > performance > collect garbage
 
 console.log(ws); // WeakSet {}
@@ -201,10 +201,7 @@ let intersect = Array.from(new Set(a)).filter((x) => b.includes(x));
 // 差集
 let difference = Array.from(new Set(a)).filter((x) => !b.includes(x));
 // 补集
-let complement = [
-  ...a.filter((x) => !b.includes(x)),
-  ...b.filter((x) => !a.includes(x)),
-];
+let complement = [...a.filter((x) => !b.includes(x)), ...b.filter((x) => !a.includes(x))];
 ```
 
 ## Proxy
@@ -346,13 +343,13 @@ Reflect.apply，可以改写以前的 call, apply 写法
 ```js
 // old
 var a = {
-  name: "test",
+  name: 'test',
   say() {
     console.log(this.name);
   },
 };
 var b = {
-  name: "b",
+  name: 'b',
 };
 a.say.call(b); //b
 a.say.apply(b); //b
@@ -420,9 +417,9 @@ Generator 函数是一个状态机，封装了多个内部状态。
 
 ```js
 function* helloWorldGenerator() {
-  yield "hello";
-  yield "world";
-  return "ending";
+  yield 'hello';
+  yield 'world';
+  return 'ending';
 }
 var test = helloWorldGenerator();
 
@@ -458,15 +455,15 @@ Generator 函数的执行必须靠执行器，所以才有了 co 模块。co 模
 
 ```js
 var gen = function* () {
-  var f1 = yield readFile("/etc/fstab");
-  var f2 = yield readFile("/etc/shells");
+  var f1 = yield readFile('/etc/fstab');
+  var f2 = yield readFile('/etc/shells');
   console.log(f1.toString());
   console.log(f2.toString());
 };
 
-var co = require("co");
+var co = require('co');
 co(gen).then(function () {
-  console.log("Generator 函数执行完成");
+  console.log('Generator 函数执行完成');
 });
 ```
 
@@ -522,13 +519,13 @@ https://stackoverflow.com/questions/38708550/difference-between-return-await-pro
 ```js
 class Father {
   constructor() {
-    this.name = "father";
+    this.name = 'father';
   }
 }
 class Son extends Father {
   constructor() {
     super();
-    this.name = "son";
+    this.name = 'son';
   }
 }
 ```
@@ -539,11 +536,11 @@ class Son extends Father {
 
 ```js
 var Father = function () {
-  this.name = "爸爸";
+  this.name = '爸爸';
 };
 var Son = function () {
   Father.call(this);
-  this.name = "儿子";
+  this.name = '儿子';
 };
 Son.prototype = new Father();
 Son.prototype.constructor = Son;

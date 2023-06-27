@@ -153,18 +153,18 @@ number.toString(2);
 如果第一个字符不能转换为数字，parseInt 会返回 NaN。
 
 ```js
-["1", "2", "3"].map(parseInt); // 输出
+['1', '2', '3'].map(parseInt); // 输出
 
 // 相当于执行了三次parseInt
-parseInt("1", 0); // 1
-parseInt("2", 1); // NaN
-parseInt("3", 2); // NaN
+parseInt('1', 0); // 1
+parseInt('2', 1); // NaN
+parseInt('3', 2); // NaN
 
 // 如果我们需要返回1，2，3需要怎么办？
 function parseIntFun(item) {
   return parseInt(item, 10);
 }
-["1", "2", "3"].map(parseIntFun);
+['1', '2', '3'].map(parseIntFun);
 ```
 
 ## number 的位数，最大/小值，最大/小安全整数
@@ -239,8 +239,8 @@ undefined 表示未初始化的变量
 一个对象作为 key，会将对象 toString()，转成[object Object]，第二个 O 大写
 
 ```js
-var a = { name: "Sam" };
-var b = { name: "Tom" };
+var a = { name: 'Sam' };
+var b = { name: 'Tom' };
 var o = {};
 o[a] = 1;
 o[b] = 2;
@@ -305,11 +305,11 @@ arguments 对象是所有（非箭头）函数中都可用的局部变量。可�
 证明不是按引用传递
 
 ```js
-var person = { name: "MJ" };
+var person = { name: 'MJ' };
 function changeName(obj) {
-  obj.name = "test";
+  obj.name = 'test';
   obj = new Object();
-  obj.name = "EP";
+  obj.name = 'EP';
 }
 changeName(person);
 console.log(person.name); // 输出test
@@ -334,7 +334,7 @@ hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是
 
 ```js
 typeof 1; // "number"
-typeof "1"; // "string"
+typeof '1'; // "string"
 typeof true; //"boolean"
 typeof undefined; // "undefined"
 let s = Symbol();
@@ -356,7 +356,7 @@ typeof new Date(); // "object"
 
 ```js
 Object.prototype.toString.call(1); // "[object Number]"
-Object.prototype.toString.call("1"); // "[object String]"
+Object.prototype.toString.call('1'); // "[object String]"
 Object.prototype.toString.call(true); // "[object Boolean]"
 Object.prototype.toString.call(new Boolean(false)); // "[object Boolean]"
 Object.prototype.toString.call(null); // "[object Null]"
@@ -378,7 +378,7 @@ console.log(/\d/ instanceof RegExp); // true
 console.log(function () {} instanceof Object); // true
 console.log(function () {} instanceof Function); // true
 
-console.log("" instanceof String); // false
+console.log('' instanceof String); // false
 console.log(1 instanceof Number); // false
 console.log(true instanceof Boolean); // false
 ```
@@ -826,12 +826,12 @@ Son.prototype.constructor = Son;
 ```js
 // 组合寄生继承
 var Father = function () {
-  this.name = "爸爸";
+  this.name = '爸爸';
 };
 
 var Son = function () {
   Father.call(this);
-  this.name = "儿子";
+  this.name = '儿子';
 };
 Son.prototype = Object.create(Father.prototype);
 Son.prototype.constructor = Son;
@@ -929,13 +929,10 @@ var ss = new Son();
 
 ```js
 (function (root, factory) {
-  if (typeof define === "function" && define.amd) {
+  if (typeof define === 'function' && define.amd) {
     // 如果环境中有define函数，并且define函数具备amd属性，则可以判断当前环境满足AMD规范
-    define(["test"], factory());
-  } else if (
-    typeof exports === "object" &&
-    typeof module.exports === "object"
-  ) {
+    define(['test'], factory());
+  } else if (typeof exports === 'object' && typeof module.exports === 'object') {
     // 是commonjs模块规范，nodejs环境
     module.exports = factory();
   } else {
@@ -944,7 +941,7 @@ var ss = new Son();
   }
 })(this, function () {
   return {
-    name: "我是一个umd模块",
+    name: '我是一个umd模块',
   };
 });
 ```
@@ -1003,4 +1000,3 @@ ESM 之所以被称为 编译时确定，是因为它的模块解析是发生在
 - 装饰模式：不需要改变已有的接口，作用是给对象添加功能。
 - 代理模式：代理是为了控制对对象的访问，不让外部直接访问到对象。代理类可以访问并操作对象，然后暴露相关方法供外部调用。
 - 发布订阅（观察者）模式：当对象发生改变时，订阅方都会收到通知。先定义一个对象，这个对象包含 on,off 方法和 trigger 方法，以及一个存储回调函数的 map。on 的时候往 map 里面 push，trigger 的时候再从 map 中拿出来并执行, off 的时候删除。
-

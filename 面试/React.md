@@ -181,9 +181,9 @@ useReducer 可以替代 useState，多一个页面使用很多 useState 时，�
 ```js
 const reducer = (state, action) => {
   switch (action.type) {
-    case "xxx":
+    case 'xxx':
       return { ...state, ...action.payload };
-    case "yyy":
+    case 'yyy':
       return { ...state, yyy };
   }
 };
@@ -192,7 +192,7 @@ const reducer = (state, action) => {
 2、使用 useReducer 来初始化 state 和改变 state 的方法
 
 ```jsx
-const initState = { a: "a", b: "b" };
+const initState = { a: 'a', b: 'b' };
 const [state, dispatch] = useReducer(reducer, initState);
 ```
 
@@ -204,7 +204,7 @@ const [{ a, b }, dispatch] = useReducer(reducer, initState);
 
 // 改变state
 const changeState = () => {
-  dispatch({ type: "xxx", payload: { test: "test" } });
+  dispatch({ type: 'xxx', payload: { test: 'test' } });
 };
 <div onClick={changeState}>{a}</div>;
 ```
@@ -268,7 +268,7 @@ function useEventListener(eventName, handler, dom) {
 
 ```js
 async function fetchMyAPI() {
-  let response = await fetch("api/data");
+  let response = await fetch('api/data');
 }
 
 useEffect(() => {
@@ -278,7 +278,7 @@ useEffect(() => {
 // 或者
 useEffect(() => {
   const fetchMyAPI = async () => {
-    let response = await fetch("api/data");
+    let response = await fetch('api/data');
   };
   fetchMyAPI();
 }, []);
@@ -306,8 +306,8 @@ useEffect(() => {
 - 通过 e.target.value 获取元素的 value
 
 ```html
-<input type="text" value={this.state.value} onChange={(e) => { this.setState({
-value: e.target.value.toUpperCase() }) }} />
+<input type="text" value={this.state.value} onChange={(e) => { this.setState({ value:
+e.target.value.toUpperCase() }) }} />
 ```
 
 ## 什么是 jsx
@@ -352,11 +352,7 @@ class ToggleButton extends React.Component {
     }));
   }
   render() {
-    return (
-      <button onClick={this.handleClick}>
-        {this.state.isToggleOn ? "ON" : "OFF"}
-      </button>
-    );
+    return <button onClick={this.handleClick}>{this.state.isToggleOn ? 'ON' : 'OFF'}</button>;
   }
 }
 ```
@@ -490,7 +486,7 @@ Component.propTypes = {
 ### 创建
 
 ```jsx
-const initValue = { a: "test" };
+const initValue = { a: 'test' };
 const MyContext = React.createContext(a);
 ```
 
@@ -598,7 +594,7 @@ hook: Hooks 就是让你不必写 class 组件就可以用 state 和其他的 Re
 <Route
   path="path"
   children={(props) => (
-    <div className={props.match ? "active" : ""}>
+    <div className={props.match ? 'active' : ''}>
       <Link to="path" />
     </div>
   )}
