@@ -5,7 +5,7 @@
   "author": "LiShuxue <1149926505@qq.com>",
   "license": "MIT",
   "scripts": {
-    "format": "prettier --write .",
+    "format": "prettier --write",
     "prepare": "husky install"
   },
   "lint-staged": {
