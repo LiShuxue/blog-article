@@ -6,7 +6,7 @@ TextView 主要用于在界面上显示一段文本信息。属性有 id，layou
 
 宽高的值：match_parent 表示让当前控件的大小和父布局的大小一样。wrap_content 表示让当前控件的大小能够刚好包含住里面的内容。固定值表示表示给控件指定一个固定的尺寸，单位一般用 dp。
 
-android:background 用于为布局或控件指定一个背景。
+android:background 用于为布局或控件指定一个背景。android:padding 表示给控件的周围加上补白，这样不至于让文本内容紧靠在边缘上; android:maxLines 设置为 1 表示让这个 TextView 只能单行显示; android:ellipsize 用于设定当文本内容超出控件宽度时文本的缩略方式。
 
 ```xml
 <TextView

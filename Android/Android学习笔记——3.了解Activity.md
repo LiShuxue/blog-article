@@ -17,9 +17,17 @@ class MainActivity : AppCompatActivity() {
 
 ## 使用 ViewBinding
 
-findViewById()方法的作用就是获取布局文件中控件的实例，比较繁琐。我们可以在 build.gradle 中开启 viewBinding
+findViewById()方法的作用就是获取布局文件中控件的实例，比较繁琐。
 
-Binding 类的命名规则是将布局文件按驼峰方式重命名后，再加上 Binding 作为结尾。
+我们可以在 module 的 build.gradle 中开启 viewBinding
+
+```xml
+buildFeatures {
+    viewBinding true
+}
+```
+
+初始化 binding，并 setContentView 为 binding.root。Binding 类的命名规则是将布局文件按驼峰方式重命名后，再加上 Binding 作为结尾。
 
 ```kotlin
 // 老式写法
@@ -29,11 +37,25 @@ button1.setOnClickListener {
 
 }
 
-// 新写法
-val binding = FirstLayoutBinding.inflate(layoutInflater)
-setContentView(binding.root)
-binding.button1.setOnClickListener {
+// 新写法，Activity
+class NewsContentActivity : AppCompatActivity() {
+    private var _binding: ActivityNewsContentBinding? = null
+    private val binding = _binding!!
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        _binding = ActivityNewsContentBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+}
 
+// 新写法， Fragment
+class NewsContentFragment : Fragment() {
+    private var _binding: NewsContentFragBinding? = null
+    private val binding = _binding!!
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = NewsContentFragBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
 }
 ```
 
