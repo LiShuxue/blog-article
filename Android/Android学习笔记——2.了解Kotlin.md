@@ -675,13 +675,65 @@ val isNumberEven = number.isEven() // 调用扩展函数
 
 重载函数的作用域是声明重载函数的类之间。
 
+## 高阶函数
+
+像 filter,map,run,apply 这种接收 Lambda 参数的函数可以称为具有函数式编程风格的 API，如果想要定义自己的函数式 API，那就得借助高阶函数来实现。（高阶函数要用 inline 关键字去做性能优化）
+
+如果一个函数接收另一个函数作为参数，或者返回值的类型是另一个函数，那么该函数就称为高阶函数。需要接收一个函数类型的参数。函数类型：`(String, Int) -> Unit`，没有返回值就使用 Unit
+
+```kotlin
+// 高阶函数
+fun example(func: (String, Int) -> Unit) {
+    func("hello", 123)
+}
+```
+
+高阶函数允许让函数类型的参数来决定函数的执行逻辑。即使是同一个高阶函数，只要传入不同的函数类型参数，那么它的执行逻辑和最终的返回结果就可能是完全不同的。
+
+### 函数引用式调用
+
+```kotlin
+fun test(str: String, num: Int): Int {
+    println("${str}${num}")
+}
+
+example(::test)
+```
+
+::test 这种写法，是一种函数引用方式的写法。表示将 test() 函数作为参数传递，这是最简单的调用高阶函数的方式。
+
+### Lambda 表达式调用
+
+函数引用式调用，需要每次都先定义个函数。所以用 Lambda 表达式调用，类似前端直接传箭头函数。
+
+```kotlin
+example { str, num ->
+    println("${str}${num}")
+}
+```
+
+### 内联函数
+
+Lambda 表达式在底层被转换成了匿名类的实现方式。这就表明，我们每调用一次 Lambda 表达式，都会创建一个新的匿名类实例，当然也会造成额外的内存和性能开销。
+
+为了解决这个问题，Kotlin 提供了内联函数的功能，它可以将使用 Lambda 表达式带来的运行时开销完全消除。只需要在定义高阶函数时加上 inline 关键字的声明即可
+
+```kotlin
+inline fun num1AndNum2(num1: Int, num2: Int, operation: (Int, Int) -> Int): Int {
+    val result = operation(num1, num2)
+    return result
+}
+```
+
+noinline 关键字，可以使某个函数参数不进行内联。crossinline 关键字就像一个契约，它用于保证在内联函数的 Lambda 表达式中一定不会使用 return 关键字。
+
 ## 其他
 
 字符串都用双引号
 
 比较相等用两个等号“==”
 
-Mac 上是 Ctrl + Shift + R 重新运行 main()函数
+Mac 上是 Ctrl + Shift + R 重新运行 main()函数，Ctrl + R 可以重新运行 Android 程序。
 
 Kotlin 默认所有的参数和变量都不可为空，如果想为 null，需要声明的时候加上 `?` 如，`val test: Int? = null`。
 

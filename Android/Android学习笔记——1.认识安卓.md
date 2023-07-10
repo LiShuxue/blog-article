@@ -96,4 +96,4 @@ Android 中的日志工具类是 Log(android.util.Log)，可以用来打印一�
 
 ## 其他
 
-Mac 系统是 control + R 可以重新运行程序。
+Mac 上是 Ctrl + Shift + R 重新运行 main()函数，Ctrl + R 可以重新运行 Android 程序。
