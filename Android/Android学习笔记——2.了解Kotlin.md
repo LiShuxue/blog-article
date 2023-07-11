@@ -535,7 +535,7 @@ button.setOnClickListener {
 }
 ```
 
-## 标准函数，let，with, run，apply，repeat
+## 内置函数
 
 ### let
 
@@ -652,6 +652,10 @@ repeat(2) {
 }
 ```
 
+### arrayOf
+
+arrayOf()方法是用于便捷创建数组的内置方法。
+
 ## 扩展函数
 
 扩展函数表示即使在不修改某个类的源码的情况下，仍然可以打开这个类，向该类添加新的函数。
@@ -726,6 +730,63 @@ inline fun num1AndNum2(num1: Int, num2: Int, operation: (Int, Int) -> Int): Int 
 ```
 
 noinline 关键字，可以使某个函数参数不进行内联。crossinline 关键字就像一个契约，它用于保证在内联函数的 Lambda 表达式中一定不会使用 return 关键字。
+
+## 泛型和委托
+
+### 泛型
+
+泛型主要有两种定义方式：一种是定义泛型类，另一种是定义泛型方法，使用的语法结构都是 `<T>`。当然括号内的 T 并不是固定要求的，事实上你使用任何英文字母或单词都可以，但是通常情况下，T 是一种约定俗成的泛型写法。
+
+### 委托
+
+Kotlin 中是支持委托功能的，并且将委托功能分为了两种：类委托和委托属性。
+
+类委托，它的核心思想在于将一个类的具体实现委托给另一个类去完成。比如：在 Set 接口所有的方法实现中，我们都没有进行自己的实现，而是调用了辅助对象中相应的方法实现，这其实就是一种委托模式。
+
+```kotlin
+
+class MySet<T>(val helperSet: HashSet<T>) : Set<T> {
+    override val size: Int get() = helperSet.size
+    override fun contains(element: T) = helperSet.contains(element)
+    override fun containsAll(elements: Collection<T>) = helperSet.containsAll(elements)
+    override fun isEmpty() = helperSet.isEmpty()
+    override fun iterator() = helperSet.iterator()
+}
+```
+
+Kotlin 中委托使用的关键字是 by，我们只需要在接口声明的后面使用 by 关键字，再接上受委托的辅助对象，就可以免去之前所写的一大堆模板式的代码了。如果我们要对某个方法进行重新实现，只需要单独重写那一个方法就可以了，其他的方 法仍然可以享受类委托所带来的便利。
+
+```kotlin
+class MySet<T>(val helperSet: HashSet<T>) : Set<T> by helperSet {
+
+}
+```
+
+委托属性的核心思想是将 一个属性(字段)的具体实现委托给另一个类去完成。
+
+```kotlin
+class MyClass {
+    var p by Delegate()
+}
+```
+
+这种写法就代表着将 p 属性的具体实现委托给了 Delegate 类去完成。当调用 p 属性的时候会自动调用 Delegate 类的 getValue()方法，当给 p 属性赋值的时候会自动调用 Delegate 类的 setValue() 方法。
+
+### 代码块懒加载 by lazy
+
+by lazy 代码块是 Kotlin 提供的一种懒加载技术。
+
+```kotlin
+val p by lazy { ... }
+```
+
+lazy 函数中会创建并返回一个 Delegate 对象，当我们调用 p 属性的时候，其实调用的是 Delegate 对象的 getValue()方法，然后 getValue()方法中又会调用 lazy 函数传入的 Lambda 表达式，这样表达式中的代码就可以得到执行了，并且调用 p 属性后得到的值就是 Lambda 表达式中最后一行代码的返回值。
+
+## infix 函数
+
+使用 infix 函数可以构建一些语法糖。比如 A to B 这样的写法，实际上等价于 A.to(B)的写法。在一个函数前面加上 infix 关键字即可。
+
+infix 函数是不能定义成顶层函数的，它必须是某个类的成员函数，可以使用扩展函数的方式将它定义到某个类当中。其次，infix 函数必须接收且只能接收一个参数，至于参数类型是没有限制的。
 
 ## 其他
 
