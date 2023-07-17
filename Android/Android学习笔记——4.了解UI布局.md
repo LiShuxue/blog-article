@@ -84,6 +84,10 @@ xml 中通过 src 指定图片，也可以通过代码动态地更改 ImageView 
     android:src="@drawable/img_1" />
 ```
 
+### ScrollView
+
+内容超出屏幕宽度或者高度时，滚动的显示屏幕外的内容
+
 ### ProgressBar
 
 ProgressBar 用于在界面上显示一个进度条，表示我们的程序正在加载一些数据。默认是一个圆形的标志。通过 style 属性可以将它指定成水平进度条。通过 android:max 属性给进度条设置一个最大值，然后在代 码中动态地更改进度条的进度。

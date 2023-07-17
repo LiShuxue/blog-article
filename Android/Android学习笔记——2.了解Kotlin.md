@@ -737,6 +737,18 @@ noinline 关键字，可以使某个函数参数不进行内联。crossinline �
 
 泛型主要有两种定义方式：一种是定义泛型类，另一种是定义泛型方法，使用的语法结构都是 `<T>`。当然括号内的 T 并不是固定要求的，事实上你使用任何英文字母或单词都可以，但是通常情况下，T 是一种约定俗成的泛型写法。
 
+### 泛型实化
+
+泛型的约束只在编译期存在，运行时期是不知道泛型是什么类型的。假设我们创建了一个`List<String>`集合，虽然 在编译时期只能向集合中添加字符串类型的元素，但是在运行时期 JVM 并不能知道它本来只打算包含哪种类型的元素，只能识别出来它是个 List。
+
+但是 Kotlin 中是可以借助内联函数和 reified 关键字，将泛型 T 进行实化，在运行时期也是知道其类型的。
+
+```kotlin
+inline fun <reified T> getGenericType() { }
+```
+
+之后，泛型 T 就是一个被实化的泛型，我们在代码中是可以直接使用这种类型的。
+
 ### 委托
 
 Kotlin 中是支持委托功能的，并且将委托功能分为了两种：类委托和委托属性。
@@ -787,6 +799,188 @@ lazy 函数中会创建并返回一个 Delegate 对象，当我们调用 p 属�
 使用 infix 函数可以构建一些语法糖。比如 A to B 这样的写法，实际上等价于 A.to(B)的写法。在一个函数前面加上 infix 关键字即可。
 
 infix 函数是不能定义成顶层函数的，它必须是某个类的成员函数，可以使用扩展函数的方式将它定义到某个类当中。其次，infix 函数必须接收且只能接收一个参数，至于参数类型是没有限制的。
+
+## 协程
+
+协程其实和线程是有点类似的，可以简单地将它理解成一种轻量级的线程。我们之前所学习的线程是非常重量级的，它需要依靠操作系统的调度才能实现不同线程之间的切换。而使用协程却可以仅在编程语言的层面就能实现不同协程之间的切换，从而大大提升了并发编程的运行效率。
+
+协程允许我们在单线程模式下模拟多线程编程的效果。代码执行时的挂起与恢复完全是由编程语言来控制的，和操作系统无关。
+
+开启 10 万个线程完全是不可想象的，而开启 10 万个协程就是完全可行的。
+
+### 创建
+
+GlobalScope.launch 函数可以创建一个协程的作用域，这样传递给 launch 函数的代码块 (Lambda 表达式)就是在协程中运行的了。
+
+GlobalScope.launch 函数每次创建的都是一个顶层协程，这种协程当应用程序运行结束时也会跟着一起结束。
+
+```kotlin
+GlobalScope.launch {
+    println("codes run in coroutine scope")
+}
+```
+
+有没有什么办法能让应用程序在协程中所有代码都运行完了之后再结束呢，就是 runBlocking 函数。
+
+runBlocking 函数同样会创建一个协程的作用域，但是它可以保证在协程作用域内的所有代码和子协程没有全部执行完之前一直阻塞当前主线程。
+
+runBlocking 函数通常只应 该在测试环境下使用，在正式环境中使用容易产生一些性能上的问题。
+
+```kotlin
+runBlocking {
+    println("codes run in coroutine scope")
+    delay(1500)
+    println("codes run in coroutine scope finished")
+}
+```
+
+在协程作用域内，可以使用 launch 函数，创建多个子协程。它和我们刚才所使用的 GlobalScope.launch 函数不同。
+
+根据打印结果，可以说明它们确实是像多线程那样并发运行的。然而这两个子协程实际却运行在同一个线程当中，只是由编程语言来决定如何在多个协程之间进行调度，让谁运行，让谁挂起。
+
+```kotlin
+runBlocking {
+    launch {
+        println("launch1")
+        delay(1000)
+        println("launch1 finished")
+    }
+    launch {
+        println("launch2")
+        delay(1000)
+        println("launch2 finished")
+    }
+}
+// 最终打印结果
+// launch1
+// launch2
+// launch1 finished
+// launch2 finished
+```
+
+runBlocking 由于会阻塞线程，因此只建议在测试环境下使用。而 GlobalScope.launch 由于每次创建的都是顶层协程，一般也不太建议使用，除非你非常明确就是要创建顶层协程。
+
+所以，实际项目中，一般使用 CoroutineScope()函数，只需要调用一次 cancel()方法，就可以将同一作用域内的所有协程全部取消。
+
+```kotlin
+val job = Job()
+val scope = CoroutineScope(job)
+scope.launch {
+    // 处理具体的逻辑
+}
+job.cancel()
+```
+
+有没有什么办法能够创建一个协程并获取它的执行结果，使用 async 函数。
+
+async 函数必须在协程作用域当中才能调用，它会创建一个新的子协程并返回一个 Deferred 对象，如果我们想要获取 async 函数代码块的执行结果，只需要调用 Deferred 对象的 await() 方法即可。
+
+await()方法 会将当前协程阻塞住，直到可以获得 async 函数的执行结果。
+
+我们可以不在每次调用 async 函数之后就立刻使用 await()方法获取结果，而是仅在需要用到 async 函数的执行结果时才调用 await()方法进行获取。这样如果有多个 async 函数就变成一种并行关系，而不会阻塞。
+
+```kotlin
+runBlocking {
+    val result = async {
+        5+5
+    }.await()
+    println(result)
+}
+
+runBlocking {
+    val deferred = async {
+        5+5
+    }
+    val result = deferred.await()
+    println(result)
+}
+```
+
+另一种构建器，withContext()函数。withContext() 函数是一个挂起函数，大体可以将它理解成 async 函数的一种简化版写法。
+
+调用 withContext()函数之后，会立即执行代码块中的代码，同时将外部协程挂起。当代码块中的代码全部执行完之后，会将最后一行的执行结果作为 withContext()函数的返回值返回，因此基本上相当于`val result = async{ 5 + 5 }.await()`的写法。唯一不同的是，withContext()函数强制要求我们指定一个线程参数。
+
+协程并不意味着我们就永远不需要开启线程了，Android 中要求网络请求必须在子线程中进行，即使你开启了协程去执行网络请求，假如它是主线程当中的协程，那么程序仍然会出错。这个时候我们就应该通过线程参数给协程指定一个具体的运行线程。
+
+```kotlin
+ runBlocking {
+    val result = withContext(Dispatchers.Default) {
+        5+5
+    }
+    println(result)
+}
+```
+
+### 暂停和取消
+
+Thread.sleep()方法可以让主线程阻塞 1 秒钟。
+
+delay()函数可以让当前协程延迟指定时间后再运行，但它和 Thread.sleep()方法不同。delay()函数是一个非阻塞式的挂起函数，它只会挂起当前协程，并不会影响其他协程的运行。而 Thread.sleep() 方法会阻塞当前的线程，这样运行在该线程下的所有协程都会被阻塞。
+
+不管是 GlobalScope.launch 函数还是 launch 函数，它们都会返回 一个 Job 对象，只需要调用 Job 对象的 cancel()方法就可以取消协程了。
+
+### 外部调用
+
+在 launch 函数中编写的代码是拥有协程作用域的，可以调用像 delay()这样的挂起函数，如果我们将 launch 函数中的复杂逻辑抽取出来，单独封装成函数，没有了协程作用域，怎么调用挂起函数呢？
+
+可以使用 suspend 关键字，将任意函数声明成挂起函数。挂起函数之间都是可以互相调用的。
+
+但是他还是没有协程的作用域，所以他内部不能再次调用 launch 函数去创建子协程。可以借助 coroutineScope 函数来解决。coroutineScope 函数和 runBlocking 函数还有点类似，它可以保证其作用域内的所 有代码和子协程在全部执行完之前，外部的协程会一直被挂起。
+
+```kotlin
+suspend fun printDot() = coroutineScope {
+    println(".")
+    delay(1000)
+
+    launch {
+        println(".")
+        delay(1000)
+    }
+}
+```
+
+### 改写回调
+
+之前的回调写法：
+
+```kotlin
+HttpUtil.sendHttpRequest(address, object : HttpCallbackListener {
+    override fun onFinish(response: String) {
+        // 得到服务器返回的具体内容
+    }
+    override fun onError(e: Exception) {
+        // 在这里对异常情况进行处理
+    }
+})
+```
+
+Kotlin 只需要借助 suspendCoroutine 函数就能将传统回调机制的写法大幅简化。
+
+suspendCoroutine 函数必须在协程作用域或挂起函数中才能调用，它接收一个 Lambda 表达式参数，主要作用是将当前协程立即挂起，然后在一个普通的线程中执行 Lambda 表达式中的代码。Lambda 表达式的参数列表上会传入一个 Continuation 参数，调用它的 resume()方法或 resumeWithException()可以让协程恢复执行。
+
+```kotlin
+suspend fun request(address: String): String {
+    return suspendCoroutine { continuation ->
+        HttpUtil.sendHttpRequest(address, object : HttpCallbackListener {
+            override fun onFinish(response: String) {
+                continuation.resume(response)
+            }
+            override fun onError(e: Exception) {
+                continuation.resumeWithException(e)
+            }
+        })
+    }
+}
+
+suspend fun getBaiduResponse() {
+    try {
+        val response = request("https://www.baidu.com/")
+        // 对服务器响应的数据进行处理
+    } catch (e: Exception) {
+        // 对异常情况进行处理
+    }
+}
+```
 
 ## 其他
 
