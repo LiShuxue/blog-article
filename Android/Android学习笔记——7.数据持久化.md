@@ -304,3 +304,74 @@ db.insert("Book", null, values)
 ## Room
 
 现在 Google 推出了一个专门用于 Android 平台的数据库框架——Room。相比于传统的数据库 API，Room 的用法要更加复杂一些，但是却更加科学和规范，也更加符合现代高质量 App 的开发标准。
+
+使用面向对象的思维去编写程序，而完全不用考虑数据库相关的逻辑和实现。
+
+### 定义实体类
+
+```kotlin
+@Entity
+data class User(var firstName: String, var lastName: String, var age: Int) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
+}
+```
+
+### 定义 Dao
+
+所有访问数据库的操作都是在这里封装的。业务方永远只需要与 Dao 层进行交互，而不必和底层的数据库打交道。
+
+数据库操作通常有增删改查这 4 种，因此 Room 也提供了@Insert、@Delete、@Update 和@Query 这 4 种相应的注解。
+
+```kotlin
+@Dao
+interface UserDao {
+    @Insert
+    fun insertUser(user: User): Long
+
+    @Update
+    fun updateUser(newUser: User)
+
+    @Query("select * from User")
+    fun loadAllUsers(): List<User>
+
+    @Query("select * from User where age > :age")
+    fun loadUsersOlderThan(age: Int): List<User>
+
+    @Delete
+    fun deleteUser(user: User)
+
+    @Query("delete from User where lastName = :lastName")
+    fun deleteUserByLastName(lastName: String): Int
+}
+```
+
+### 定义 Database
+
+这部分内容的写法是非常固定的，只需要定义好 3 个部分的内容：数据库的版本号、包含哪些实体类，以及提供 Dao 层的访问实例。
+
+```kotlin
+@Database(version = 1, entities = [User::class])
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): UserDao
+
+    companion object {
+        private var instance: AppDatabase? = null
+        @Synchronized
+        fun getDatabase(context: Context): AppDatabase {
+            instance?.let {
+                return it
+            }
+            return Room.databaseBuilder(context.applicationContext,
+                AppDatabase::class.java, "app_database")
+                .build().apply {
+                instance = this
+            }
+        }
+    }
+}
+```
+
+### 数据库升级
+
+Room 在数据库升级方面设计得非常烦琐，基本上没有 比使用原生的 SQLiteDatabase 简单到哪儿去，每一次升级都需要手动编写升级逻辑才行。

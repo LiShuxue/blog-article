@@ -222,6 +222,16 @@ override fun onBackPressed() {
 }
 ```
 
+### 使用 Intent 传递对象
+
+使用 Intent 来传递对象通常有两种实现方式：Serializable 和 Parcelable。
+
+序列化后的对象可以在网络上进行传输，也可以存储到本地，让一个类去实现 Serializable 这个接口就可以。
+
+getSerializableExtra()方法来获取通过参数传递过来的序列化对象，接着再将它向下转型成 Person 对象。
+
+Parcelable 方式的实现原理是将一个完整的对象进行分解，而分解后的每一部分都是 Intent 所支持的数据类型，这样就能实现传递对象的功能了。
+
 ## Activity 的生命周期
 
 Activity 的存储是栈结构，每启动一个新的 Activity ，该 Activity 会入栈，覆盖在原 Activity 之上，然后点击 Back 键会销毁最上面的 Activity ，下面的一个 Activity 就会重新显示出来。
@@ -401,3 +411,24 @@ button1.setOnClickListener {
     SecondActivity.actionStart(this, "data1", "data2")
 }
 ```
+
+### 全局获取 Context 的技巧
+
+Android 提供了一个 Application 类，每当应用程序启动的时候，系统就会自动将这个类进行初始化。而我们可以定制一个自己的 Application 类，以便于管理程序内一些全局的状态信息，比如全局 Context。
+
+```kotlin
+class MyApplication : Application() {
+    companion object {
+        lateinit var context: Context
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        context = applicationContext
+    }
+}
+```
+
+接下来我们还需要告知系统，当程序启动的时候应该初始化 MyApplication 类，而不是默认的 Application 类。这一步也很简单，在 AndroidManifest.xml 文件的`<application>`标签下进行指定就可以了。
+
+之后不管你想在项目的任何地方使用 Context，只需要调用一下 MyApplication.context 就可以。

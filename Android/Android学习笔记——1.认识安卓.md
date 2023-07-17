@@ -96,6 +96,12 @@ Android 中的日志工具类是 Log(android.util.Log)，可以用来打印一�
 
 在 Logcat 中查看：package:mine 就可以看到当前应用的日志信息，也可以使用 level:debug 来查看不同的日志等级。
 
+## 调试
+
+在运行程序的时候，以调试模式运行，这种调试方式虽然完全可以正常工作，但在调试模式下，程序的运行效率将会大大降低，如果你的断点加在一个比较靠后的位置，需要执行很多操作才能运行到这个断点，那么前面这些操作就会有一些卡顿的感觉。
+
+使用正常的方式启动，需要调试的时候，点击 Android Studio 顶部工具栏 的“Attach Debugger to Android Process” 按钮。
+
 ## 其他
 
 Mac 上是 Ctrl + Shift + R 重新运行 main()函数，Ctrl + R 可以重新运行 Android 程序。
