@@ -60,44 +60,26 @@ dockerfile 是一个用来构建镜像的文本文件，文本内容包含了一
 
 docker build 可以根据 dockerfile 生成 image。之后就可以运行这个 image 了，这就是 docker run 命令，image 运行起来后就是 docker container。
 
-## 安装和配置 registry 镜像源
+## 安装
 
-### 1. 根据操作系统安装对应的 doker
-
-### 2. 配置国内镜像加速
-
-- 对于 Mac， 在 docker desktop 中配置
-- 对于 Centos 7，在 /etc/docker/daemon.json 中添加 `"registry-mirrors": ["https://reg-mirror.qiniu.com/"]`
-
-之后重新启动服务：
-
-```sh
-$ sudo systemctl enable docker # 开机自启
-$ sudo systemctl start docker
-
-# 如果不是第一次安装就重启
-$ sudo systemctl daemon-reload
-$ sudo systemctl restart docker
-```
-
-通过 `docker info`命令来查看 registry 是否替换成功
+根据操作系统安装对应的 docker desktop
 
 ## 使用
 
+### 镜像管理
+
 ```sh
-# 搜索镜像
-docker search nginx
+docker images #列出本地的镜像
+docker pull <image> #下载一个镜像
+docker push <image> #将一个镜像推送到远程仓库
+docker build -t <image> <path> #根据 Dockerfile 构建一个镜像
+docker rmi <image> #删除一个本地的镜像
+```
 
-# 拉取镜像
-docker pull centos:centos7
+### 容器管理
 
-# 查看本地镜像
-docker images
-
-# 删除镜像
-docker image rm image-id
-
-# 运行镜像， 生成容器
+```sh
+# 运行镜像，生成容器
 docker run -it centos:centos7
 
 --name="" 指定容器名字，后续可以通过名字进行容器管理
@@ -111,33 +93,36 @@ docker run -it centos:centos7
 
 # 查看本地运行的容器
 docker ps
+# 列出所有容器，包括停止的容器
+docker ps -a
 
 # 停止某容器
-docker stop e22d4c3accb4
+docker stop <container>
 
 # 启动停止的容器
-docker container start
+docker start <container>
+
+# 重启一个容器
+docker restart <container>
 
 # 删除不需要的容器
 docker rm 8652b9f0cb4c
 
 # 查看运行的容器的资源占用
 docker stats
+```
 
+### 日志和输出
+
+```sh
 # 查看容器内部的标准输出
-docker logs container-id
+docker logs <container>
 
-# 进入容器bash，因为容器都是基于linux内核的
-docker exec -it 34d0 bash
+# 进入容器bash或者sh，因为容器都是基于linux内核的
+docker exec -it <container> bash/sh
 
 # 将容器内文件拷贝到宿主机
 docker cp 容器名:容器内路径 宿主机路径
-
-# 导出容器
-docker export 容器ID > xxx.tar
-
-# 把镜像保存成 tar 文件
-docker save -o xxx.tar image
 
 # 退出当前交互
 exit
@@ -157,7 +142,7 @@ Docker 不是虚拟机，容器中的应用都应该以前台执行，而不是�
 - 执行用户指定的应用程序
 - 执行完毕后容器被终止
 
-推荐 run 的时候后台运行， -dit，然后需要进入容器的时候再用 exec。 `docker exec -it 69d1 bash`
+推荐 run 的时候后台运行， -d，然后需要进入容器的时候再用 exec。 `docker exec -it 69d1 sh`
 
 ## 构建镜像
 
