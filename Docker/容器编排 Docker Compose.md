@@ -9,20 +9,13 @@ Compose 中有两个重要的概念：
 - 服务 (service)：一个应用的容器，实际上可以包括若干运行相同镜像的容器实例。
 - 项目 (project)：由一组关联的应用容器组成的一个完整业务单元，在 docker-compose.yml 文件中定义。
 
-## 安装卸载
-
-Windows/Mac 的 Docker Desktop 自带
-
-Linux 通过以下命令安装二进制包。
+## 命令
 
 ```sh
-$ sudo curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-
-$ sudo chmod +x /usr/local/bin/docker-compose
-```
-
-卸载
-
-```sh
-$ sudo rm /usr/local/bin/docker-compose
+# docker-compose up -d 启动
+# docker-compose down 停止
+# docker-compose ps 查看启动的容器，也可以用 docker ps 查看
+# docker-compose up -d service_name 单独启动一个容器
+# docker-compose stop service_name
+# docker-compose build 只构建镜像，可以加service_name来单独构建某个服务的镜像
 ```

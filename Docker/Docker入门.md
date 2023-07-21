@@ -82,7 +82,7 @@ docker rmi <image> #删除一个本地的镜像
 # 运行镜像，生成容器
 docker run -it centos:centos7
 
---name="" 指定容器名字，后续可以通过名字进行容器管理
+--name 指定容器名字，后续可以通过名字进行容器管理
 -t: 在新容器内指定一个伪终端或终端
 -i: 允许你对容器内的标准输入 (STDIN) 进行交互
 -p 8080:80, 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口
@@ -126,6 +126,24 @@ docker cp 容器名:容器内路径 宿主机路径
 
 # 退出当前交互
 exit
+```
+
+### 网络
+
+```sh
+docker network ls：列出 Docker 网络
+docker network create <network>：创建一个新的 Docker 网络
+docker network inspect: 查看某个网络详情
+docker network connect <network> <container>：将容器连接到指定的网络
+docker network disconnect: 断开容器上的网络连接
+docker network rm: 删除网络
+```
+
+### 清除缓存
+
+```sh
+docker system df 查看占用空间
+docker system prune 删除缓存
 ```
 
 Docker 不是虚拟机，容器中的应用都应该以前台执行，而不是像虚拟机、物理机里面那样，用 systemd 去启动后台服务，容器内没有后台服务的概念。
