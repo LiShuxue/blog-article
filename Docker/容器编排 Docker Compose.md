@@ -11,11 +11,13 @@ Compose 中有两个重要的概念：
 
 ## 命令
 
+在有 docker-compose.yml 的目录，执行下面命令。
+
 ```sh
-# docker-compose up -d 启动
-# docker-compose down 停止
-# docker-compose ps 查看启动的容器，也可以用 docker ps 查看
-# docker-compose up -d service_name 单独启动一个容器
-# docker-compose stop service_name
-# docker-compose build 只构建镜像，可以加service_name来单独构建某个服务的镜像
+# docker compose up -d 启动
+# docker compose down 停止
+# docker compose ps 查看启动的容器，也可以用 docker ps 查看
+# docker compose up -d service_name 单独启动一个容器
+# docker compose stop service_name
+# docker compose build 只构建镜像，可以加service_name来单独构建某个服务的镜像
 ```
