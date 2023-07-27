@@ -15,6 +15,7 @@ Compose 中有两个重要的概念：
 
 ```sh
 # docker compose up -d 启动
+# docker compose -f docker-compose.yml up -d 指定某个配置文件来启动
 # docker compose down 停止
 # docker compose ps 查看启动的容器，也可以用 docker ps 查看
 # docker compose up -d service_name 单独启动一个容器

@@ -51,6 +51,8 @@ yum upgrade package1     # 升级指定程序包package1（不保留旧版本）
 
 yum info package1        # 显示安装包信息package1
 
+yum list installed | grep mongodb # 查看某个已安装的包
+
 yum list package1        # 显示指定程序包安装情况package1
 
 yum remove package1      # 删除指定程序包package1

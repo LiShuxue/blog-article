@@ -74,6 +74,7 @@ docker pull <image> #下载一个镜像
 docker push <image> #将一个镜像推送到远程仓库
 docker build -t <image> <path> #根据 Dockerfile 构建一个镜像
 docker rmi <image> #删除一个本地的镜像
+docker image prune # 删除所有tag是<none>的标签
 ```
 
 ### 容器管理
