@@ -1,6 +1,6 @@
 ## NestJS
 
-NestJS (https://docs.nestjs.cn/10/introduction) 是一个基于 TypeScript 的渐进式 Node.js 框架，它结合了 OOP（面向对象编程）、 AOP（面向切面编程）、 DI（依赖注入）和 IoC（控制反转）的最佳实践。
+NestJS ([https://docs.nestjs.cn/10/introduction](https://docs.nestjs.cn/10/introduction)) 是一个基于 TypeScript 的渐进式 Node.js 框架，它结合了 OOP（面向对象编程）、 AOP（面向切面编程）、 DI（依赖注入）和 IoC（控制反转）的最佳实践。
 
 NestJS 提供了一系列强大的组件，使您能够构建可维护、可扩展的应用程序。本文将介绍 NestJS 的基本组件，包括控制器、服务、提供者、模块、中间件、过滤器、管道、拦截器和守卫。
 
