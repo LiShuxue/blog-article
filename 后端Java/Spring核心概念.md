@@ -63,7 +63,7 @@ Spring 允许你使用 XML、注解或 Java 代码来配置应用程序的 Bean 
 
 随着 Spring 3.0 以后的版本，XML 配置文件不再是唯一的配置方式。Spring 还支持基于 Java 的配置（通过 Java 类）和注解配置（通过使用注解标记 Bean）等方式。这些方法提供了更灵活和类型安全的配置选项。因此，在一些现代的 Spring 项目中，你可能会看到更多使用基于 Java 或注解的配置方式。
 
-### Spring IoC
+### 容器
 
 Spring IoC 容器负责管理你的应用程序中的所有对象（bean），这个容器负责创建、配置和连接 bean，使它们可以一起工作。如 ApplicationContext 接口。
 
