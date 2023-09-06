@@ -1,6 +1,6 @@
 ## Spring 是什么
 
-[Spring 中文文档](https://springdoc.cn/)
+[Spring 中文文档](https://springdoc.cn/docs/)
 
 Spring，在不同的语境中，可以意味着不同的东西。它可以用来指代 Spring 框架项目本身，它是一切的开始。随着时间的推移，其他 Spring 项目也被建立在 Spring 框架之上。大多数时候，当人们说 "Spring" 时，他们指的是整个项目家族（全家桶）。
 
