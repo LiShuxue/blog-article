@@ -432,3 +432,15 @@ class MyApplication : Application() {
 接下来我们还需要告知系统，当程序启动的时候应该初始化 MyApplication 类，而不是默认的 Application 类。这一步也很简单，在 AndroidManifest.xml 文件的`<application>`标签下进行指定就可以了。
 
 之后不管你想在项目的任何地方使用 Context，只需要调用一下 MyApplication.context 就可以。
+
+## Application 类
+
+Application 类是 Android 应用程序中的一个重要组件，它是所有应用程序组件的基类。
+
+它的一个主要作用是提供应用程序的全局上下文。这个上下文可以在整个应用程序中使用，而不受活动（Activity）或服务（Service）生命周期的限制。这使得你可以在任何地方访问应用程序级别的资源和数据。
+
+也可用于管理应用程序的全局状态。你可以在 Application 类中创建成员变量和方法，用于存储和管理应用程序范围内的数据，例如全局配置信息、共享数据等。
+
+你可以创建自定义的 Application 子类，以便扩展其功能。要使用自定义的 Application 类，需要在 AndroidManifest.xml 文件中的`<application>`元素的 android:name 属性中指定你的自定义 Application 类的名称。
+
+生命周期与应用程序一致，它的实例在应用程序启动时创建，并在应用程序退出时销毁。所以也只有 `onCreate()` 和 `onTerminate()`。
