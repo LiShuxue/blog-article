@@ -143,93 +143,93 @@ is: 后面指定一个组件的名字
 ## 组件通信
 
 1. props/$emit 父子通信  
-    如果子组件需要修改父组件传进来的 props，可以用.sync 来减少父组件监听和修改的代码
+   如果子组件需要修改父组件传进来的 props，可以用.sync 来减少父组件监听和修改的代码
 
-    ```js
-    // before
-    // 父组件中
-    <child :val="name" @update="modify">
-    modify(newVal){
-      this.name=newVal
-    }
-    // 子组件中
-    <input :value=val @input="$emit('update', $event.target.value)"/>
+   ```js
+   // before
+   // 父组件中
+   <child :val="name" @update="modify">
+   modify(newVal){
+     this.name=newVal
+   }
+   // 子组件中
+   <input :value=val @input="$emit('update', $event.target.value)"/>
 
-    // after
-    // 父组件中，省略了写监听函数
-    <child :val.sync="name">
-    // 子组件中
-    <input :value=val @input="$emit('update:val', $event.target.value)"/>
-    ```
+   // after
+   // 父组件中，省略了写监听函数
+   <child :val.sync="name">
+   // 子组件中
+   <input :value=val @input="$emit('update:val', $event.target.value)"/>
+   ```
 
 2. 使用 vuex 父子，兄弟，隔代都可以用
 3. EventBus 父子，兄弟，隔代都可以用
 
-    ```js
-    const EventBus = new Vue();
-    EventBus.$emit('aMsg', '来自A页面的消息');
-    EventBus.$on('aMsg', (msg) => {
-      this.msg = msg;
-    });
-    ```
+   ```js
+   const EventBus = new Vue();
+   EventBus.$emit('aMsg', '来自A页面的消息');
+   EventBus.$on('aMsg', (msg) => {
+     this.msg = msg;
+   });
+   ```
 
 4. provide/inject 隔代通信  
-    祖先组件中通过 provide 来提供变量，然后在子孙组件中通过 inject 来注入变量
+   祖先组件中通过 provide 来提供变量，然后在子孙组件中通过 inject 来注入变量
 
-    ```js
-    // 祖先
-    provide: {
-      test: 'demo';
-    }
-    // 子孙
-    inject: ['test'];
-    ```
+   ```js
+   // 祖先
+   provide: {
+     test: 'demo';
+   }
+   // 子孙
+   inject: ['test'];
+   ```
 
 5. `$attrs/$listeners` 隔代通信
 
-    - $attrs：当子组件的props中没有声明父组件传下来的prop属性时，那么父组件传下来的prop属性会被保存在子组件的$attrs 属性上( class 和 style 除外 )。  
-      子组件加了 inheritAttrs:false，DOM 上就不会继承未声明的 props。
+   - $attrs：当子组件的props中没有声明父组件传下来的prop属性时，那么父组件传下来的prop属性会被保存在子组件的$attrs 属性上( class 和 style 除外 )。  
+     子组件加了 inheritAttrs:false，DOM 上就不会继承未声明的 props。
 
-      ````js
-      // 父
-      <child :foo="foo" :coo="coo"></child>
+     ````js
+     // 父
+     <child :foo="foo" :coo="coo"></child>
 
-          // 子，继承了所有属性并传给下一代
-          <p>attrs:{{$attrs}}</p>
-          <grandChild v-bind="$attrs"></grandChild>
+         // 子，继承了所有属性并传给下一代
+         <p>attrs:{{$attrs}}</p>
+         <grandChild v-bind="$attrs"></grandChild>
 
-          // 孙子，只声明了coo，并设置inheritAttrs: false表示不继承
-          props:["coo"],
-          inheritAttrs:false
-          <p>coo:{{coo}}</p>
-          ```
+         // 孙子，只声明了coo，并设置inheritAttrs: false表示不继承
+         props:["coo"],
+         inheritAttrs:false
+         <p>coo:{{coo}}</p>
+         ```
 
-      ````
+     ````
 
-    - $listeners：包含了父作用域中的 (不含 .native 修饰器的)  v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件
+   - $listeners：包含了父作用域中的 (不含 .native 修饰器的)  v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件
 
-      ```js
-      // 父
-      <child @parentTest="parentTestMethod"></child>
-      parentTestMethod(value){
-          console.log(value)
-      }
+     ```js
+     // 父
+     <child @parentTest="parentTestMethod"></child>
+     parentTestMethod(value){
+         console.log(value)
+     }
 
-      // 子，相当于也监听了事件
-      <grandChild v-on="$listeners"></grandChild>
+     // 子，相当于也监听了事件
+     <grandChild v-on="$listeners"></grandChild>
 
-      // 孙子
-      <button @click="test">我要发射火箭</button>
-      test(){
-          this.$emit("parentTest",'test');
-      }
-      ```
+     // 孙子
+     <button @click="test">我要发射火箭</button>
+     test(){
+         this.$emit("parentTest",'test');
+     }
+     ```
 
 6. ref 与 $parent / $children 父子通信
-    - 使用 this.$parent 查找当前组件的父组件实例。
-    - 使用 this.$children 查找当前组件的直接子组件，可以遍历全部子组件，需要注意 $children 并不保证顺序，也不是响应式的。
-    - 使用 this.$refs 查找命名子组件。
-    - 使用 this.$root 查找根组件，并可以配合$children 遍历全部组件。
+   - 使用 this.$parent 查找当前组件的父组件实例。
+   - 使用 this.$children 查找当前组件的直接子组件，可以遍历全部子组件，需要注意 $children 并不保证顺序，也不是响应式的。
+   - 使用 this.$refs 查找命名子组件。
+   - 使用 this.$root 查找根组件，并可以配合$children 遍历全部组件。
 
 ## provide/inject 实现原理
 
@@ -757,6 +757,7 @@ initWatch 的过程中其实就是实例化 new Watcher 完成观察者的依赖
 虚拟 DOM 的实现原理主要包括以下 3 部分：
 
 1. 用 JavaScript 对象模拟真实 DOM 树，对真实 DOM 进行抽象；一般虚拟 DOM 都有以下几个属性。
+
    - 节点名称 tag
    - 节点属性 props 对象
    - 子节点 children 数组

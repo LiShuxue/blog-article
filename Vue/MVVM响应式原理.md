@@ -9,21 +9,21 @@
 
 ```html
 <body>
-    <div id="app">
-        <h2>{{a}}</h2>
-        <h2>{{b.c}}</h2>
-    </div>
+  <div id="app">
+    <h2>{{a}}</h2>
+    <h2>{{b.c}}</h2>
+  </div>
 </body>
 <script>
-    var vm = new MVVM({
-        el: '#app',
-        data: {
-            a: 'test',
-            b: {
-                c:'test2'
-            }
-        }
-    });
+  var vm = new MVVM({
+    el: '#app',
+    data: {
+      a: 'test',
+      b: {
+        c: 'test2',
+      },
+    },
+  });
 </script>
 ```
 

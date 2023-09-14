@@ -5,15 +5,18 @@
   "author": "LiShuxue <1149926505@qq.com>",
   "license": "MIT",
   "scripts": {
-    "format": "prettier --write",
+    "format": "prettier --write .",
+    "lint": "markdownlint --fix **/*.md",
     "prepare": "husky install"
   },
   "lint-staged": {
-    "**/*.md": "yarn format"
+    "**/*.md": "yarn lint && yarn format"
   },
   "devDependencies": {
     "husky": "^8.0.3",
     "lint-staged": "^13.2.2",
+    "markdownlint": "^0.31.0",
+    "markdownlint-cli": "^0.36.0",
     "prettier": "^2.8.8"
   }
 }
