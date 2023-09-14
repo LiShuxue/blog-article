@@ -38,12 +38,15 @@
 - 设置该元素的宽度，再设置 margin: 0 auto;
 - 父元素设置 display: flex; justify-content: center;
 - 设置该元素：绝对定位 + translate，适用于不定宽
+
   ```css
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   ```
+
 - 设置该元素：绝对定位 + 负 margin，适用于定宽
+
   ```css
   position: absolute;
   width: 100px;
@@ -76,6 +79,7 @@
 - fixed：固定定位，相对于屏幕视口定位。
 
 - sticky：粘性定位，初始时，元素在正常文档流位置，当屏幕滚动时，该元素会始终固定于顶部某位置。
+
   ```css
   position: sticky;
   top: 10px;
@@ -87,6 +91,7 @@
 清除浮动：
 
 - 在父元素使用伪类：
+
   ```css
   .parent::after {
     content: '';
@@ -94,6 +99,7 @@
     clear: left;
   }
   ```
+
 - 父元素使用 overflow: auto;
 
 ## flex 布局
@@ -245,6 +251,7 @@ text1 ===> red text2 ===> green text3 ===> green text4 ===> orange
   `animation: myKeyframe 4s infinite;`
 
 - @keyframes 定义具体的动画细节。注意 keyframes， 加 s
+
   ```css
   @keyframes myKeyframe {
     0% {
@@ -291,13 +298,13 @@ text1 ===> red text2 ===> green text3 ===> green text4 ===> orange
 
 准确来说，外边距折叠应该叫垂直外边距折叠，因为只会发生在垂直方向上，而水平方向上不会发生。
 
-### 会发生外边距折叠的情况：
+### 会发生外边距折叠的情况
 
 1. 相邻兄弟元素
 2. 父元素的上外边距和第一个子元素的上外边距
 3. 父元素的下外边距和最后一个子元素的下外边距
 
-### 解决方案：
+### 解决方案
 
 1. 使用 padding 或者 border 取代 margin 间距效果
 1. 变为 BFC。但 overflow: hidden 不能解决相邻元素外边距重叠问题。
@@ -357,7 +364,7 @@ text1 ===> red text2 ===> green text3 ===> green text4 ===> orange
 6. z-index: 0：z-index 为 0 或 auto 的定位元素， 这些元素形成了新的层叠上下文；
 7. 正 z-index 值：z-index 为正的定位元素，正的越大层叠等级越高；
 
-### 总结：
+### 总结
 
 1. 有层叠上下文的元素的子元素跟其他外部元素没有关联，也没有可比性
 2. 层叠上下文可以嵌套
@@ -577,7 +584,7 @@ grid-row-gap 属性、grid-column-gap 属性分别设置行间距和列间距。
 5. 屏幕分辨率： 设备的物理像素个数。
 6. 屏幕密度：屏幕密度是指一个设备表面上存在的物理像素数量。它通常以每英寸有多少像素来计算(PPI)。
 
-综上所述：如 iPhone6 的分辨率：750 _ 1334，则它的物理像素为：750 _ 1334。他的像素比 DPR 为 2，逻辑像素分辨率为：375 \* 667。
+综上所述：如 iPhone6 的分辨率：`750 * 1334`，则它的物理像素为：`750 * 1334`。他的像素比 DPR 为 2，逻辑像素分辨率为：`375 * 667`。
 
 ### 视口
 

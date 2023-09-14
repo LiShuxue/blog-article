@@ -161,7 +161,7 @@ RelativeLayout 又称作相对布局，可以通过相对定位的方式让控�
 
 相对父布局定位：值是 true/false，表示贴着父布局的上下左右还是中间。
 
-```
+```xml
 android:layout_alignParentTop
 android:layout_alignParentBottom
 android:layout_alignParentLeft
@@ -171,7 +171,7 @@ android:layout_centerInParent
 
 相对于控件进行定位：值是某个控件的 id，表示放在这个控件的上下左右。
 
-```
+```xml
 android:layout_above
 android:layout_below
 android:layout_toLeftOf
@@ -180,7 +180,7 @@ android:layout_toRightOf
 
 另外一组相对于控件进行定位的属性，让控件跟目标控件的上下左右边缘对齐。
 
-```
+```xml
 android:layout_alignTop
 android:layout_alignBottom
 android:layout_alignLeft
@@ -199,7 +199,7 @@ FrameLayout 又称作帧布局，它相比于前面两种布局就简单太多�
 
 相对定位约束：值是控件 id，表示控件的哪个位置与目标控件的哪个位置对齐。
 
-```
+```xml
 app:layout_constraintTop_toTopOf=""           我的顶部和谁的顶部对齐
 app:layout_constraintBottom_toBottomOf=""     我的底部和谁的底部对齐
 app:layout_constraintLeft_toLeftOf=""         我的左边和谁的左边对齐
@@ -215,7 +215,7 @@ layout_constraintBaseline_toBaselineOf        我的文字基线跟谁的文字�
 
 角度约束：一个控件在某个控件的某个角度的位置。
 
-```
+```xml
 app:layout_constraintCircle=""         目标控件id
 app:layout_constraintCircleAngle=""    对于目标的角度(0-360)
 app:layout_constraintCircleRadius=""   到目标中心的距离
@@ -223,14 +223,14 @@ app:layout_constraintCircleRadius=""   到目标中心的距离
 
 百分比偏移：让控件在父布局的水平方向或垂直方向的百分之多少的位置。
 
-```
+```xml
 app:layout_constraintHorizontal_bias=""   水平偏移 取值范围是0-1的小数
 app:layout_constraintVertical_bias=""     垂直偏移 取值范围是0-1的小数
 ```
 
 控件内边距、外边距、GONE Margin：内边距和外边距的使用方式其实是和其他布局一致的。GONE Margin，当依赖的目标 view 隐藏时会生效的属性，例如 B 被 A 依赖约束，当 B 隐藏时 B 会缩成一个点，自身的 margin 效果失效，A 设置的 GONE Margin 就会生效
 
-```
+```xml
 <!--  外边距  -->
 android:layout_margin="0dp"
 android:layout_marginStart="0dp"
@@ -260,14 +260,14 @@ app:layout_goneMarginTop="0dp"
 
 尺寸限制：用来限制最大、最小宽高度，这些属性只有在给出的宽度或高度为 wrap_content 时才会生效。
 
-```
+```xml
 android:minWidth=""   设置view的最小宽度
 android:minHeight=""  设置view的最小高度
 android:maxWidth=""   设置view的最大宽度
 android:maxHeight=""  设置view的最大高度
 ```
 
-更多内容参考：https://juejin.cn/post/6949186887609221133
+更多内容参考：<https://juejin.cn/post/6949186887609221133>
 
 ## 自定义控件
 
@@ -279,7 +279,7 @@ android:maxHeight=""  设置view的最大高度
 
 但是需要在每个 Activity 中为这些控件单独编写一次事件注册的代码，比如标题栏中的返回按钮。比较繁琐，代码重复度高，所以我们用自定义控件。
 
-### 自定义控件
+### 自定义
 
 需要写一个类，在布局中引入自定义 TitleLayout 控件时就会调用这个构造函数。可以将点击事件定义在这里。
 

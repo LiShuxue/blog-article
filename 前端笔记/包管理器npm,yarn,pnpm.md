@@ -213,7 +213,7 @@ pnpm 依赖文件通过三次寻址方式找到下载资源：
 
 ## nvm
 
-安装：https://github.com/nvm-sh/nvm#installing-and-updating
+安装：<https://github.com/nvm-sh/nvm#installing-and-updating>
 
 使用
 

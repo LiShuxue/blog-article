@@ -22,7 +22,7 @@ Android 内置了很多系统级别的广播，我们可以在应用程序中通
 
 具体的系统广播列表在：
 
-```
+```xml
 <Android SDK>/platforms/<任意android api版本>/data/broadcast_actions.txt
 ```
 
@@ -52,7 +52,7 @@ registerReceiver(timeChangeReceiver, intentFilter)
 
 从理论上来说，动态注册能监听到的系统广播，静态注册也应该能监听到，在过去的 Android 系统中确实是这样的。但是由于大量恶意的应用程序利用这个机制在程序未启动的情况下监听系统广播，从而使任何应用都可以频繁地从后台被唤醒，严重影响了用户手机的电量和 性能，因此 Android 系统几乎每个版本都在削减静态注册 BroadcastReceiver 的功能。
 
-在 Android 8.0（API level 26） 系统之后，所有隐式广播都不允许使用静态注册的方式来接收了。隐式广播指的是那些没有具体指定发送给哪个应用程序的广播，大多数系统广播属于隐式广播，但是少数特殊的系统广播目前仍然允许使用静态注册的方式来接收。这些特殊的系统广播列表详见 https://developer.android.google.cn/guide/components/broadcast-exceptions.html 。
+在 Android 8.0（API level 26） 系统之后，所有隐式广播都不允许使用静态注册的方式来接收了。隐式广播指的是那些没有具体指定发送给哪个应用程序的广播，大多数系统广播属于隐式广播，但是少数特殊的系统广播目前仍然允许使用静态注册的方式来接收。这些特殊的系统广播列表详见 <https://developer.android.google.cn/guide/components/broadcast-exceptions.html> 。
 
 开机自启动可以使用静态注册的方式来接收开机广播，然后在 onReceive()方法里执行相应的逻辑。
 

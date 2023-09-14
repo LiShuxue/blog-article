@@ -22,7 +22,7 @@ render() {
 }
 ```
 
-有时候会有很多使用 js 来动态判断是否为组件添加 class，可以用<u>classnames</u>库去简化它。
+有时候会有很多使用 js 来动态判断是否为组件添加 class，可以用**classnames**库去简化它。
 
 ```jsx
 import classnames from 'classnames';
@@ -90,7 +90,7 @@ import './test.module.css';
 
 ## CSS in JS => styled-components
 
-结合<u>styled-components</u>库，可以定义一个带有样式的元素。然后在 jsx 中使用。
+结合**styled-components**库，可以定义一个带有样式的元素。然后在 jsx 中使用。
 
 CSS in JS 可以和 JS 共享变量。
 

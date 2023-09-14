@@ -125,7 +125,7 @@ const store = createStore(reducer, preloadedState);
 ## Middleware
 
 在 Express 或者 Koa 等框架中，middleware 是指可以被嵌入在框架接收请求到产生响应过程之中的代码。  
-Redux middleware 提供的是位于 action 被发起之后，到达 reducer 之前的扩展点。 主要用来自定义扩展 Redux。你可以利用 Redux middleware 来进行<b>日志记录、创建崩溃报告、调用异步接口或者路由</b>等等。
+Redux middleware 提供的是位于 action 被发起之后，到达 reducer 之前的扩展点。 主要用来自定义扩展 Redux。你可以利用 Redux middleware 来进行**日志记录、创建崩溃报告、调用异步接口或者路由**等等。
 
 根据 Redux middleware API，每个 middleware 接受 Store 的 dispatch 和 getState 函数作为命名参数，并返回一个函数。
 
@@ -281,7 +281,7 @@ function testActionCreator(dispatch, anyParam) {
 }
 ```
 
-写法二，Action 对象的 payload 属性是一个 Promise 对象。这需要借助<u>redux-actions</u>模块引入 createAction 方法，生成 FSA
+写法二，Action 对象的 payload 属性是一个 Promise 对象。这需要借助**redux-actions**模块引入 createAction 方法，生成 FSA
 
 1. dispatch a copy of the action with the resolved value of the promise, and set status to success.
 2. dispatch a copy of the action with the rejected value of the promise, and set status to error.
@@ -374,10 +374,10 @@ const reducer = handleAction(
 );
 ```
 
-### 用 redux-observable 来 dispatch Observable。
+### 用 redux-observable 来 dispatch Observable
 
-### 用 redux-saga 中间件来创建更加复杂的异步 action。
+### 用 redux-saga 中间件来创建更加复杂的异步 action
 
-### 用 redux-pack 中间件 dispatch 基于 Promise 的异步 Action。
+### 用 redux-pack 中间件 dispatch 基于 Promise 的异步 Action
 
 ### 用 redux-logger 中间件记录显示 action、state 的变化

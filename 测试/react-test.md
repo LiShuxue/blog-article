@@ -71,7 +71,7 @@ it('renders without crashing', () => {
 ```
 
 - API  
-  Enzyme 通过模仿 JQuery 的 api 来操作 DOM 元素，更多 API 参考：https://airbnb.io/enzyme/docs/api/
+  Enzyme 通过模仿 JQuery 的 api 来操作 DOM 元素，更多 API 参考：<https://airbnb.io/enzyme/docs/api/>
 
 ```js
 // .contains 判断是否包含某个DOM元素
@@ -104,7 +104,7 @@ react-testing-library 是一个库，用于以类似于最终用户使用组件�
 
 它可以通过 label 文本查找 DOM 元素，查找 link 和 button 等所有 DOM 操作。
 
-它基于 DOM Testing Library 来处理 DOM 相关的测试。参考 https://testing-library.com/docs/dom-testing-library/intro
+它基于 DOM Testing Library 来处理 DOM 相关的测试。参考 <https://testing-library.com/docs/dom-testing-library/intro>
 
 ### 安装
 
@@ -128,9 +128,9 @@ it('renders welcome message', () => {
 });
 ```
 
-### <b>render 方法</b>
+### **render 方法**
 
-render 方法将 React 元素呈现到 DOM 中。将创建一个 div 并将该 div 附加到 document.body，然后渲染 React 组件到这个 div。更多详情参考： https://testing-library.com/docs/react-testing-library/api#render
+render 方法将 React 元素呈现到 DOM 中。将创建一个 div 并将该 div 附加到 document.body，然后渲染 React 组件到这个 div。更多详情参考： <https://testing-library.com/docs/react-testing-library/api#render>
 
 并且返回一系列查询函数，供你查询 DOM 节点。如
 
@@ -140,7 +140,7 @@ render 方法将 React 元素呈现到 DOM 中。将创建一个 div 并将该 d
 - `queryAllBy*** (ByText, ByTitle, ByRole, ByDisplayValue...等等)` 返回所有匹配的 DOM 节点，如果没有匹配到就返回[]数组
 - `findBy*** (ByText, ByTitle, ByRole, ByDisplayValue...等等)` 返回一个 Promise，如果有一个匹配到就 resolve，没有匹配或者匹配了多个就 reject
 - `findAllBy*** (ByText, ByTitle, ByRole, ByDisplayValue...等等)` 返回一个 Promise，如果匹配到 DOM 节点就 resolve，如果没有匹配到任何节点就 reject
-- 更多详情参考：https://testing-library.com/docs/dom-testing-library/api-queries
+- 更多详情参考：<https://testing-library.com/docs/dom-testing-library/api-queries>
 
 ```js
 const { getByText, getByRole } = render(<App />);
@@ -153,7 +153,7 @@ const { getByText, getByRole } = render(<App />);
 - debug() 该方法可以打印你的 DOM 信息，相当于 console.log()。不传参打印所有的，传参只打印你所传的
 - rerender，跟 render 方法相同，可以渲染组件。一般用来测试组件的 props update
 - unmount，卸载你渲染的组件
-- asFragment 相当于获取当前的快照，一般用来测试你的组件响应一些事件后的变化，可以通过库 snapshot-diff 去比较两个快照，https://github.com/jest-community/snapshot-diff
+- asFragment 相当于获取当前的快照，一般用来测试你的组件响应一些事件后的变化，可以通过库 snapshot-diff 去比较两个快照，<https://github.com/jest-community/snapshot-diff>
 
 ```js
 import React from 'react';
@@ -180,16 +180,16 @@ it('test renders', () => {
 });
 ```
 
-### <b>fireEvent 方法</b>
+### **fireEvent 方法**
 
-fireEvent 方法允许你触发一个事件，模拟用户操作，比如 click, change, keyDown 等，更多支持的事件参考：https://github.com/testing-library/dom-testing-library/blob/master/src/events.js
+fireEvent 方法允许你触发一个事件，模拟用户操作，比如 click, change, keyDown 等，更多支持的事件参考：<https://github.com/testing-library/dom-testing-library/blob/master/src/events.js>
 
 ```js
 fireEvent.click(getByText('Submit')); // 左键点击
 fireEvent.click(getByText('Submit'), { button: 2 }); // 右键点击
 ```
 
-### <b>获取异步渲染组件 wait, waitForElement, waitForDomChange</b>
+### **获取异步渲染组件 wait, waitForElement, waitForDomChange**
 
 有时候我们某些组件是异步渲染的，可以用 await...等待 DOM 元素出现或者消失。
 
@@ -207,7 +207,7 @@ test('test async', async () => {
 });
 ```
 
-### <b>匹配器</b>
+### **匹配器**
 
 Jest 本身提供了很多的匹配器，但是用来判断 DOM 的场景不是很适用，所以通过 jest-dom 扩展了很多关于 DOM 的匹配器，如
 
@@ -219,11 +219,11 @@ Jest 本身提供了很多的匹配器，但是用来判断 DOM 的场景不是�
 - toHaveAttribute 是否有某个属性
 - toHaveClass 是否有某个 class
 - toHaveStyle 是否有某个具体的 css 样式
-- 更多匹配器参考：https://github.com/testing-library/jest-dom#custom-matchers
+- 更多匹配器参考：<https://github.com/testing-library/jest-dom#custom-matchers>
 
-### <b>自定义配置</b>
+### **自定义配置**
 
-自定义 render 和 queries，参考：https://testing-library.com/docs/react-testing-library/setup
+自定义 render 和 queries，参考：<https://testing-library.com/docs/react-testing-library/setup>
 
 ---
 

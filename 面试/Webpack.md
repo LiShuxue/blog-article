@@ -83,8 +83,8 @@ Webpack 的运行流程是一个串行的过程，从启动到结束会依次执
 
 ## 如何提高 webpack 构建速度
 
-1.  使用 cache-loader 缓存结果
-2.  使用 DLLPlugin 和 DLLReferencePlugin
+1. 使用 cache-loader 缓存结果
+2. 使用 DLLPlugin 和 DLLReferencePlugin
 
 DLLPlugin 这个插件是在一个额外独立的 webpack 设置中创建一个只有 dll 的 bundle，也就是说我们在项目根目录下除了有 webpack.config.js，还会新建一个 webpack.dll.config.js 文件。
 

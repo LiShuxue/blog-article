@@ -304,7 +304,7 @@ Reflect 对象一般搭配 Proxy 使用，Reflect 对象的设计目的有这样
 3. 修改某些 Object 方法的返回结果，让其变得更合理。比如，Object.defineProperty(obj, name, desc)在无法定义属性时，会抛出一个错误，而 Reflect.defineProperty(obj, name, desc)则会返回 false。
 4. 让 Object 操作都变成函数行为。某些 Object 操作是命令式，比如 name in obj 和 delete obj[name]，而 Reflect.has(obj, name)和 Reflect.deleteProperty(obj, name)让它们变成了函数行为。
 
-### Proxy 中为啥要搭配 Reflect 使用。
+### Proxy 中为啥要搭配 Reflect 使用
 
 在复杂的使用场景保持正确的上下文和 this。
 
@@ -489,7 +489,7 @@ async/await 的注意事项：
 
 ## await 能不能被 return，return await promise 和 return promise 的区别
 
-https://stackoverflow.com/questions/38708550/difference-between-return-await-promise-and-return-promise
+<https://stackoverflow.com/questions/38708550/difference-between-return-await-promise-and-return-promise>
 
 1. 大体上没啥区别，效果一样
 2. 一般 await 用 try catch 包裹，如果两个都用 try catch 包裹，如果 promise reject，return await promise 会走到 catch， return promise 不会。

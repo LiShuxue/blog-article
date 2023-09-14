@@ -1,18 +1,18 @@
 ## FingerprintManager API 介绍
 
-### Google Doc：
+### Google Doc
 
-> https://developer.android.google.cn/reference/kotlin/android/hardware/fingerprint/FingerprintManager
+<https://developer.android.google.cn/reference/kotlin/android/hardware/fingerprint/FingerprintManager>
 
-### 公共方法：
+### 公共方法
 
 设备是否支持指纹识别
 
-> `isHardwareDetected()`
+`isHardwareDetected()`
 
 手机是否已经注册了指纹
 
-> `hasEnrolledFingerprints()`
+`hasEnrolledFingerprints()`
 
 开启指纹扫描
 
@@ -21,49 +21,52 @@
 - 参数 3： 一个 flag, 默认传 0
 - 参数 4： 一个回调对象，里面会实现成功，失败，错误，帮助等回调方法，当指纹扫描完成会进入不同的回调
 - 参数 5： FingerprintManager 将会使用这个 handler 中的 looper 来处理来自指纹识别硬件的消息。通常来讲，开发者不用提供这个参数，可以直接置为 null
-  > `authenticate(crypto: FingerprintManager.CryptoObject?, cancel: CancellationSignal?, flags: Int, callback: FingerprintManager.AuthenticationCallback, handler: Handler?)`
 
-### 子类：
+```java
+authenticate(crypto: FingerprintManager.CryptoObject?, cancel: CancellationSignal?, flags: Int, callback: FingerprintManager.AuthenticationCallback, handler: Handler?)
+```
 
-> `FingerprintManager.CryptoObject`
->
-> > `getCipher()`, `getMac()`, `getSignature()`
+### 子类
+
+#### FingerprintManager.CryptoObject
+
+`getCipher()`, `getMac()`, `getSignature()`
 
 可以传入 Signature, Cipher 和 Mac 来生成一个加密对象，这个加密对象可以传入 authenticate 方法。稍后介绍为什么传它。
 
-> `FingerprintManager.AuthenticationCallback`
->
-> > `onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult)` // 指纹识别成功
+#### FingerprintManager.AuthenticationCallback
 
-> > `onAuthenticationFailed()` // 指纹识别失败
+`onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult)` // 指纹识别成功
 
-> > `onAuthenticationError()` // 指纹识别过程中出错，或者用户取消了指纹识别操作
+`onAuthenticationFailed()` // 指纹识别失败
 
-> > `onAuthenticationHelp()` // 指纹识别过程中出错，但错误是可修复的，如指纹扫描器脏了，提示“Sensor dirty, please clean it.”
+`onAuthenticationError()` // 指纹识别过程中出错，或者用户取消了指纹识别操作
+
+`onAuthenticationHelp()` // 指纹识别过程中出错，但错误是可修复的，如指纹扫描器脏了，提示“Sensor dirty, please clean it.”
 
 生成一个回调对象来传入 authenticate 方法，这个回调对象包含 4 个回调方法。
 
-> `FingerprintManager.AuthenticationResult`
->
-> > `getCryptoObject()`
+#### FingerprintManager.AuthenticationResult
+
+`getCryptoObject()`
 
 指纹识别成功的回调方法里会传入一个 AuthenticationResult 对象，用这个 result 对象可以获得指纹扫描时传进来的 CryptoObject 对象：getCryptoObject
 
 ### 相关概念
 
-> KeyStore
+#### KeyStore
 
 安卓中用来存储公钥、私钥或者密钥的一个系统级的东西，有不同类型如：BKS， BouncyCastle， AndroidKeyStore， AndroidCAStore 等
 
-> KeyGenerator
+#### KeyGenerator
 
 用来生成公钥、私钥或者密钥的类，生成的时候提供一个 KeyStore 类型，生成后可以自动存进对应的 KeyStore 中
 
-> KeyGenParameterSpec
+#### KeyGenParameterSpec
 
 用来设定一系列的规则来初始化 KeyGenerator 对象
 
-> Cipher
+#### Cipher
 
 用来执行加密、解密的一个对象
 
@@ -394,4 +397,4 @@ try {
 
 ## 代码
 
-本 demo 的所有代码可以在我的 github 中找到：https://github.com/LiShuxue/Fingerprint-Demo/tree/fingerprint
+本 demo 的所有代码可以在我的 github 中找到：<https://github.com/LiShuxue/Fingerprint-Demo/tree/fingerprint>

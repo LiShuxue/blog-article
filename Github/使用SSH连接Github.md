@@ -17,7 +17,7 @@ ssh-keygen
 ## 3. 确认
 
 ```
-$ ssh -T git@github.com
+ssh -T git@github.com
 ```
 
 ## 4. 修改已有仓库的 url

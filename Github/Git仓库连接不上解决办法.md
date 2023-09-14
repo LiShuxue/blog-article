@@ -14,8 +14,8 @@ git config --global http.postBuffer 50M
 ## 2. 网络问题
 
 - Failed connect to github.com:443; Connection timed out。
-- fatal: unable to access ‘https://github.com/xxx‘: Encountered end of file
-- fatal: unable to access 'https://github.com/xxx': Empty reply from server
+- fatal: unable to access '<https://github.com/xxx>': Encountered end of file
+- fatal: unable to access '<https://github.com/xxx>': Empty reply from server
 
 这种问题一般是 https 的问题，或者是 github 服务器在国外，中间访问时候网络波动导致连接不上。
 

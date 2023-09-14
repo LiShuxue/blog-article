@@ -4,7 +4,7 @@ Nikto 是一个开源的网络服务器扫描程序，它针对网络服务器�
 
 ## 使用方式
 
-进入 git 页面：https://github.com/sullo/nikto，参考步骤
+进入 git 页面：<https://github.com/sullo/nikto，参考步骤>
 
 我使用了 nikto-2.1.6，当时 2.5.0 不能成功。
 

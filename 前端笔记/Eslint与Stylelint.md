@@ -198,4 +198,4 @@ extends: ['eslint:recommended', 'plugin:prettier/recommended']
 
 ## stylelint
 
-stylelint 用法跟 eslint 非常相似，具体参考: https://stylelint.io/
+stylelint 用法跟 eslint 非常相似，具体参考: <https://stylelint.io/>

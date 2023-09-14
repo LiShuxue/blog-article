@@ -11,7 +11,7 @@
 <body>
     <div id="app">
         <h2>{{a}}</h2>
-        <h2>{{b.c}}</b>
+        <h2>{{b.c}}</h2>
     </div>
 </body>
 <script>

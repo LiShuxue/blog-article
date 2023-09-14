@@ -6,7 +6,7 @@
 
 Jest 会寻找项目中所有的 test 文件来执行，根据下面的规则寻找
 
-- `__tests__ ` 文件夹下的所有`.js`文件
+- `__tests__` 文件夹下的所有`.js`文件
 - 所有 `.test.js` 文件
 - 所有 `.spec.js`文件
 
@@ -28,7 +28,7 @@ Jest 会寻找项目中所有的 test 文件来执行，根据下面的规则寻
 - "--watch", // 观察文件的变化，并重新执行变化的文件对应的测试
 - "--watchAll" // 观察文件的变化，并重新执行所有的测试
 - "--coverage" // 输出测试覆盖率报告
-- 更多选项请看：https://jestjs.io/docs/en/cli
+- 更多选项请看：<https://jestjs.io/docs/en/cli>
 
 ## 怎么编写测试文件
 
@@ -66,7 +66,7 @@ it('sums numbers', () => {
 - .toHaveBeenCalledTimes(number) 验证方法被调用了几次
 - .toHaveBeenCalledWith(arg1, arg2...) 验证方法被调用的时候的参数
 - .toMatchSnapsho 验证是否匹配最近的快照
-- Jest 还提供了很多的匹配器供你选择，如果没有合适的，也可以自己写匹配器。更多匹配器信息参考 https://jestjs.io/docs/en/expect
+- Jest 还提供了很多的匹配器供你选择，如果没有合适的，也可以自己写匹配器。更多匹配器信息参考 <https://jestjs.io/docs/en/expect>
 
 ## 如何测试异步代码
 
@@ -131,15 +131,15 @@ test('test async await', async () => {
 });
 ```
 
-更多关于异步测试的信息，参考：https://jestjs.io/docs/en/asynchronous
+更多关于异步测试的信息，参考：<https://jestjs.io/docs/en/asynchronous>
 
-> 个人思考，为什么 callback 形式和 promise 形式需要特殊处理才能按预期执行？
+- 个人思考，为什么 callback 形式和 promise 形式需要特殊处理才能按预期执行？
 
-> 个人认为，这跟 JS 代码的执行原理有关系，我们知道在浏览器中执行异步代码，会通过事件循环来处理，也会分为宏任务，微任务。先执行同步代码，同步代码执行完后再执行微任务代码，然后是宏任务代码。这样保证了回调函数或者是 promise 等异步代码的执行，但是这个事件循环机制是 V8 引擎提供的。个人认为 Jest 并没有提供事件循环机制，所以要通过额外的操作，保证异步代码的执行。
+- 个人认为，这跟 JS 代码的执行原理有关系，我们知道在浏览器中执行异步代码，会通过事件循环来处理，也会分为宏任务，微任务。先执行同步代码，同步代码执行完后再执行微任务代码，然后是宏任务代码。这样保证了回调函数或者是 promise 等异步代码的执行，但是这个事件循环机制是 V8 引擎提供的。个人认为 Jest 并没有提供事件循环机制，所以要通过额外的操作，保证异步代码的执行。
 
-> 可能有的会认为，为什么 async/await 的写法却跟我们在浏览器中执行代码一样，个人还是认为，这个是 Jest 自己实现的功能，跟浏览器保持了一致，而不是浏览器中的那个 async/await。
+- 可能有的会认为，为什么 async/await 的写法却跟我们在浏览器中执行代码一样，个人还是认为，这个是 Jest 自己实现的功能，跟浏览器保持了一致，而不是浏览器中的那个 async/await。
 
-如果个人的理解有错的地方，欢迎指正
+- 如果个人的理解有错的地方，欢迎指正
 
 ## Jest 的一些钩子,全局方法
 
@@ -147,7 +147,7 @@ test('test async await', async () => {
 
 比如你可能需要在测试用例执行前，做一些准备工作，或者用例执行之后的一些收尾工作。
 
-Jest 提供了`beforeEach()`, `afterEach()`, `beforeAll()`, `afterAll()` 来在不同时间段执行。区别是...Each 会在每一个 test 用例执行前后生效，而...All 一般写在文件的开头，会在整个文件的<b>所有用例</b>开始执行前和执行完毕后生效。
+Jest 提供了`beforeEach()`, `afterEach()`, `beforeAll()`, `afterAll()` 来在不同时间段执行。区别是...Each 会在每一个 test 用例执行前后生效，而...All 一般写在文件的开头，会在整个文件的**所有用例**开始执行前和执行完毕后生效。
 
 如果用于一组用例，可以用 describe 来分组，写在 describe 里面。
 
@@ -186,7 +186,7 @@ test.skip('test2', () => {
 test.todo('test3');
 ```
 
-更多全局方法函数参考：https://jestjs.io/docs/en/api
+更多全局方法函数参考：<https://jestjs.io/docs/en/api>
 
 ## Mock 函数, jest.fn, jest.mock
 
@@ -267,7 +267,7 @@ test('mock', () => {
 });
 ```
 
-虽然在代码中我们把 jest.mock 写在了后面，但实际上 Jest 会把 jest.mock 放在任何 import 的前面去调用，详见 https://github.com/kentcdodds/how-jest-mocking-works
+虽然在代码中我们把 jest.mock 写在了后面，但实际上 Jest 会把 jest.mock 放在任何 import 的前面去调用，详见 <https://github.com/kentcdodds/how-jest-mocking-works>
 
 ### 手动 mock 模块
 
@@ -285,7 +285,7 @@ Jest 可以通过配置文件设置进行相应的设置，其中有一个选项
 
 Jest 提供了`jest.useFakeTimers()`来模拟定时器函数，它可以模拟 setTimeout 和其他的定时器函数。
 
-如果你需要在一个文件或一个 describe 块中运行多次测试，在<b>每次测试前</b>手动添加`jest.useFakeTimers()`或者在 beforeEach 中添加。
+如果你需要在一个文件或一个 describe 块中运行多次测试，在**每次测试前**手动添加`jest.useFakeTimers()`或者在 beforeEach 中添加。
 
 ```js
 // timerGame.js
@@ -315,7 +315,7 @@ test('waits 1 second before ending the game', () => {
 - `jest.runOnlyPendingTimers()`  
   当前正在执行的 timer 立即执行完毕
 - `jest.advanceTimersByTime(1000)`  
-  将时间向前进行 1000ms,这个值可以自己设置。所有通过 setTimeout() 或 setInterval() 而处于<b>任务队列中等待中的</b>“宏任务”和一切其他<b>应该在本时间片中被执行的</b>东西都应该被执行。
+  将时间向前进行 1000ms,这个值可以自己设置。所有通过 setTimeout() 或 setInterval() 而处于**任务队列中等待中的**“宏任务”和一切其他**应该在本时间片中被执行的**东西都应该被执行。
 
 ## 覆盖率报表 Coverage Reporting
 

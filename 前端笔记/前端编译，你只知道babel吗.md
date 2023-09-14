@@ -35,7 +35,7 @@ Babel 解析器根据 [Babel AST](https://github.com/babel/babel/blob/main/packa
 
 [@babel/eslint-parser](https://github.com/babel/babel/tree/main/eslint/babel-eslint-parser) 就是除 Espree 之外专门用于 ESLint 的一个自定义解析器，内部使用@babel/parser 来解析代码（使用你项目中的 babel 配置），返回 ESLint 需要的结果，输出的 AST 也是基于 ESTree 规范的。相比于 Espree 只支持最终的标准，babel 解析器支持实验性的语法和 typescript 的语法。
 
-eslint 运行流程和原理可以参考：https://juejin.cn/post/7025256331120476197
+eslint 运行流程和原理可以参考：<https://juejin.cn/post/7025256331120476197>
 
 ## @typescript-eslint/parser
 
@@ -85,10 +85,10 @@ Autoprefixer, Stylelint, CSSnano 都是基于 PostCSS 之上的。一般配合 w
 
 ## 参考
 
-https://zhuanlan.zhihu.com/p/295291463
+<https://zhuanlan.zhihu.com/p/295291463>
 
-https://zhuanlan.zhihu.com/p/358518402
+<https://zhuanlan.zhihu.com/p/358518402>
 
-https://blog.csdn.net/mouday/article/details/126336560
+<https://blog.csdn.net/mouday/article/details/126336560>
 
-https://juejin.cn/post/7084882650233569317
+<https://juejin.cn/post/7084882650233569317>

@@ -6,7 +6,7 @@
 
 ## 常见类型
 
-string，number，boolean，number[] (或者 Array<number>)
+string，number，boolean，number[] (或者 `Array<number>`)
 
 声明变量的时候：你可以选择性的添加一个类型注解，显式指定变量的类型，不过大部分时候，这不是必须的。
 
@@ -360,8 +360,8 @@ const person = { name: 'kevin', age: '18' };
 type Kevin = typeof person;
 
 // type Kevin = {
-// 		name: string;
-// 		age: string;
+//   name: string;
+//   age: string;
 // }
 
 function identity<Type>(arg: Type): Type {
@@ -457,19 +457,19 @@ type Greeting = Capitalize<LowercaseGreeting>;
 
 ## 内置类型工具
 
-### Partial<Type>
+### `Partial<Type>`
 
 用于构造一个 Type 下面的所有属性都设置为可选的类型
 
-### Required<Type>
+### `Required<Type>`
 
 用于构造一个 Type 下面的所有属性全都设置为必填的类型
 
-### Readonly<Type>
+### `Readonly<Type>`
 
 用于构造一个 Type 下面的所有属性全都设置为只读的类型
 
-### Record<Keys, Type>
+### `Record<Keys, Type>`
 
 用于构造一个对象类型，它所有的键都是 Keys 类型，它所有的值都是 Type 类型。
 
@@ -488,23 +488,23 @@ const cats: Record<CatName, CatInfo> = {
 };
 ```
 
-### Omit<Type, Keys>
+### `Omit<Type, Keys>`
 
 用于构造一个类型，它是从 Type 类型里面忽略（移除）了一些属性 Keys，用于对象类型或 interface
 
-### Pick<Type, Keys>
+### `Pick<Type, Keys>`
 
 用于构造一个类型，它是从 Type 类型里面选择了一些属性 Keys，用于对象类型或 interface
 
-### Exclude<UnionType, ExcludedMembers>
+### `Exclude<UnionType, ExcludedMembers>`
 
 用于构造一个类型，它是从 UnionType 联合类型里面排除了所有可以赋给 ExcludedMembers 的类型。
 
-### Extract<Type, Union>
+### `Extract<Type, Union>`
 
 用于构造一个类型，它是从 Type 类型里面提取了所有可以赋给 Union 的类型。
 
-### ReturnType<Type>
+### `ReturnType<Type>`
 
 用于构造一个含有 Type 函数的返回值的类型。
 

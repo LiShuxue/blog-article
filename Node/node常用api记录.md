@@ -2,7 +2,7 @@
 
 写 node 程序，可能经常用到的文件的操作，或者文件夹的操作。
 
-不需要用原生的 fs 模块，用更好的 fs-extra 包：https://www.npmjs.com/package/fs-extra
+不需要用原生的 fs 模块，用更好的 fs-extra 包：<https://www.npmjs.com/package/fs-extra>
 
 ```js
 /**
@@ -129,7 +129,7 @@ console.log(path.parse('/Users/lishuxue/Documents/study/journey/test.js'));
 
 单线程：就是一个进程只开一个线程。
 
-浏览器中 js 执行是单线程的：https://www.ruanyifeng.com/blog/2014/10/event-loop.html
+浏览器中 js 执行是单线程的：<https://www.ruanyifeng.com/blog/2014/10/event-loop.html>
 
 nodejs 中 js 执行也是单线程的。
 

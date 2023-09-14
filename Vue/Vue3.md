@@ -104,13 +104,13 @@ x.value++; // 正确
 - 在模板中访问 ref 中的数据，系统会自动帮我们添加.value，
 - 在 setup 的 JS 中访问 ref 中的数据，需要手动添加.value。
 
-### ref 和 reactive 到底用哪个。
+### ref 和 reactive 到底用哪个
 
 reactive 对象存在解构丢失响应性的问题，而 ref 需要到处使用 .value 则感觉很繁琐，并且在没有类型系统的帮助时很容易漏掉 .value。
 
 ### $ref 语法糖
 
-为了解决繁琐的 value 问题。可以使用$ref 宏来声明变量。目前是一个实验性功能，默认是禁用的，需要显式选择使用。参考：https://cn.vuejs.org/guide/extras/reactivity-transform.html
+为了解决繁琐的 value 问题。可以使用$ref 宏来声明变量。目前是一个实验性功能，默认是禁用的，需要显式选择使用。参考：<https://cn.vuejs.org/guide/extras/reactivity-transform.html>
 
 ```js
 <script setup>
@@ -153,11 +153,14 @@ setup(props) {
 ## computed $ watch & watchEffect
 
 - computed()：接受一个函数，返回一个响应式 ref 对象。函数中的响应式变量为依赖（自动收集依赖）
+
   ```js
   const plusOne = computed(() => count.value + 1);
   console.log(plusOne.value); // 2
   ```
+
 - watch()，跟 vue2 中差不多，第一个参数是要监听的值，可以是多个，ref 或者 reactive, getter 等。第二个是回调，第三个参数是一些选项，控制执行时机等。
+
   ```js
   // watch ref
   watch(num, (newValue, oldValue) => {
@@ -171,6 +174,7 @@ setup(props) {
     }
   );
   ```
+
 - watchEffect()，类似 useEffect, 在组件渲染之前执行。第一个参数是函数，函数中的响应式变量为依赖（自动收集依赖），依赖变化时函数重新执行。第二个参数选项可以调整函数第一次执行时的机。返回值是一个用来停止该副作用的函数。
 
 推荐大部分时候用 watch 显式的指定依赖以避免不必要的重复触发，也避免在后续代码修改或重构时不小心引入新的依赖。
@@ -504,7 +508,7 @@ const MyVueElement = defineCustomElement({
 customElements.define('my-vue-element', MyVueElement);
 ```
 
-## vue3 核心写法总结：
+## vue3 核心写法总结
 
 - 优先使用 `<script setup>` 语法，早期的 setup 函数不推荐。
 - 组件的 props 可以用 const props = defineProps({})来定义和接收。通过 props.xxx 来使用，模板中也可以直接用 xxx，省略 props.
@@ -550,7 +554,7 @@ setup 中使用的组件内守卫：`import { onBeforeRouteLeave, onBeforeRouteU
 
 ### 路由插槽
 
-之前可以直接传递一个模板，通过嵌套在 `<router-view>` 组件下，由路由组件的 <slot> 来渲染
+之前可以直接传递一个模板，通过嵌套在 `<router-view>` 组件下，由路由组件的 `<slot>` 来渲染
 
 ```js
 <router-view>

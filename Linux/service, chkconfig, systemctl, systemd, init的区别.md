@@ -113,7 +113,7 @@ $ sudo systemctl set-property httpd.service CPUShares=500
 ```
 
 一些别的命令
-https://blog.csdn.net/weixin_40763897/article/details/106865755
+<https://blog.csdn.net/weixin_40763897/article/details/106865755>
 
 ```sh
 # 重启系统

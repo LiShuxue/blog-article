@@ -2,7 +2,7 @@
 
 上一篇文章中所介绍的内容，与 React 没有关系，上面都是在 Redux 中如何操作状态，其他框架也可以使用 Redux。
 
-如果想在 react 中使用 redux，需要借助<u>react-redux</u>库。
+如果想在 react 中使用 redux，需要借助**react-redux**库。
 
 ## react-redux
 
@@ -55,7 +55,7 @@ export default connect(
 
 第一个参数是 `mapStateToProps(state, ownProps?)`方法
 
-作用：将 state 映射成组件的<b>额外的</b>props 传递给组件
+作用：将 state 映射成组件的**额外的**props 传递给组件
 
 - 输入 state 和组件本身的 props，然后返回一个对象，对象里的每一项都会变成组件额外的 props 传递给组件
 - 每次 state 改变，这个方法都会被调用，所以组件额外的 props 都会被更新，导致组件重新渲染

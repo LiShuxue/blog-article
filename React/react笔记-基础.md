@@ -144,7 +144,7 @@ props（“properties” 的缩写）和 state 都是普通的 JavaScript 对象
 
 ### 常用生命周期
 
-#### 挂载阶段：
+#### 挂载阶段
 
 当组件实例被创建并插入 DOM 中时
 
@@ -152,13 +152,13 @@ props（“properties” 的缩写）和 state 都是普通的 JavaScript 对象
 - render()
 - componentDidMount()
 
-#### 更新阶段：
+#### 更新阶段
 
 - shouldComponentUpdate()
 - render()
 - componentDidUpdate()
 
-#### 卸载阶段：
+#### 卸载阶段
 
 - componentWillUnmount()
 
@@ -170,11 +170,11 @@ React 事件的命名采用小驼峰式（camelCase），而不是纯小写。
 
 注意 this 的绑定，否则 this 有可能为 undefined
 
-#### 四种写法：
+#### 四种写法
 
 一般我们常用第一和第二种。
 
-1.  在构造函数中绑定 this，在 JSX 模板使用的时候直接用 this.handleClick
+1. 在构造函数中绑定 this，在 JSX 模板使用的时候直接用 this.handleClick
 
 ```jsx
 class Test extends React.Component {
@@ -392,7 +392,7 @@ function Parent(props) {
 
 用空标签<>或者<React.Fragment>来包裹一些不需要父级标签的内容。
 
-使用显式 <React.Fragment> 语法声明的片段<b>可能具有 key</b>，而且 key 是目前唯一可以传递给 Fragment 的属性，未来可能会添加对其他属性的支持，例如事件。
+使用显式 <React.Fragment> 语法声明的片段**可能具有 key**，而且 key 是目前唯一可以传递给 Fragment 的属性，未来可能会添加对其他属性的支持，例如事件。
 
 ```jsx
 <>

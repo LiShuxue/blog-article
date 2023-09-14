@@ -262,11 +262,11 @@ onDestroy()：这个方法在 Activity 被销毁之前调用，之后 Activity �
 
 onRestart()：这个方法在 Activity 由停止状态变为运行状态之前调用，也就是 Activity 被重新启动了。
 
-<b>完整生存期</b>：Activity 在 onCreate()方法和 onDestroy()方法之间所经历的就是完整生存期。一般情况下，一个 Activity 会在 onCreate()方法中完成各种初始化操作，而在 onDestroy()方法中完成释放内存的操作。
+**完整生存期**：Activity 在 onCreate()方法和 onDestroy()方法之间所经历的就是完整生存期。一般情况下，一个 Activity 会在 onCreate()方法中完成各种初始化操作，而在 onDestroy()方法中完成释放内存的操作。
 
-<b>可见生存期</b>：Activity 在 onStart()方法和 onStop()方法之间所经历的就是可见生存期。在可见生存期内，Activity 对于用户总是可见的，即便有可能无法和用户进行交互。我们可以通过这两个方法合理地管理那些对用户可见的资源。比如在 onStart()方法中对资源进行加载，而在 onStop()方法中对资源进行释放，从而保证处于停止状态的 Activity 不会占用过多内存。
+**可见生存期**：Activity 在 onStart()方法和 onStop()方法之间所经历的就是可见生存期。在可见生存期内，Activity 对于用户总是可见的，即便有可能无法和用户进行交互。我们可以通过这两个方法合理地管理那些对用户可见的资源。比如在 onStart()方法中对资源进行加载，而在 onStop()方法中对资源进行释放，从而保证处于停止状态的 Activity 不会占用过多内存。
 
-<b>前台生存期</b>：Activity 在 onResume()方法和 onPause()方法之间所经历的就是前台生存期。在前台生存期内，Activity 总是处于运行状态，此时的 Activity 是可以和用户进行交互的，我们平时看到和接触最多的就是这个状态下的 Activity 。
+**前台生存期**：Activity 在 onResume()方法和 onPause()方法之间所经历的就是前台生存期。在前台生存期内，Activity 总是处于运行状态，此时的 Activity 是可以和用户进行交互的，我们平时看到和接触最多的就是这个状态下的 Activity 。
 
 ### Dialog Activity
 
@@ -307,13 +307,13 @@ override fun onCreate(savedInstanceState: Bundle?) {
 启动模式一共有 4 种，分别是 standard、singleTop、
 singleTask 和 singleInstance ，可以在 AndroidManifest.xml 中通过给`<activity>`标签指定 android:launchMode 属性来选择启动模式。
 
-<b>standard</b> 模式，是 Activity 默认的启动模式，在不进行显式指定的情况下，所有 Activity 都会自动使用这种启动模式。在 standard 模式下，每当启动一个新的 Activity ，它就会在返回栈中入栈，并处于栈顶的位置。对于使用 standard 模式的 Activity ，系统不会在乎这个 Activity 是否已经在返回栈中存在，是否在栈顶，每次启动都会创建一个该 Activity 的新实例，放入栈顶。
+**standard** 模式，是 Activity 默认的启动模式，在不进行显式指定的情况下，所有 Activity 都会自动使用这种启动模式。在 standard 模式下，每当启动一个新的 Activity ，它就会在返回栈中入栈，并处于栈顶的位置。对于使用 standard 模式的 Activity ，系统不会在乎这个 Activity 是否已经在返回栈中存在，是否在栈顶，每次启动都会创建一个该 Activity 的新实例，放入栈顶。
 
-<b>singleTop</b> 模式，在启动 Activity 时如果发现栈顶已经是该 Activity，则认为可以直接使用它，不会再创建新的 Activity 实例。如果该 Activity 并没有处于栈顶的位置，还是会创建一个该 Activity 的新实例，放入栈顶。
+**singleTop** 模式，在启动 Activity 时如果发现栈顶已经是该 Activity，则认为可以直接使用它，不会再创建新的 Activity 实例。如果该 Activity 并没有处于栈顶的位置，还是会创建一个该 Activity 的新实例，放入栈顶。
 
-<b>singleTask</b> 模式，每次启动该 Activity 时，系统首先会在返回栈中检查是否存在该 Activity 的实例，如果发现已经存在则直接使用该实例，并把在这个 Activity 之上的所有其他 Activity 统统出栈，如果没有发现就会创建一个新的 Activity 实例。
+**singleTask** 模式，每次启动该 Activity 时，系统首先会在返回栈中检查是否存在该 Activity 的实例，如果发现已经存在则直接使用该实例，并把在这个 Activity 之上的所有其他 Activity 统统出栈，如果没有发现就会创建一个新的 Activity 实例。
 
-<b>singleInstance</b> 模式，会有一个单独的返回栈来管理这个 Activity ，不管是哪个应用程序来访问这个 Activity ，都共用同一个返回栈，也就解决了共享 Activity 实例的问题。
+**singleInstance** 模式，会有一个单独的返回栈来管理这个 Activity ，不管是哪个应用程序来访问这个 Activity ，都共用同一个返回栈，也就解决了共享 Activity 实例的问题。
 
 ## Activity 的最佳实践技巧
 

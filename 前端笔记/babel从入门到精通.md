@@ -109,7 +109,7 @@ polyfill 指当浏览器不支持某一最新 API 时，它将帮你实现，中
 ]
 ```
 
-### ★ 注意：
+### ★ 注意
 
 - @babel/preset-env 中的 useBuiltIns 和 corejs 选项就可以删除了
 - 这个 corejs 选项需要主动安装 @babel/runtime-corejs3 包：yarn add @babel/runtime-corejs3
@@ -119,33 +119,33 @@ polyfill 指当浏览器不支持某一最新 API 时，它将帮你实现，中
 
 ## 1）babel 基础库
 
-<b>初始化项目：</b>
+**初始化项目：**
 
 [codesandbox.io](https://codesandbox.io/dashboard/drafts?workspace=9374287f-1efe-4fb4-8e50-4e117b63c113)
 
-<b>安装</b>
+**安装**
 
 `yarn add @babel/core @babel/cli`
 
-<b>使用命令行工具@babel/cli 编译</b>
+**使用命令行工具@babel/cli 编译**
 
 `./node_modules/.bin/babel ./es6.js --config-file ./babel.config.js --out-file ./dist/es6-babel-compiled.js`
 
 ## 2）preset 及其配置
 
-<b>初始化项目：</b>
+**初始化项目：**
 
 [codesandbox.io](https://codesandbox.io/dashboard/drafts?workspace=9374287f-1efe-4fb4-8e50-4e117b63c113)
 
-<b>安装</b>
+**安装**
 
 `yarn add @babel/core @babel/cli @babel/preset-env`
 
-<b>使用命令行工具@babel/cli 编译</b>
+**使用命令行工具@babel/cli 编译**
 
 `./node_modules/.bin/babel ./es6.js --config-file ./babel.config.js --out-file ./dist/es6-babel-compiled.js`
 
-<b>配置 preset-env</b>
+**配置 preset-env**
 
 ```js
 presets: [
@@ -160,17 +160,17 @@ presets: [
 ];
 ```
 
-<b>再次编译，观察结果</b>
+**再次编译，观察结果**
 
 增加了 core-js 中的 polyfill 的导入，但是文件上的一大堆辅助函数，造成了代码冗余。
 
 ## 3）@babel/plugin-transform-runtime 和@babel/runtime
 
-<b>初始化项目：</b>
+**初始化项目：**
 
 [codesandbox.io](https://codesandbox.io/dashboard/drafts?workspace=9374287f-1efe-4fb4-8e50-4e117b63c113)
 
-<b>安装</b>
+**安装**
 
 `yarn add @babel/core @babel/cli @babel/preset-env @babel/plugin-transform-runtime @babel/runtime`
 
@@ -180,25 +180,25 @@ presets: [
 plugins: ['@babel/plugin-transform-runtime'];
 ```
 
-<b>使用命令行工具@babel/cli 编译</b>
+**使用命令行工具@babel/cli 编译**
 
 `./node_modules/.bin/babel ./es6.js --config-file ./babel.config.js --out-file ./dist/es6-babel-compiled.js`
 
-<b>是否发现了什么问题？</b>
+**是否发现了什么问题？**
 
 将 core-js 中的 polyfill 直接导入进来，他们会挂载到全局，造成全局污染。
 
 ## 4）优化 corejs
 
-<b>初始化项目：</b>
+**初始化项目：**
 
 [codesandbox.io](https://codesandbox.io/dashboard/drafts?workspace=9374287f-1efe-4fb4-8e50-4e117b63c113)
 
-<b>安装</b>
+**安装**
 
 `yarn add @babel/core @babel/cli @babel/preset-env @babel/plugin-transform-runtime @babel/runtime-corejs3`
 
-<b>配置 plugins，preset 配置可删除</b>
+**配置 plugins，preset 配置可删除**
 
 ```js
 plugins: [
@@ -212,21 +212,21 @@ plugins: [
 presets: ['@babel/preset-env']
 ```
 
-<b>使用命令行工具@babel/cli 编译</b>
+**使用命令行工具@babel/cli 编译**
 
 `./node_modules/.bin/babel ./es6.js --config-file ./babel.config.js --out-file ./dist/es6-babel-compiled.js`
 
-<b>观察结果</b>
+**观察结果**
 
 此时所有的 polyfill 和辅助函数全是通过 @babel/runtime-corejs3 引入，解决了全局污染的问题，同时，由 babel 控制了所有的 polyfill 加载。
 
 ## 5）babel api 编译
 
-<b>初始化项目：</b>
+**初始化项目：**
 
 [codesandbox.io](https://codesandbox.io/dashboard/drafts?workspace=9374287f-1efe-4fb4-8e50-4e117b63c113)
 
-<b>使用 api 编译代码</b>
+**使用 api 编译代码**
 
 index.js
 
@@ -250,11 +250,11 @@ console.log(code);
 
 ## 6）webpack 加载 babel
 
-<b>初始化项目：</b>
+**初始化项目：**
 
 [codesandbox.io](https://codesandbox.io/dashboard/drafts?workspace=9374287f-1efe-4fb4-8e50-4e117b63c113)
 
-<b>用 babel-loader 处理 js 文件，他会默认加载根目录的 babel.config.js</b>
+**用 babel-loader 处理 js 文件，他会默认加载根目录的 babel.config.js**
 
 webpack.config.js
 
@@ -330,7 +330,7 @@ babel 仓库是 monorepo 形式，采用 yarn workspaces 管理，所有的核�
 
 Babel 是没有语义分析和中间代码生成/优化阶段的。但是我们熟知的 JavaScript 的编译器 v8 引擎是有的。
 
-<b>V8 原理图</b>
+**V8 原理图**
 
 1. 输入全局的 js 代码，解析器(Parser)通过词法分析，生成 tokens，语法分析根据 tokens 生成 AST 抽象语法树。
 1. 解释器(Ignition) 会将 AST 转换为字节码，一边解释一边执行。（解释执行）
@@ -436,28 +436,28 @@ babel 的语法分析器具体实现在[babel-parser/src/parser/statement.ts](ht
 
 [在线 AST 转换](https://astexplorer.net/)
 
-<b>抽象语法树</b>（abstract syntax code，AST）是源代码抽象语法结构的树状表示，树上的每个节点都表示源代码中的一种结构，之所以说语法是 "抽象" 的，是因为这里的语法不会表示出真实语法中出现的每个细节。比如说，嵌套括号被隐含在树的结构中，并没有以节点的形式呈现。
+**抽象语法树**（abstract syntax code，AST）是源代码抽象语法结构的树状表示，树上的每个节点都表示源代码中的一种结构，之所以说语法是 "抽象" 的，是因为这里的语法不会表示出真实语法中出现的每个细节。比如说，嵌套括号被隐含在树的结构中，并没有以节点的形式呈现。
 
-<b>具象语法树</b>（Concret Syntax Tree，CST）是包含代码所有语法信息的树形结构，它是代码的直接翻译，所以解析树也被称为具象语法树。抽象语法树实际只是解析树的一个精简版。
+**具象语法树**（Concret Syntax Tree，CST）是包含代码所有语法信息的树形结构，它是代码的直接翻译，所以解析树也被称为具象语法树。抽象语法树实际只是解析树的一个精简版。
 
 AST 节点数据结构：
 
 ```js
 {
-	type: 'Program' | 'FunctionDeclaration' | 'Identifier' // 节点的类型
+  type: 'Program' | 'FunctionDeclaration' | 'Identifier' // 节点的类型
 
- 	// 不同节点类型的一些独有的描述字段
+  // 不同节点类型的一些独有的描述字段
   kind: "const" // 变量，函数，表达式等的类型
   name: '' // 变量名
   ...
 
- 	// 位置属性
+  // 位置属性
   start: 0,
   end: 54
 }
 ```
 
-<b>常见的节点类型：</b>
+**常见的节点类型：**
 
 - Programs（根节点，表示所有源程序开始）
 
@@ -948,7 +948,7 @@ visitor.FunctionDeclaration = function () {};
 
 我们编写的 Babel 插件其实也是通过定义一个 visitor 对象处理一系列的 AST 节点，来完成我们对代码的修改操作。
 
-<b>需求：给所有的方法添加 try catch</b>
+**需求：给所有的方法添加 try catch**
 
 ```js
 // 原方法
@@ -970,7 +970,7 @@ function add(a, b) {
 }
 ```
 
-<b>思路：</b>
+**思路：**
 
 1. 先看 AST 语法树的区别 [在线 AST 转换](https://astexplorer.net/)
 
@@ -980,7 +980,7 @@ function add(a, b) {
 
 4. 将当前函数体内的代码块放在 try 语句代码块中
 
-<b>babel 插件</b>
+**babel 插件**
 
 [codesandbox.io](https://codesandbox.io/dashboard/drafts?workspace=9374287f-1efe-4fb4-8e50-4e117b63c113)
 
@@ -1220,16 +1220,16 @@ module.exports = compiler;
 
 ## 7）参考
 
-https://babel.dev/docs/en/
+<https://babel.dev/docs/en/>
 
-https://github.com/zloirock/core-js
+<https://github.com/zloirock/core-js>
 
-https://webpack.js.org/guides/
+<https://webpack.js.org/guides/>
 
-https://baike.baidu.com/item/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/4194
+<https://baike.baidu.com/item/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/4194>
 
-https://github.com/estree/estree
+<https://github.com/estree/estree>
 
-https://github.com/jamiebuilds/the-super-tiny-compiler
+<https://github.com/jamiebuilds/the-super-tiny-compiler>
 
-https://zhuanlan.zhihu.com/p/419252425
+<https://zhuanlan.zhihu.com/p/419252425>

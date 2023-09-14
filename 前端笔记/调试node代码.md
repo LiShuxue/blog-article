@@ -19,10 +19,12 @@ node --inspect-brk test.js
 ### Attach 模式
 
 1. 先运行程序，并使断点停在第一行
+
    ```js
    // 以调式模式运行，并停在第一行断点
    node --inspect-brk test.js
    ```
+
 2. 创建一个.vscode/launch.json 配置文件，点击右下角的“Add Configuration”按钮添加配置。
 
    ```js
