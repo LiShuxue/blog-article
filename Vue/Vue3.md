@@ -15,9 +15,9 @@
 - 更好的类型推导能力。
 - 更小的生产包体积。
 
-### [VueUse](https://vueuse.org/)
+### VueUse
 
-vue 工具型组合式函数集合。
+vue 工具型组合式函数集合。<https://vueuse.org>
 
 ## setup
 
@@ -107,26 +107,6 @@ x.value++; // 正确
 ### ref 和 reactive 到底用哪个
 
 reactive 对象存在解构丢失响应性的问题，而 ref 需要到处使用 .value 则感觉很繁琐，并且在没有类型系统的帮助时很容易漏掉 .value。
-
-### $ref 语法糖
-
-为了解决繁琐的 value 问题。可以使用$ref 宏来声明变量。目前是一个实验性功能，默认是禁用的，需要显式选择使用。参考：<https://cn.vuejs.org/guide/extras/reactivity-transform.html>
-
-```js
-<script setup>
-let count = $ref(0)
-
-console.log(count)
-
-function increment() {
-  count++
-}
-</script>
-
-<template>
-  <button @click="increment">{{ count }}</button>
-</template>
-```
 
 ## toRefs & toRef & unref
 
@@ -506,6 +486,46 @@ const MyVueElement = defineCustomElement({
 // 注册之后，所有此页面中的 `<my-vue-element>` 标签
 // 都会被升级
 customElements.define('my-vue-element', MyVueElement);
+```
+
+## JSX
+
+### 无状态的纯 UI 组件
+
+```jsx
+const App = () => <div>Vue 3.0</div>;
+
+const App = {
+  render() {
+    return <div>Vue 3.0</div>;
+  },
+};
+
+// fragment
+const App = () => (
+  <>
+    <span>I'm</span>
+    <span>Fragment</span>
+  </>
+);
+```
+
+### 有状态的组件
+
+```jsx
+import { defineComponent } from 'vue';
+
+const App = defineComponent({
+  setup() {
+    const count = ref(0);
+
+    const inc = () => {
+      count.value++;
+    };
+
+    return () => <div onClick={inc}>{count.value}</div>;
+  },
+});
 ```
 
 ## vue3 核心写法总结
