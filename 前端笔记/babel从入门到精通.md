@@ -29,6 +29,8 @@ module.exports = {
 - module：使用模块语法解析文件。允许 import / export 语句。
 - unambiguous：如果存在 import / export 语句，则将文件视为“模块”，否则将其视为“脚本”。
 
+默认是 module。
+
 ### 1.2）targets
 
 指定我们编译完后的 js 需要支持的浏览器版本。没有指定 targets 会寻找项目的.browserslistrc 中的配置代替。
@@ -108,6 +110,8 @@ polyfill 指当浏览器不支持某一最新 API 时，它将帮你实现，中
   ]
 ]
 ```
+
+这个适合在开发类库的时候使用，打包出来的代码，不包含这些辅助函数，只包含一些import，而这些需要在最终业务代码打包时引入进来。
 
 ### ★ 注意
 
@@ -1218,7 +1222,13 @@ const codeGenerator = (node) => {
 module.exports = compiler;
 ```
 
-## 7）参考
+# 五、附
+
+## 1）源码
+
+<https://github.com/LiShuxue/babel-transform>
+
+## 2）参考
 
 <https://babel.dev/docs/en/>
 
