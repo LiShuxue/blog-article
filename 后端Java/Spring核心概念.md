@@ -161,7 +161,7 @@ Spring 强调注解的使用，如 **@Component、@Service、@Controller** 等�
 
 - **@Repository**：标记一个类作为数据访问层（DAO）的 Bean，通常用于数据访问类。
 
-- **@Autowired**：自动注入依赖，通常用于构造函数、Setter 方法或字段上。Spring 会自动解析并注入所需的 Bean。如果一个 Bean 有多个构造函数，你需要用 **@Autowired** 注解来告诉 Spring 该用哪个构造函数进行注入。
+- **@Autowired**：自动注入依赖，通常用于构造函数、Setter 方法或字段上。Spring 会自动解析并注入所需的 Bean。如果一个 Bean 有多个构造函数，你需要用 **@Autowired** 注解来告诉 Spring 该用哪个构造函数进行注入。不推荐使用。
 
 - **@Bean**：创建第三方 Bean，在 **@Configuration** 类中编写一个 Java 方法创建并返回它，该方法用 **@Bean** 注解。
 
