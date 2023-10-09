@@ -6,7 +6,11 @@
 
 2、源码 .github/CONTRIBUTING.md 文件中有描述怎么安装依赖，使用 `pnpm i` 安装依赖
 
-3、安装依赖的时候，遇到 puppeteer 下载问题，需要在项目根目录添加`.npmrc`，加上这一行代码`puppeteer-download-base-url="https://cdn.npmmirror.com/binaries/chrome-for-testing"`
+3、安装依赖的时候，遇到 puppeteer 下载问题，需要在项目根目录添加`.npmrc`，加上这一行代码
+
+```js
+puppeteer-download-base-url="https://cdn.npmmirror.com/binaries/chrome-for-testing"
+```
 
 4、在 package.json 中的 scripts 中添加如下命令 build-vue-only，主要是只打包全局的 vue 和输出 sourcemap 文件。package.json 中默认有 build 命令，是打包所有的 package，并且打包所有格式。
 
