@@ -80,11 +80,11 @@ package.json 中默认有 build 命令，是打包所有的 package，并且生�
 
 ## Vue3 使用和调试
 
-1、在 packages/vue/examples 文件夹下创建 debug 文件夹，并且在 debug 文件夹下创建 index.html，App.js，index.js。
+1、在 packages/vue/examples 文件夹下创建 debug 文件夹，并且在 debug 文件夹下创建 index.html
 
-2、将下面的代码复制到对应文件中
+2、将下面的代码复制到文件中
 
-3、浏览器运行 index.html，需要使用服务器启动这个 html
+3、浏览器运行 index.html
 
 4、开始打断点调试，从 createApp 方法开始
 
@@ -96,42 +96,31 @@ package.json 中默认有 build 命令，是打包所有的 package，并且生�
   <div @click="add">{{name}}</div>
 </script>
 
-<!-- App根组件 -->
-<script type="module" src="./App.js"></script>
-
-<!-- 项目启动文件 -->
-<script type="module" src="./index.js"></script>
-
-<!-- 模拟渲染的根节点 -->
+<!-- app渲染的根节点 -->
 <div id="demo"></div>
-```
 
-```js
-// App.js
-const { ref } = Vue;
-export default {
-  template: '#app',
-  setup() {
-    const name = ref(0);
-    const add = () => {
-      name.value++;
-    };
+<script>
+  const { createApp, ref } = Vue;
+  // 根组件
+  const App = {
+    template: '#app',
+    setup() {
+      const name = ref(0);
+      const add = () => {
+        name.value++;
+      };
 
-    return {
-      name,
-      add,
-    };
-  },
-};
-```
-
-```js
-// index.js
-import App from './app.js';
-
-const { createApp } = Vue;
-const app = createApp(App);
-app.mount('#demo');
+      return {
+        name,
+        add,
+      };
+    },
+  };
+  // 创建实例
+  const app = createApp(App);
+  // 渲染
+  app.mount('#demo');
+</script>
 ```
 
 ## 其他

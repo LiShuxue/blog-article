@@ -142,7 +142,7 @@ export function mountComponent(vm, el) {
 }
 ```
 
-### vm.\_render
+### render
 
 该方法主要是调用组件或者 Vue 实例中自己写的 render 函数，或者是模板编译后生成的的 render 函数，来创建虚拟 DOM 节点 VNode.
 
@@ -193,7 +193,7 @@ Vue.prototype._render = function () {
 };
 ```
 
-### vm.\_update
+### update
 
 该方法主要是根据最新的 vnode，生成真实的 DOM，用最新的 DOM 替换当前浏览器 DOM 树中旧的 DOM。
 

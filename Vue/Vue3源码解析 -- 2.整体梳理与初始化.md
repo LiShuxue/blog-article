@@ -159,16 +159,11 @@ Vue3 中通过 createApp() 来创建整个 app 实例，app 实例上可以使�
 看下面的例子。
 
 ```js
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import App from './App.vue';
-import handleError from './utils/handleError';
-
 const app = createApp(App);
 app.use(createPinia());
 app.config.errorHandler = handleError;
 
-app.mount('#app');
+app.mount('#demo');
 ```
 
 ### createApp
