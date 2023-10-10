@@ -50,18 +50,33 @@ puppeteer-download-base-url="https://cdn.npmmirror.com/binaries/chrome-for-testi
 
 compile 可以理解为编译器，将 vue 的语法，代码，编译成 JS 的过程。而 runtime 则是程序运行时的一些方法，比如创建实例，生命周期，渲染等 vue 的核心功能。
 
+## Vue3 打包分析
+
+项目根目录可以看到 rollup.config.js，vue3 正是使用 rollup 打包的，在这个配置文件中，可以看到下面这行的代码：
+
+```js
+let entryFile = /runtime$/.test(format) ? `src/runtime.ts` : `src/index.ts`;
+```
+
+entryFile 就是打包的入口文件。在 packages 目录下面的每一个文件夹，都可以被单独打包，我们现在只分析 packages/vue 这个包。所以入口文件就是 `packages/vue/src/runtime.ts` 或者 `packages/vue/src/index.ts`，具体是哪个入口，取决于你打包时选择的格式，是打包 rumtine 相关的，还是打包整个 Vue。
+
 ## 打包生成的文件
 
-package.json 中默认有 build 命令，是打包所有的 package，并且生成不同格式的文件。分别有 iife，cjs，es 格式。iife 表示立即执行函数，可以直接在 html 中使用；cjs 表示用在 Nodejs 环境，或其他支持 CommonJS 的环境；es 表示生成的文件遵循 ES6 的模块规范。
+package.json 中默认有 build 命令，是打包所有的 package，并且生成不同格式的文件。分别有 iife，cjs，es 格式。
 
-生成的文件名字分别是 `vue.global.js`，`vue.cjs.js`，`vue.esm-browser.js`，`vue.esm-bundler.js`，`vue.runtime.global.js`，`vue.runtime.esm-browser.js`，`vue.runtime.esm-bundler.js`。其中大致分为两种，一种是带 runtime 的，表示这个文件是纯 Vue 功能的，包含 Vue 运行时的各种方法，但是不支持模版语法等，也就是不支持编译。另外一种不带 runtime 的，表示是全部的代码，既包含编译部分，也包含 Vue 的运行时功能。
+- iife 表示立即执行函数，可以直接在 html 中使用；
+- cjs 表示用在 Nodejs 环境，或其他支持 CommonJS 的环境；
+- es 表示生成的文件遵循 ES6 的模块规范。
 
-- cjs：CommonJS（CJS）模块格式的文件，适用于 Node.js 环境或其他支持 CommonJS 的环境。
+我们只打包 vue 的话，生成的文件名字分别是 `vue.global.js`，`vue.cjs.js`，`vue.esm-browser.js`，`vue.esm-bundler.js`，`vue.runtime.global.js`，`vue.runtime.esm-browser.js`，`vue.runtime.esm-bundler.js`。
+
+其中大致分为两种，一种是带 runtime 的，表示这个文件是纯 Vue 功能的，包含 Vue 运行时的各种方法，但是不支持模版语法等，也就是不支持编译。另外一种不带 runtime 的，表示是全部的代码，既包含编译部分，也包含 Vue 的运行时功能。
+
+- cjs：CommonJS 模块格式的文件，适用于 Node.js 环境或其他支持 CommonJS 的环境。
 - global：将 Vue 3 作为一个全局变量暴露给浏览器环境使用。
 - global-runtime：仅包含运行时代码的全局变量模块文件，适用于浏览器环境。相比 global.js 就是少了 compile 方法。
-- esm-bundler 和 esm-browser：这两个配置用于打包 ES 模块（ESM）格式的文件。'esm-bundler' 用于打包供 bundler（如 Rollup 或 Webpack）使用的 ES 模块文件，而 'esm-browser' 用于打包供浏览器环境使用的 ES 模块文件。
-
-- esm-bundler-runtime 和 esm-browser-runtime：这两个配置用于打包仅包含运行时代码的 ES 模块文件。'esm-bundler-runtime' 用于 bundler 环境，如 Rollup 或 Webpack，而 'esm-browser-runtime' 用于浏览器环境。
+- esm-bundler 和 esm-browser：这两个配置用于打包 ES 模块格式的文件。esm-bundler 用于打包供 bundler（如 Rollup 或 Webpack）使用，而 esm-browser 用于打包供浏览器环境使用。
+- esm-bundler-runtime 和 esm-browser-runtime：这两个配置用于打包仅包含运行时代码的 ES 模块文件。esm-bundler-runtime 用于 bundler 环境，如 Rollup 或 Webpack，而 esm-browser-runtime 用于浏览器环境。
 
 ## Vue3 使用和调试
 
@@ -127,7 +142,7 @@ app.mount('#demo');
 
 ![debug](https://cdn.lishuxue.site/blog/image/Vue/debug.png)
 
-这些`__XXX__`类型的变量通常用于在开发环境和生产环境之间进行条件编译，以实现在开发阶段添加额外的调试信息或者去除一些不必要的代码。这些变量通常是在构建过程中通过构建工具的插件定义的。
+这些 `__XXX__` 类型的变量通常用于在开发环境和生产环境之间进行条件编译，以实现在开发阶段添加额外的调试信息或者去除一些不必要的代码。这些变量通常是在构建过程中通过构建工具的插件定义的。
 
 vue3 打包时，用到了 rollup-plugin-esbuild 的 define 属性，设置了许多预定义常量。类似的功能还有 webpack.DefinePlugin，@rollup/plugin-replace 等插件。
 
