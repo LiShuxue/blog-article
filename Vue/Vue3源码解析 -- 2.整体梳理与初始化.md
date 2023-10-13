@@ -276,7 +276,11 @@ function createAppAPI(render) {
     return app;
   };
 }
+```
 
+createAppContext 用来创建一个全局的上下文对象，这个对象会挂在每一个子组件对象上。以供所有的地方都能使用。
+
+```js
 function createAppContext() {
   return {
     app: null,
@@ -303,3 +307,5 @@ function createAppContext() {
 ### 总结
 
 我们通过 `const app = createApp(App);` 创建了一些 app 对象，这个 app 对象提供了一些全局方法，比如注册组件、指令、挂载根组件等，也可以设置 config 对象，app 中的 config 对象就是 context 中的 config。
+
+最后通过 mount 方法将应用挂载并渲染到页面。
