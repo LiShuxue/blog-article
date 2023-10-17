@@ -23,7 +23,7 @@ export function initState(vm) {
 
 ## props 的初始化
 
-实例在初始化后就有$props属性，这是因为源码中在定义Vue类的时候，就给Vue.prototype上增加了该属性。$data 也一样。默认没有 set 只有 get。在非生产环境下，不允许修改 props。
+实例在初始化后就有 `$props` 属性，这是因为源码中在定义 Vue 类的时候，就给 Vue.prototype 上增加了该属性。`$data` 也一样。默认没有 set 只有 get。在非生产环境下，不允许修改 props。
 
 ```js
 // src/core/instance/state.js
@@ -39,9 +39,9 @@ Object.defineProperty(Vue.prototype, '$data', dataDef);
 Object.defineProperty(Vue.prototype, '$props', propsDef);
 ```
 
-在\_init 方法中合并 options 的时候，会将 props 中的数据，挂在实例的$options.propsData 中，值是传进来的值。
+在 \_init 方法中合并 options 的时候，会将 props 中的数据，挂在实例的$options.propsData 中，值是传进来的值。
 
-在 initProps 方法中，我们会遍历组件的整个 props 对象，将每个属性挂在实例的\_props 属性上，并且变成响应式的。如果实例上不存在（在创建组件类的时候，就会将 props 挂在组件类的 prototype 上），也会将属性和值再直接挂在实例上，方便代码中通过 this.xxx 调用。
+在 initProps 方法中，我们会遍历组件的整个 props 对象，将每个属性挂在实例的 \_props 属性上，并且变成响应式的。如果实例上不存在（在创建组件类的时候，就会将 props 挂在组件类的 prototype 上），也会将属性和值再直接挂在实例上，方便代码中通过 this.xxx 调用。
 
 ```js
 // src/core/instance/state.js
@@ -298,7 +298,7 @@ export function popTarget() {
 
 遍历 computed options 中的每一个属性，获取到其 get 方法，并对应生成一个 watcher 实例。watcher 实例生成的时候，会调用 get 方法进行依赖收集。对于 vue 实例的计算属性，重新定义在实例上，且是带有缓存性的。
 
-将这些计算属性的 watcher 用\_computedWatchers 来存储。
+将这些计算属性的 watcher 用 \_computedWatchers 来存储。
 
 缓存的实现主要通过 dirty 属性，当数据被访问时，如果 dirty 是 true，就重新计算，否则就直接返回值。当数据被更新时，dirty 会被赋值为 true，当数据计算完后，又被赋值为 false。
 

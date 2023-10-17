@@ -158,12 +158,39 @@ Vue3 中通过 createApp() 来创建整个 app 实例，app 实例上可以使�
 
 看下面的例子。
 
-```js
-const app = createApp(App);
-app.use(createPinia());
-app.config.errorHandler = handleError;
+```html
+<script src="../../dist/vue.global.js"></script>
 
-app.mount('#demo');
+<!-- App组件的模板 -->
+<script type="text/x-template" id="app">
+  <div @click="add">{{name}}</div>
+</script>
+
+<!-- app渲染的根节点 -->
+<div id="demo"></div>
+
+<script>
+  const { createApp, ref } = Vue;
+  // 根组件
+  const App = {
+    template: '#app',
+    setup() {
+      const name = ref(0);
+      const add = () => {
+        name.value++;
+      };
+
+      return {
+        name,
+        add,
+      };
+    },
+  };
+  // 创建实例
+  const app = createApp(App);
+  // 渲染
+  app.mount('#demo');
+</script>
 ```
 
 ### createApp

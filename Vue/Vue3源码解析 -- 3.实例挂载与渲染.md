@@ -6,7 +6,9 @@
 
 那这个根组件是怎么创建并渲染到页面的，其中的子组件又是怎么渲染的呢？
 
-```js
+```html
+<script src="../../dist/vue.global.js"></script>
+
 <!-- App组件的模板 -->
 <script type="text/x-template" id="app">
   <div @click="add">{{name}}</div>
@@ -18,30 +20,36 @@
   <div>这是子组件</div>
 </script>
 
-// 子组件
-const Children = {
-  template: '#children',
-};
-// 根组件
-const App = {
-  template: '#app',
-  components: {
-    Children,
-  },
-  setup() {
-    const name = ref(0);
-    const add = () => {
-      name.value++;
-    };
+<!-- app渲染的根节点 -->
+<div id="demo"></div>
 
-    return {
-      name,
-      add,
-    };
-  },
-};
-const app = createApp(App);
-app.mount('#demo');
+<script>
+  const { createApp, ref } = Vue;
+  // 子组件
+  const Children = {
+    template: '#children',
+  };
+  // 根组件
+  const App = {
+    template: '#app',
+    components: {
+      Children,
+    },
+    setup() {
+      const name = ref(0);
+      const add = () => {
+        name.value++;
+      };
+
+      return {
+        name,
+        add,
+      };
+    },
+  };
+  const app = createApp(App);
+  app.mount('#demo');
+</script>
 ```
 
 ## 实例挂载
@@ -897,7 +905,7 @@ const parseValue = parse(`
     <script setup>
     import { ref } from 'vue'
     const name = ref(0);
-    </script>
+    <script/>
 
     <style>
     </style>
