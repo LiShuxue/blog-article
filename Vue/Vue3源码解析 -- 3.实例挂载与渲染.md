@@ -512,7 +512,7 @@ function handleSetupResult(instance, setupResult) {
 
 #### finishComponentSetup
 
-最后又调用了 finishComponentSetup 方法，这个函数主要是给组件实例，添加上 render 方法。方便将组件的模版渲染成 vnode。
+最后又调用了 finishComponentSetup 方法，这个函数主要是给组件实例，添加上 render 方法。方便将组件的模版渲染成 vnode。同时也会调用 applyOptions 处理 2.x 的 options 选项式写法，将 data，computed，watch，生命周期等处理一遍。
 
 它先判断组件是否存在渲染函数 render，如果不存在则判断是否存在 template 选项，将 template 编译成渲染函数。
 
@@ -547,6 +547,11 @@ function finishComponentSetup(instance) {
     }
 
     instance.render = Component.render || NOOP;
+  }
+
+  // 支持 2.x options 写法
+  if (__FEATURE_OPTIONS_API__ && !(__COMPAT__ && skipOptions)) {
+    applyOptions(instance);
   }
 }
 ```
