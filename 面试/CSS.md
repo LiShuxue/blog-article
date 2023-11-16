@@ -110,7 +110,7 @@
 display: flex;
 flex-direction: row | column; /* 横竖 */
 justify-content: center | flex-start | flex-end | space-between | space-around; /* 居中，左对齐，右对齐，两端对齐，中间间隔相等 */
-flex-wrap: wrap | no-wrap | wrap-reverse; /* 换行， 不换行， 跟正常换行相反，如向上换行，第一行在下，新行在上 */
+flex-wrap: nowrap | wrap | wrap-reverse; /* 不换行，换行，跟正常换行相反，如向上换行，第一行在下，新行在上 */
 align-items: center | flex-start | flex-end | base-line | stretch; /* 交叉轴对齐方式：居中，上对齐，下对齐，第一行基线对齐，子元素占满整个容器高度 */
 ```
 
