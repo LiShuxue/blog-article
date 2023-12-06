@@ -716,7 +716,7 @@ class Fish with Swim {
 
 继承是面向对象编程中的重要概念，它允许一个类（子类）获取另一个类（父类）的属性和行为。子类可以继承父类的成员变量和成员方法，并且可以通过重写方法来修改或扩展父类的行为。
 
-子类构造方法后面需要调 super 来自动引用父类的构造函数。
+子类构造方法需要调 super 引用父类的构造函数。
 
 ```dart
 // 定义一个父类
@@ -732,7 +732,7 @@ class Animal {
 
 // 定义一个子类，并继承父类
 class Dog extends Animal {
-  Dog(String name) : super(name);
+  Dog(super.name); // 等同于：Dog(String name) : super(name);
 
   void bark() {
     print('Woof!');
@@ -745,7 +745,27 @@ void main() {
   dog.eat(); // 输出 Buddy is eating
   dog.bark(); // 输出 Woof!
 }
+```
 
+### super 参数
+
+用 super 来初始化参数是一种机制，用于避免在构造函数的 super 调用中手动传递每个参数。这种特性使得在子类构造函数中能够将参数快速地传递给指定或默认的父类构造函数。这对于简化代码、提高可读性非常有用。
+
+```dart
+class Vector2d {
+  final double x;
+  final double y;
+
+  Vector2d(this.x, this.y);
+}
+
+class Vector3d extends Vector2d {
+  final double z;
+
+  // Forward the x and y parameters to the default super constructor like:
+  // Vector3d(final double x, final double y, this.z) : super(x, y);
+  Vector3d(super.x, super.y, this.z);
+}
 ```
 
 #### 单例模式
