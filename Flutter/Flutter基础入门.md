@@ -1,3 +1,5 @@
+> 上一篇文章介绍了 Dart 的知识点，想必你对 Dart 已经很熟悉了，接下来开始了解下 Flutter 的基础吧，做一个完整的 flutter 程序。
+
 ## Flutter 介绍
 
 Flutter 是一个由 Google 开发的开源 UI 工具包，用于构建跨平台移动应用、Web 应用和桌面应用。它使用 Dart 编程语言，具有快速的热重载功能和丰富的现代化 UI 组件，使得开发者能够轻松构建高性能、美观的应用程序。
@@ -19,6 +21,10 @@ Flutter 实用教程：<https://flutter.cn/docs/cookbook>
 Widget 目录：<https://docs.flutter.dev/ui/widgets>
 
 Material 组件库：<https://docs.flutter.dev/ui/widgets/material>
+
+### 安装
+
+略。
 
 ## Flutter 基础命令介绍
 
