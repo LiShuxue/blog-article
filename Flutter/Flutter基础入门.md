@@ -679,6 +679,136 @@ void dioConfig() {
 }
 ```
 
+## 状态管理
+
+当你需要在多个页面共享数据，且数据变化后页面需要重新渲染的话，你就需要做状态管理了。
+
+在 React 中，提供了 Context 在组件之间共享数据。首先创建一个 Context，用这个 Context 的 Provider 将数据提供给子级，子级中通过 useContext 来获取。
+
+而 Flutter 中，也有类似的设计，这就需要用到 provider 库。其中涉及到三个概念 ChangeNotifier，ChangeNotifierProvider，Consumer。和观察者模式类似。
+
+### ChangeNotifier
+
+ChangeNotifier 是 Flutter SDK 中的一个简单的类，它用于向监听器发送通知。换言之，如果被定义为 ChangeNotifier，你可以订阅它的状态变化。
+
+在相对复杂的应用中，由于会有多个模型，所以可能会有多个 ChangeNotifier。
+
+假设现在我们有一个公共的状态 Model 类。里面有两个数据，一个是\_items，一个是 totalPrice。
+
+当模型发生改变并且需要更新 UI 的时候可以调用 notifyListeners() 方法。
+
+```dart
+import 'dart:collection';
+class MyModel extends ChangeNotifier {
+  // 内部状态 _items
+  final List<int> _items = [1,2,3];
+  // 外部获取该状态，返回一个不可修改的
+  get items => UnmodifiableListView(_items);
+
+  // 内部状态 totalPrice
+  get totalPrice => _items.length * 42;
+
+  void add(int number) {
+    _items.add(number);
+    // 通知widget更新
+    notifyListeners();
+  }
+
+  void removeAll() {
+    _items.clear();
+    notifyListeners();
+  }
+}
+```
+
+### ChangeNotifierProvider
+
+ChangeNotifierProvider widget 可以向其子孙节点暴露一个 ChangeNotifier 实例，我们可以将它放在需要访问这个状态的 widget 之上。
+
+可以给 widget 同时提供一个或者多个 ChangeNotifierProvider。
+
+```dart
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CartModel(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => MyModel()),
+        ChangeNotifierProvider(create: (context) => SomeOtherClass()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+```
+
+### 使用全局状态
+
+#### Consumer
+
+通过 Consumer widget，可以访问这个状态数据，使用时必须指定要访问的模型类型 `Consumer<MyModel>` 。当状态变化时，Consumer 会重新渲染。
+
+Consumer widget 唯一必须的参数就是 builder，当你在模型中调用 notifyListeners() 时，所有相关的 Consumer widget 的 builder 方法都会被调用。
+
+builder 在被调用的时候会用到三个参数，第一个是 context，第二个参数是 ChangeNotifier 的实例，第三个参数是 child，用于优化目的。
+
+最好能把 Consumer 放在 widget 树尽量低的位置上。
+
+```dart
+return HumongousWidget(
+  // ...
+  child: AnotherMonstrousWidget(
+    // ...
+    child: Consumer<MyModel>(
+      builder: (context, my, child) {
+        return Text('Total price: ${my.totalPrice}');
+      },
+    ),
+  ),
+);
+```
+
+#### Provider.of
+
+Provider.of 也可以访问全局状态，并且在状态变化时更新 widget。
+
+```dart
+class MyWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final myModel = Provider.of<MyModel>(context, listen: true);
+    return Text(myModel.myValue.toString());
+  }
+}
+```
+
+有的时候你不需要模型中的数据来改变 UI，但是你可能还是需要访问该数据或者方法。所以我们可以将 listen 设置为 false。
+
+在 build 方法中使用上面的代码，当 notifyListeners 被调用的时候，并不会使 widget 被重构。
+
+```dart
+Provider.of<MyModel>(context, listen: false).removeAll();
+```
+
+#### context.read
+
+context.read 也可以用于获取全局状态数据模型，但不会在数据模型更改时更新 widget。
+
+```dart
+final mymodel = context.read<MyModel>();
+mymodel.add(1);
+```
+
 ## 数据持久化 Shared preferences
 
 使用 Shared preferences 需要借助插件，来将简单的 key-value 数据存储到硬盘。支持的数据类型有 int、double、bool、String、`List<String>`。
@@ -787,11 +917,14 @@ battery_plus：获取电池状态（full, charging, discharging）
 ## 一个完整的 Flutter 示例
 
 ```dart
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 final _logger = Logger();
 
@@ -838,6 +971,28 @@ void dioConfig() {
   );
 }
 
+// 全局状态 models
+class MyModel extends ChangeNotifier {
+  // 内部状态 _items
+  final List<int> _items = [1, 2, 3];
+  // 外部获取该状态，返回一个不可修改的
+  get items => UnmodifiableListView(_items);
+
+  // 内部状态 totalPrice
+  get totalPrice => _items.length * 42;
+
+  void add(int number) {
+    _items.add(number);
+    // 通知widget更新
+    notifyListeners();
+  }
+
+  void removeAll() {
+    _items.clear();
+    notifyListeners();
+  }
+}
+
 void main() {
   dioConfig();
   // 主方法启动app
@@ -852,13 +1007,19 @@ class MyApp extends StatelessWidget {
   // 覆写 build 方法
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'My Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), // 定义颜色
-        useMaterial3: true, // 启用Material 3
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => MyModel()),
+      ],
+      child: MaterialApp.router(
+        title: 'My Flutter Demo',
+        theme: ThemeData(
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: Colors.deepPurple), // 定义颜色
+          useMaterial3: true, // 启用Material 3
+        ),
+        routerConfig: _router, // 路由配置
       ),
-      routerConfig: _router, // 路由配置
     );
   }
 }
@@ -967,8 +1128,20 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 // 处理按钮按下事件
                 _logger.d('button pressed');
+                // 修改全局状态
+                context.read<MyModel>().add(1);
               },
-              child: const Text('Press Me'),
+              child: const Text('更新全局状态'),
+            ),
+            Consumer<MyModel>(
+                builder: (context, my, child) =>
+                    Text('全局状态 Total price: ${my.totalPrice}')),
+            ElevatedButton(
+              onPressed: () {
+                // 修改全局状态
+                Provider.of<MyModel>(context, listen: false).removeAll();
+              },
+              child: const Text('清空全局状态'),
             ),
           ],
         ),
@@ -1130,6 +1303,12 @@ class _SecondPageState extends State<SecondPage> {
               },
               child: const Text('获取持久化的数据'),
             ),
+            Consumer<MyModel>(
+                builder: (context, my, child) =>
+                    Text('全局状态 items: ${my.items.toString()}')),
+            Consumer<MyModel>(
+                builder: (context, my, child) =>
+                    Text('全局状态 Total price: ${my.totalPrice}')),
           ],
         ),
       ),

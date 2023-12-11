@@ -224,16 +224,24 @@ List，Set，Map 中可以使用 if 和 for。
 
 #### 不可变
 
-使用 const 关键字，则该集合具有不可变性。
+使用 const 关键字，则该集合具有不可变性。如果是 final，这确保了该字段不能被另一个字段覆盖，但它仍然允许修改该字段的大小或内容。
 
 ```dart
 const fruits = <String>{'apple', 'orange', 'pear'};
 ```
 
-也可使用 unmodifiable 方法
+也可使用 unmodifiable 方法。但是该方法会返回一个集合的拷贝。也就是说会创建一个副本。
 
 ```dart
 final _set = Set<String>.unmodifiable(['a', 'b', 'c']);
+```
+
+如果不想额外创建副本，在 dart:collection 库中提供了一个 UnmodifiableListView 类，可以将原始数据包装在防止修改的视图中。
+
+```dart
+var originalList = [1, 2, 3];
+var unmodifiableCopy = List<int>.unmodifiable(originalList);
+var unmodifiableView = UnmodifiableListView(originalList);
 ```
 
 #### 相等比较
