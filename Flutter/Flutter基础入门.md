@@ -14,6 +14,8 @@ Flutter 中的 setState 和 React 中的 setState 类似，它们都用于通知
 
 Flutter 官网：<https://docs.flutter.dev/ui>
 
+Flutter 实战 第二版：<https://book.flutterchina.club/>
+
 练习 flutter：<https://dartpad.dev/>
 
 Flutter 实用教程：<https://flutter.cn/docs/cookbook>
