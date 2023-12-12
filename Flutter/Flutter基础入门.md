@@ -916,6 +916,8 @@ battery_plus：获取电池状态（full, charging, discharging）
 
 ## 一个完整的 Flutter 示例
 
+Github地址：<https://github.com/LiShuxue/flutter_app_demo>
+
 ```dart
 import 'dart:collection';
 

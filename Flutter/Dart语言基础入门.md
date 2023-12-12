@@ -586,9 +586,9 @@ this 仅在类中使用，并且始终引用当前实例。
 
 #### 构造方法和实例
 
-构造方法可以是默认构造方法或者命名构造方法。默认构造方法与类同名，而命名构造方法具有自定义名称。
+构造方法可以是默认构造方法或者命名构造方法。默认构造方法与类同名，而命名构造方法具有自定义名称。如果是内部私有命名构造（也就是命名构造的前面加上 `_`），只能在类内部调用
 
-在构造方法中，可以使用 this 关键字来引用当前实例，以初始化实例变量。
+在默认构造方法中，可以使用 this 关键字来引用当前实例，以初始化实例变量。
 
 创建实例不需要 new 关键字。
 
@@ -598,11 +598,11 @@ class Person {
   int age;
 
   // 默认构造方法
-  Person(this.name, this.age);
+  Person(this.name, this.age); // 这两个参数会被赋值给Person类的name和age属性。将在构造函数执行之前赋值。
 
-  // 命名构造方法
+  // 命名构造方法，
   Person.guest() {
-    name = 'Guest';
+    name = 'Guest'; // 可以省略this，因为是直接赋值的
     age = 18;
   }
 }
@@ -614,6 +614,72 @@ void main() {
   // 使用命名构造方法创建实例
   Person person2 = Person.guest();
 }
+```
+
+构造函数也可以有主体内容，可能包括初始化一些可以在运行时计算的变量，或者执行一些需要在对象创建后立即进行的操作。
+
+如果构造函数的参数名和类的属性名相同，函数主体中不能省略 this 关键字。否则可以。
+
+```dart
+class Point {
+  double x, y, distanceFromOrigin;
+  Point(double x, double y)
+      : x = x,
+        y = y {
+    // 函数主体
+    distanceFromOrigin = sqrt(x * x + y * y);
+  }
+}
+
+class Student {
+  int age;
+  Student(int age) {
+    age = age;  // 错误：这里的age是构造函数的参数，而不是类的属性
+  }
+}
+
+class Student {
+  int age;
+  Student(int age) {
+    this.age = age;  // 正确：使用this关键字来引用类的属性
+  }
+}
+
+class Student {
+  int age;
+  Student(int num) {
+    age = num;  // 正确：省略this
+  }
+}
+```
+
+#### 初始化列表
+
+构造函数后面的冒号 `:` 用于分隔构造函数的参数列表和初始化列表。
+
+初始化列表允许在构造函数体执行之前初始化类的实例变量，为实例的属性提供初始值。
+
+初始化列表可以包含多个初始化表达式，这些表达式之间用逗号 `,` 分隔。
+
+初始化列表可以直接使用参数名来引用参数，而不需要使用 this 关键字。这是因为在初始化列表中，Dart 可以清楚地区分参数和类的属性。
+
+```dart
+class Point {
+  double x, y;
+  Point(double x, double y)
+      : x = x, // 初始化列表
+        y = y {
+    // 构造函数体
+  }
+}
+
+// 等价于
+Person(double x, double y) {
+  this.x = x;
+  this.y = y;
+}
+// 等价于
+Point(this.x, this.y);
 ```
 
 #### 成员变量、成员方法
@@ -638,6 +704,10 @@ class Person {
 关键字 this 用于引用当前实例。
 
 this 可以用来区分实例变量和局部变量。
+
+工厂构造不能用 this。初始化列表可以直接使用参数名来引用参数，而不需要使用 this 关键字。
+
+如果构造函数的参数名和类的属性名相同，函数主体中不能省略 this 关键字。否则可以。
 
 ```dart
 class Person {
@@ -776,9 +846,33 @@ class Vector3d extends Vector2d {
 }
 ```
 
-#### 单例模式
+#### 工厂构造函数 & 单例模式
 
-有些类提供常量构造函数，使用常量构造函数创建编译时常量，这个实例就是相等的。
+工厂构造函数用 factory 关键字指定，这个构造函数可以是命名的，或者默认的那种。通过 factory 关键字，我们可以自定义返回的对象。
+
+工厂构造函数必须返回类或者子类的实例。在工厂构造中不能用 this。
+
+工厂构造可以用于返回类的缓存实例，所以很容易创建单例。
+
+```dart
+class Singleton {
+  static final Singleton _instance = Singleton._internal(); // 调用内部私有命名构造，创建一个实例对象
+
+  Singleton._internal(); // 内部私有命名构造，只能在类内部调用
+
+  factory Singleton() => _instance; // 工厂构造，自定义返回这个实例对象
+}
+// 等价于
+class Singleton {
+  static final Singleton _instance = Singleton._internal();
+  Singleton._internal();
+  factory Singleton() {
+    return _instance;
+  }
+}
+```
+
+有些类提供常量构造函数，使用常量构造函数创建编译时常量，这个实例就是相等的。前提是类的所有实例变量都是final的，也就是说它们在对象创建后不能被修改。
 
 ```dart
 class MySingleton {
