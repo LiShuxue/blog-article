@@ -579,12 +579,30 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-页面跳转，传递参数
+页面跳转 go 或者 push，传递参数，获取参数
+
+go 方法会直接跳转到目标路由，丢弃之前的路由。push 方法则会将目标路由添加到当前路由之上，形成一个导航堆栈。
 
 ```dart
+// 页面跳转
 onPressed: () => context.go('/details'),
+onPressed: () => GoRouter.of(context).go('/details'),
 
+// 传递参数，路径参数，query参数
 context.go(Uri(path: '/users/123', queryParameters: {'filter': 'abc'}).toString());
+GoRouter.of(context).pushNamed('home', pathParameters: {'id': '1'}, queryParameters: {'from': 'home'});
+
+// 获取参数
+GoRoute(
+  name: 'home',
+  path: '/home/:id',
+  builder: (BuildContext context, GoRouterState state) {
+    return DetailPage(
+      id: state.pathParameters['id'] ?? '',
+      from: state.uri.queryParameters['from'] ?? '',
+    );
+  },
+),
 ```
 
 ## Flutter 渲染机制
@@ -920,7 +938,7 @@ battery_plus：获取电池状态（full, charging, discharging）
 
 ## 一个完整的 Flutter 示例
 
-Github地址：<https://github.com/LiShuxue/flutter_app_demo>
+Github 地址：<https://github.com/LiShuxue/flutter_app_demo>
 
 ```dart
 import 'dart:collection';
