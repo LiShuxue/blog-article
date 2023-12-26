@@ -45,7 +45,9 @@ var name = 'Bob'; // 自动推断类型String
 
 #### 常量
 
-final 或者 const 可以定义常量，也能自动推断类型。类的实例常量，只能用 final，不能用 const。一般写代码时都使用 final 即可。
+final 或者 const 可以定义常量，也都能自动推断类型。类的实例常量，只能用 final，不能用 const。
+
+const 适用于在编译时就确定的常量，final 允许在运行时才确定值。
 
 ```dart
 final name = 'Bob'; // 也能自动推断
