@@ -7,6 +7,7 @@ keytool -genkey -keystore journey.keystore -alias journey -keyalg RSA -validity 
 - -keystore：指定生成的密钥库文件的名称。
 
 - -storepass：设置密钥库的访问密码。
+
 - -keypass：设置密钥（私钥）的密码。如果未指定，则默认与密钥库密码相同。
 
 - -alias：设置别名，用于标识密钥对的唯一性。
