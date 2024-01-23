@@ -33,3 +33,19 @@ git config --global --unset http.proxy
 在项目下打开.git/config文件，将里面的项目的URL，https://改为git:// 。即使用git协议
 或者，使用SSH协议，url为 git@github.com:LiShuxue/xxx.git 也应该可以解决（未尝试）
 ```
+
+## 3. 22 端口问题
+
+今天突然用 ssh 方式 pull GitHub 的项目报错：ssh: connect to host xx.xx.xx.xx port 22: Connection timed out
+
+表明 SSH 连接在尝试通过 22 端口连接到远程服务器时超时。这可能是由于网络环境、防火墙设置或代理配置等原因导致的(很可能端口 22 被防火墙或提供商阻止了)。
+
+为了解决此问题，我们可以尝试将 SSH 连接切换到 443 端口。
+
+~/.ssh/config 文件中添加以下内容（如果没有文件就创建该文件）：
+
+```
+Host github.com
+  Hostname ssh.github.com
+  Port 443
+```
