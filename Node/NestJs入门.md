@@ -117,7 +117,7 @@ export class CatService {
 
 提供者会被声明在@Module 的 providers 中，将被依赖注入到 Controller 或者其他地方。
 
-## 中间件（Middlewares）
+### 中间件（Middlewares）
 
 中间件是在路由处理程序 **之前** 调用的函数。可以访问请求和响应对象，以及请求响应周期中的 next() 函数。可以用来处理请求、进行验证、日志记录、实现认证等操作。
 
@@ -300,11 +300,15 @@ app.useGlobalGuards(new AuthGuard());
 
 管道也是具有 @Injectable() 装饰器的类。管道应实现 PipeTransform 接口，且实现 transform 方法。
 
+当 class-validator 结合 dto 的验证不满足需求时，才需要自定义 pipe。
+
 ```ts
 import { Injectable, PipeTransform, ArgumentMetadata } from '@nestjs/common';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
+  // metadata 参数是一个包含了有关参数的元数据的对象，其中包括以下属性：type：参数的类型（QUERY、BODY、PARAM 等）。metatype：参数的 JavaScript 类型。data：可选的自定义元数据。
+  @Injectable()
   transform(value: any, metadata: ArgumentMetadata) {
     console.log('pipe ', value);
     // 在这里进行数据验证和转换
@@ -327,7 +331,17 @@ export class CatController {
 
 ### 数据传输对象 DTO
 
-管道也可以跟 DTO 结合使用，用来验证 @Body 中的数据结构。
+DTO 的主要目的是提供一种清晰的方式来定义数据结构，并确保数据的一致性和有效性。
+
+管道可以跟 DTO 结合使用，用来验证 @Body 中的数据结构。
+
+- DTO 可以用于验证传入请求的数据。通过定义输入 DTO，你可以明确地指定哪些字段是必需的，哪些字段是可选的，以及每个字段的验证规则。
+
+- DTO 也可以用于格式化传出响应的数据。通过定义输出 DTO，你可以指定响应的数据结构，并确保响应的数据符合预期的格式。
+
+```sh
+pnpm add class-validator class-transformer
+```
 
 ```ts
 import { IsString, IsNumber } from 'class-validator';
@@ -347,7 +361,7 @@ import { CreateCatDto } from './create-cat.dto';
 @Controller('cat')
 export class CatController {
   @Post()
-  @UsePipes(ValidationPipe)
+  @UsePipes(ValidationPipe) // 自动验证
   create(@Body() createCatDto: CreateCatDto) {
     // 在这里使用经过验证的 createCatDto
   }
