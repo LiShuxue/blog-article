@@ -115,7 +115,7 @@ export class CatService {
 
 通过将 @Injectable() 装饰器应用于类，标识这个类是可注入的，可注入的类就是提供者。
 
-提供者会被声明在@Module 的 providers 中，将被依赖注入到 Controller 或者其他地方。
+提供者会被声明在 @Module 的 providers 中，将被依赖注入到 Controller 或者其他地方。
 
 ### 中间件（Middlewares）
 
@@ -194,14 +194,15 @@ export class MyInterceptor implements NestInterceptor {
 }
 ```
 
-@UseInterceptors 可以将拦截器使用在局部方法上，也可以通过 app.useGlobalInterceptors 使用在全局。
+@UseInterceptors 可以将拦截器使用在局部方法上，参数是 class，可以依赖注入，参数是 instance，则不可以注入。
 
-可以传多个拦截器，按顺序处理。
+也可以通过 app.useGlobalInterceptors 使用在全局。可以传多个拦截器，按顺序处理。
 
 ```ts
 // 局部
 @Controller('cat')
-@UseInterceptors(MyInterceptor)
+@UseInterceptors(MyInterceptor) // 自动依赖注入
+@UseInterceptors(new MyInterceptor()) // 不会依赖注入
 export class CatController {
   ...
 }
@@ -209,6 +210,17 @@ export class CatController {
 // 全局
 const app = await NestFactory.create(ApplicationModule);
 app.useGlobalInterceptors(new MyInterceptor());
+```
+
+这种全局方法，没有办法进行依赖注入，需要 new XXX() 中传参。如果想在 constructor 中依赖注入其他 service，需要在 app.module 中的 providers 中声明。
+
+```ts
+providers: [
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: HttpInterceptor, // 全局注册您的拦截器
+  },
+],
 ```
 
 ### 过滤器（Filters）
@@ -243,12 +255,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
 }
 ```
 
-过滤器可以通过 @UseFilters 使用在某个路径上，也可以 app.useGlobalFilters 用在全局。可以传入多个过滤器。
+过滤器可以通过 @UseFilters 使用在某个路径上，参数是 class，可以依赖注入，参数是 instance，则不可以注入。
+
+也可以 app.useGlobalFilters 用在全局。可以传入多个过滤器。
 
 ```ts
 //局部
 @Controller('cat')
-@UseFilters(HttpExceptionFilter)
+@UseFilters(HttpExceptionFilter) // 自动依赖注入
+@UseFilters(new HttpExceptionFilter()) // 不会自动注入
 export class CatController {
   ...
 }
@@ -256,6 +271,17 @@ export class CatController {
 // 全局
 const app = await NestFactory.create(AppModule);
 app.useGlobalFilters(new HttpExceptionFilter());
+```
+
+这种全局方法，没有办法进行依赖注入，需要 new XXX() 中传参。如果想在 constructor 中依赖注入其他 service，需要在 app.module 中的 providers 中声明。
+
+```ts
+providers: [
+  {
+    provide: APP_FILTER,
+    useClass: HttpExceptionFilter, // 全局注册您的过滤器
+  },
+],
 ```
 
 ### 守卫（Guards）
@@ -281,17 +307,31 @@ const validateRequest = (req) => {
 };
 ```
 
-守卫也是可以控制使用范围的，方法范围 @UseGuards() 或全局范围 app.useGlobalGuards。
+守卫也是可以控制使用范围的，方法范围 @UseGuards() 参数是 class，可以依赖注入，参数是 instance，则不可以注入。
+
+全局范围 app.useGlobalGuards。
 
 ```ts
 // 方法范围
 @Controller('cat')
 @UseGuards(AuthGuard)
+@UseGuards(new AuthGuard())
 export class CatController {}
 
 // 全局范围
 const app = await NestFactory.create(AppModule);
 app.useGlobalGuards(new AuthGuard());
+```
+
+这种全局方法，没有办法进行依赖注入，需要 new XXX() 中传参。如果想在 constructor 中依赖注入其他 service，需要在 app.module 中的 providers 中声明。
+
+```ts
+providers: [
+  {
+    provide: APP_GUARD,
+    useClass: AuthGuard,
+  },
+],
 ```
 
 ### 管道（Pipes）
@@ -370,7 +410,7 @@ export class CatController {
 
 ## 各种组件的执行顺序
 
-请求 -> 中间件 -> 守卫 —> req 拦截器 -> 管道 -> 控制器方法执行 -> service 方法执行 -> 控制器返回响应 -> res 拦截器 -> 异常过滤器 -> 响应
+传入请求 -> 中间件 -> 守卫 —> req 拦截器 -> 管道 -> 控制器 -> service -> res 拦截器 -> 异常过滤器 -> 响应
 
 ## 附
 
