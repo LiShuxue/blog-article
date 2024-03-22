@@ -131,6 +131,16 @@ exit
 
 ### 网络
 
+docker 有几种网络模式
+
+bridge - 这是 Docker 的默认网络模式之一。当您运行一个容器时，如果您没有明确指定网络模式，Docker 将会将容器连接到 bridge 网络。在 bridge 网络中，Docker 主机和所有容器都在同一个网络中，并且容器之间可以相互通信，但是它们与外部网络是隔离的。
+
+host - 这是另一种 Docker 网络模式。当您将容器连接到 host 网络时，容器将直接共享主机的网络命名空间，与主机共享相同的 IP 地址和端口。这意味着容器的网络通信将直接由主机处理，而不需要进行 NAT 转换。这种模式通常用于需要最大性能和最小网络隔离的情况。
+
+none - 这是 Docker 的一个特殊网络模式，它将容器连接到一个完全隔离的网络环境中，容器内部没有网络接口，也没有能够进行网络通信的能力。在这种模式下，容器只能通过本地文件系统进行通信。
+
+docker bridge 模式默认的网关地址是 172.17.0.1。当我们通过 docker network create 创建一个新的 Docker 网络后，会从 172.18.0.1 开始，接入这个网络的其他 IP 地址就是 172.17.0.2，172.17.0.3 等。再创建一个，就会从 172.19.0.1 开始。
+
 ```sh
 docker network ls：列出 Docker 网络
 docker network create <network>：创建一个新的 Docker 网络
@@ -138,6 +148,7 @@ docker network inspect: 查看某个网络详情
 docker network connect <network> <container>：将容器连接到指定的网络
 docker network disconnect: 断开容器上的网络连接
 docker network rm: 删除网络
+docker network prune: 删除所有不用的网络
 ```
 
 ### 清除缓存
