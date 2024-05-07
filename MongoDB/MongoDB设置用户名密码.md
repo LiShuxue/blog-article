@@ -8,25 +8,6 @@
 
 还好我之前就留了一手，每周一自动备份数据库到本地。所以我及时恢复了数据库，才没有导致太大损失。
 
-数据库备份
-
-```sh
-mongodump --host localhost --port 27017 --db db001 --authenticationDatabase admin --username username --password password --out /root/db-backup
-```
-
-数据库恢复
-
-```sh
-mongorestore --host localhost --port 27017 --db db001 --authenticationDatabase admin --username username --password password  /root/db-backup/db001
-# mongorestore --host localhost --port 27017 --db journey --authenticationDatabase admin --username lishuxue --password lishuxue  /backup/journey
-```
-
-按日期压缩数据库备份文件
-
-```sh
-zip -r db001-`date +%Y-%m-%d-%H-%M-%S`.zip db001
-```
-
 ## 问题原因
 
 经过搜索，发现 MongoDB 默认是不需要认证就可以访问的，再加上我为了可以远程访问服务器的数据库，设置了`bind_ip=0.0.0.0`，也就是可以被网上的任何 ip 访问到。
@@ -34,7 +15,7 @@ zip -r db001-`date +%Y-%m-%d-%H-%M-%S`.zip db001
 ## 问题解决
 
 1. 数据库必须开启验证，只允许管理员和用户登陆
-2. 还原`bindIp=127.0.0.1`，只监听服务器本地的访问。(当然有时候我们需要本地远程访问，所以这个我们需要开启，那就必须设置数据库用户名密码了)
+2. 还原`bindIp=127.0.0.1`，只监听服务器本地的访问。(当然有时候我们需要本地远程访问，所以这个我们需要开启 bind_ip=0.0.0.0，那就必须设置数据库用户名密码了)
 
 ## 设置管理员账户与普通账户
 
@@ -73,7 +54,7 @@ db.createUser({
 ```sh
 # 设置MongoDB服务器监听的IP地址和端口，将bindIp配置为0.0.0.0，表示接受任何IP的连接，可以解决宿主机访问不到或者远程访问不到的问题
 net:
-  bindIp: 127.0.0.1
+  bindIp: 127.0.0.1 # 0.0.0.0 设置docker或者外部访问
   port: 27017
 
 # 设置数据存储目录
@@ -97,7 +78,7 @@ security:
 
 ```sh
 # docker 启动
-docker run -d --rm --name journey-mongodb -p 27017:27017 -v /Users/lishuxue/Documents/software/mongodb/data/db:/data/db -v /Users/lishuxue/Documents/software/mongodb/data/configdb:/data/configdb -e MONGO_INITDB_ROOT_USERNAME=lishuxue -e MONGO_INITDB_ROOT_PASSWORD=lishuxue mongo --config /data/configdb/mongod.conf
+docker run -d --rm --name journey-mongodb -p 27017:27017 -v /root/mongodb/data/db:/data/db -v /root/mongodb/backup:/backup -v /root/project/journey/journey-docker/mongodb:/data/configdb -e MONGO_INITDB_ROOT_USERNAME=lishuxue -e MONGO_INITDB_ROOT_PASSWORD=lishuxue mongo:7.0.7-jammy --config /data/configdb/mongod.conf
 ```
 
 ## 使用用户名密码登陆数据库
@@ -124,12 +105,24 @@ mongoose.connect('mongodb://username:password@localhost:27017/db001');
 
 ## mongod，mongo，mongosh
 
-我们安装好 domgodb 数据库后，需要 mongod 命令来启动数据库服务。启动之后，使用 mongo，打开 shell 命令行工具，可以查看或者删除数据库等。mongosh 是新版的 mongo，提供了更友好的操作。
+我们安装好 mongodb 数据库后，需要 mongod 命令来启动数据库服务。启动之后，使用 mongo，打开 shell 命令行工具，可以查看或者删除数据库等。mongosh 是新版的 mongo，提供了更友好的操作。
 
 可以使用下面的命令直接连接数据库。
 
 ```sh
 mongosh --host localhost -u lishuxue -p lishuxue --authenticationDatabase admin
+
+# 如果是第一次使用数据库，切换到journey数据库，创建用户
+use journey
+
+db.createUser({
+  user: 'journey',
+  pwd: 'journey',
+  roles: [{
+    role: 'readWrite',
+    db: 'journey'
+  }]
+})
 ```
 
 ## mongosh 中的增删改查
@@ -148,4 +141,25 @@ mongosh --host localhost -u lishuxue -p lishuxue --authenticationDatabase admin
 
 ```
 db.User.find().forEach((user) => printjson(Object.keys(user)) );
+```
+
+## 数据库备份和恢复
+
+数据库备份
+
+```sh
+mongodump --host localhost --port 27017 --db db001 --authenticationDatabase admin --username username --password password --out /root/db-backup
+```
+
+数据库恢复
+
+```sh
+mongorestore --host localhost --port 27017 --db db001 --authenticationDatabase admin --username username --password password  /root/db-backup/db001
+# mongorestore --host localhost --port 27017 --db journey --authenticationDatabase admin --username lishuxue --password lishuxue  /backup/journey
+```
+
+按日期压缩数据库备份文件
+
+```sh
+zip -r db001-`date +%Y-%m-%d-%H-%M-%S`.zip db001
 ```
