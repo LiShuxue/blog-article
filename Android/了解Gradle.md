@@ -56,6 +56,52 @@ tasks.register('intro') {
 
 使用 `gradle wrapper` 生成对应的 gradlew 脚本。gradlew 是 Gradle 的包装脚本，用于在项目中执行 Gradle 命令。
 
+## 依赖管理
+
+在大型项目中，通常会有多个模块。每个模块都会有自己的 build.gradle 文件，定义自己需要的依赖。同时，根目录下的 build.gradle 文件可以配置所有模块共享的配置。
+
+### Registry（仓库）
+
+在 build.gradle 中，仓库通常配置在 repositories 块中，例如：
+
+```
+repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+}
+```
+
+google() 和 mavenCentral() 是 Gradle 提供的快捷方法，用于定义仓库来源。当你调用 google()时，Gradle 会自动配置 Google 的 Maven 仓库的 URL，而 mavenCentral()则会配置 Maven 中央仓库的 URL。
+
+```
+// 例如，google() 相当于：
+maven {
+    url "https://maven.google.com"
+}
+
+// 而 mavenCentral() 则相当于：
+maven {
+    url "https://repo.maven.apache.org/maven2"
+}
+```
+
+### 使用国内库
+
+```
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public/' }
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/central' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+}
+
+```
+
+Gradle Sync 会下载所有的依赖，也可以通过 ./gradlew build 来确保依赖都下载了。
+
+Gradle 会将下载的依赖缓存到本地（默认路径为~/.gradle/caches/）。
+
 ## Android 项目
 
 当我们新建一个项目后，Gradle 默认会生成一些编译脚本文件，主要有：setting.gradle、build.gradle 以及子项目中的 build.gradle 等等，还会在当前目录下生成一个 gradle 文件夹，下面分别介绍一些这些文件的作用：
@@ -92,7 +138,7 @@ Gradle 构建脚本的执行是由 Gradle 构建引擎负责的。构建引擎�
 
 - 加载项目根目录下的 settings.gradle 文件，解析 settings.gradle 文件，配置根项目的属性，如插件管理、仓库配置等。确定哪些项目参与构建。
 
-配置阶段（Configuration）：解析构建脚本中的配置块。生成要执行的 task。
+配置阶段（Configuration）：解析构建脚本中的配置块。生成要执行的 task。plugins，repositories，dependencies 是 Gradle 的核心配置，无论你构建的是 Java、Android、Kotlin 还是其他类型的项目，都会用到它们。
 
 - 加载项目根目录和子项目的 build.gradle 文件，解析 build.gradle 文件。
 
@@ -147,7 +193,7 @@ Gradle 构建脚本的执行是由 Gradle 构建引擎负责的。构建引擎�
 ```gradle
 // 项目初始化的时候执行 setting.gradle
 
-// pluginManagement 配置和管理构建脚本自身需要使用的 Gradle 插件，以及下载插件的仓库地址。
+// pluginManagement 用于管理 Gradle 插件的仓库。
 pluginManagement {
     repositories {
         google()
@@ -156,8 +202,9 @@ pluginManagement {
     }
 }
 
-// dependencyResolutionManagement 用于配置项目的依赖解析策略，比如指定依赖库下载的仓库。
+// dependencyResolutionManagement 用于管理项目中所有依赖的仓库。
 dependencyResolutionManagement {
+    // 如果在模块的 build.gradle 文件中定义了额外的仓库，Gradle 将会抛出错误。也就是不能再写 repositories 了
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
@@ -166,8 +213,9 @@ dependencyResolutionManagement {
 }
 
 // 用于声明和配置项目中的使用的插件，apply false 的意思是不将该 plugin 应用于当前项目。
+// 一般都是在根 build.gradle 文件中声明插件但不立即应用，然后在各个子项目的 build.gradle 文件中，根据需要应用特定的插件
 plugins {
-    id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+    id "dev.flutter.flutter-plugin-loader" version "1.0.0" apply false
     id "com.android.application" version "7.3.0" apply false
 }
 
@@ -228,7 +276,7 @@ tasks.register("clean", Delete) {
 ```gradle
 // 模块（子项目）级别的 build.gradle
 
-// 配置子项目中使用的插件
+// 配置子项目中使用的插件，这些插件会对应特定的配置块，如android
 plugins {
     id 'com.android.application' // 用于配置 Android 应用程序的构建。
     id 'org.jetbrains.kotlin.android' // 支持 Kotlin 在 Android 项目中的使用。
