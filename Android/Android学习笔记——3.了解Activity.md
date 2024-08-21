@@ -1,6 +1,6 @@
 ## Activity
 
-Activity 是所有 Android 应用程序的门面，凡是在应用中你看得到 的东西，都是放在 Activity 中的。所有自定义的 Activity 都必须 继承它或者它的子类才能拥有 Activity 的特性。
+Activity 是所有 Android 应用程序的门面，凡是在应用中你看得到的东西，都是放在 Activity 中的。所有自定义的 Activity 都必须继承它或者它的子类才能拥有 Activity 的特性。
 
 AppCompatActivity 是 AndroidX 中提供的一种向下兼容的 Activity ，可以使 Activity 在不同系统版本中的功能保持一致性。
 
@@ -102,13 +102,13 @@ override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
 ## 销毁 Activity
 
-返回键，或者调用 finish()方法。
+返回键，或者调用 finish() 方法。
 
-## 页面跳转 Intent
+## Intent
 
 Intent 是 Android 程序中各组件之间进行交互的一种重要方式，它不仅可以指明当前组件想要执行的动作，还可以在不同组件之间传递数据。
 
-Intent 一般可用于启动 Activity、启动 Service 以 及发送广播等场景。
+Intent 一般可用于启动 Activity、启动 Service、发送广播、传递数据、启动外部应用等场景。
 
 ### 显式 Intent
 
@@ -127,11 +127,11 @@ button1.setOnClickListener {
 
 不在 kotlin 代码中明确指出想要启动哪一个 Activity，而是在 AndroidManifest.xml 文件中给该 Activity 添加 intent-filter，指定 action 和 category 等信息，然后在 kotlin 代码中，指定该 action，intent 添加 category，再使用`startActivity(intent)`跳转。
 
-只有`<action>`和`<category>`中的内容同时匹配 Intent 中指定的 action 和 category 时，这个 Activity 才能响应该 Intent 。android.intent.category.DEFAULT 是一种默认的 category， 在调用 startActivity()方法的时候会自动将这个 category 添加到 Intent 中。
+只有`<action>`和`<category>`中的内容同时匹配 Intent 中指定的 action 和 category 时，这个 Activity 才能响应该 Intent 。android.intent.category.DEFAULT 是一种默认的 category， 在调用 startActivity() 方法的时候会自动将这个 category 添加到 Intent 中。
 
 intent.addCategory("com.example.activitytest.MY_CATEGORY")方法来添加 category。
 
-使用隐式 Intent ，不仅可以启动自己程序内的 Activity，还可以启动其他程序的 Activity，这就 使多个应用程序之间的功能共享成为了可能。
+使用隐式 Intent ，不仅可以启动自己程序内的 Activity，还可以启动其他程序的 Activity，这就使多个应用程序之间的功能共享成为了可能。
 
 ```xml
 <activity android:name=".SecondActivity" >
@@ -167,7 +167,7 @@ button1.setOnClickListener {
 
 ### intent 传输数据
 
-putExtra()方法可以把我们想要传递的数据暂存在 Intent 中，在启动另一个 Activity 后，只需要把这些数据从 Intent 中取出就可以了。使用 getStringExtra / getIntExtra / getBooleanExtra 等
+putExtra() 方法可以把我们想要传递的数据暂存在 Intent 中，在启动另一个 Activity 后，只需要把这些数据从 Intent 中取出就可以了。使用 getStringExtra / getIntExtra / getBooleanExtra 等
 
 ```kotlin
 // 第一个activity中
@@ -179,7 +179,7 @@ val extraData = intent.getStringExtra("extra_data")
 
 ### 返回上一个 Activity，并携带数据
 
-返回上一个 Activity，只需要按一下 back 键就行，或者是主动 finish()销毁该 Activity。
+返回上一个 Activity，只需要按一下 back 键就行，或者是主动 finish() 销毁该 Activity。
 
 如果需要返回的时候携带数据，则需要在开始打开新的 Activity 的时候，就用`startActivityForResult(intent, 1)` 来打开。在第二个 Activity 中使用 setResult 即可向上一个 Activity 返回数据，同时第一个 Activity 监听数据，重写 onActivityResult 方法。
 
@@ -211,7 +211,7 @@ button2.setOnClickListener {
 }
 ```
 
-如果用户在 SecondActivity 中并不是通过点击按钮，而是通过按下 Back 键回到 FirstActivity ，这样可以重写 onBackPressed()方法来返回数据。
+如果用户在 SecondActivity 中并不是通过点击按钮，而是通过按下 Back 键回到 FirstActivity ，这样可以重写 onBackPressed() 方法来返回数据。
 
 ```kotlin
 override fun onBackPressed() {
@@ -228,7 +228,7 @@ override fun onBackPressed() {
 
 序列化后的对象可以在网络上进行传输，也可以存储到本地，让一个类去实现 Serializable 这个接口就可以。
 
-getSerializableExtra()方法来获取通过参数传递过来的序列化对象，接着再将它向下转型成 Person 对象。
+getSerializableExtra() 方法来获取通过参数传递过来的序列化对象，接着再将它向下转型成 Person 对象。
 
 Parcelable 方式的实现原理是将一个完整的对象进行分解，而分解后的每一部分都是 Intent 所支持的数据类型，这样就能实现传递对象的功能了。
 
@@ -248,25 +248,25 @@ Activity 的存储是栈结构，每启动一个新的 Activity ，该 Activity 
 
 ### 生命周期方法
 
-onCreate()： 每个 Activity 中都重写了这个方 法，它会在 Activity 第一次被创建的时候调用。你应该在这个方法中完成 Activity 的初始化 操作，比如加载布局、绑定事件等。
+onCreate()：每个 Activity 中都重写了这个方法，它会在 Activity 第一次被创建的时候调用。你应该在这个方法中完成 Activity 的初始化操作，比如加载布局、绑定事件等。
 
 onStart()：这个方法在 Activity 由不可见变为可见的时候调用。
 
-onResume()：这个方法在 Activity 准备好和用户进行交互的时候调用。此时的 Activity 一 定位于返回栈的栈顶，并且处于运行状态。
+onResume()：这个方法在 Activity 准备好和用户进行交互的时候调用。此时的 Activity 一定位于返回栈的栈顶，并且处于运行状态。
 
 onPause()：这个方法在系统准备去启动或者恢复另一个 Activity 的时候调用。我们通常会在这个方法中将一些消耗 CPU 的资源释放掉，以及保存一些关键数据，但这个方法的执行速度一定要快，不然会影响到新的栈顶 Activity 的使用。
 
-onStop()：这个方法在 Activity 完全不可见的时候调用。它和 onPause()方法的主要区 别在于，如果启动的新 Activity 是一个对话框式的 Activity ，那么 onPause()方法会得到执 行，而 onStop()方法并不会执行。
+onStop()：这个方法在 Activity 完全不可见的时候调用。它和 onPause() 方法的主要区别在于，如果启动的新 Activity 是一个对话框式的 Activity ，那么 onPause() 方法会得到执行，而 onStop() 方法并不会执行。
 
-onDestroy()：这个方法在 Activity 被销毁之前调用，之后 Activity 的状态将变为销毁状 态。
+onDestroy()：这个方法在 Activity 被销毁之前调用，之后 Activity 的状态将变为销毁状态。
 
 onRestart()：这个方法在 Activity 由停止状态变为运行状态之前调用，也就是 Activity 被重新启动了。
 
-**完整生存期**：Activity 在 onCreate()方法和 onDestroy()方法之间所经历的就是完整生存期。一般情况下，一个 Activity 会在 onCreate()方法中完成各种初始化操作，而在 onDestroy()方法中完成释放内存的操作。
+**完整生存期**：Activity 在 onCreate() 方法和 onDestroy() 方法之间所经历的就是完整生存期。一般情况下，一个 Activity 会在 onCreate() 方法中完成各种初始化操作，而在 onDestroy() 方法中完成释放内存的操作。
 
-**可见生存期**：Activity 在 onStart()方法和 onStop()方法之间所经历的就是可见生存期。在可见生存期内，Activity 对于用户总是可见的，即便有可能无法和用户进行交互。我们可以通过这两个方法合理地管理那些对用户可见的资源。比如在 onStart()方法中对资源进行加载，而在 onStop()方法中对资源进行释放，从而保证处于停止状态的 Activity 不会占用过多内存。
+**可见生存期**：Activity 在 onStart() 方法和 onStop() 方法之间所经历的就是可见生存期。在可见生存期内，Activity 对于用户总是可见的，即便有可能无法和用户进行交互。我们可以通过这两个方法合理地管理那些对用户可见的资源。比如在 onStart() 方法中对资源进行加载，而在 onStop() 方法中对资源进行释放，从而保证处于停止状态的 Activity 不会占用过多内存。
 
-**前台生存期**：Activity 在 onResume()方法和 onPause()方法之间所经历的就是前台生存期。在前台生存期内，Activity 总是处于运行状态，此时的 Activity 是可以和用户进行交互的，我们平时看到和接触最多的就是这个状态下的 Activity 。
+**前台生存期**：Activity 在 onResume() 方法和 onPause() 方法之间所经历的就是前台生存期。在前台生存期内，Activity 总是处于运行状态，此时的 Activity 是可以和用户进行交互的，我们平时看到和接触最多的就是这个状态下的 Activity 。
 
 ### Dialog Activity
 
@@ -279,11 +279,11 @@ onRestart()：这个方法在 Activity 由停止状态变为运行状态之前�
 
 ### Activity 被回收了怎么办
 
-用户在 Activity A 的基础上启动了 Activity B ，Activity A 就进入了停止状态，这个时候由于系统内存不足，将 Activity A 回收掉了，然后用户按下 Back 键返回 Activity A ，会出现什么情况呢？其实还是会正常显示 Activity A 的，只不过这时并不会执行 onRestart()方法，而是会执行 Activity A 的 onCreate()方法，因为 Activity A 在这种情况下会被重新创建一次，数据和状态都会消失。
+用户在 Activity A 的基础上启动了 Activity B ，Activity A 就进入了停止状态，这个时候由于系统内存不足，将 Activity A 回收掉了，然后用户按下 Back 键返回 Activity A ，会出现什么情况呢？其实还是会正常显示 Activity A 的，只不过这时并不会执行 onRestart()方法，而是会执行 Activity A 的 onCreate() 方法，因为 Activity A 在这种情况下会被重新创建一次，数据和状态都会消失。
 
-Activity 中提供了一个 onSaveInstanceState()回调方法，这个方法可以保证在 Activity 被回收之前一定会被调用，因此我们可以通过这个方法来解决问题。方法有一个 Bundle 类型的参数用于保存数据，类似于 Intent，可以用 putString，putInt 等保存数据。
+Activity 中提供了一个 onSaveInstanceState() 回调方法，这个方法可以保证在 Activity 被回收之前一定会被调用，因此我们可以通过这个方法来解决数据丢失问题。方法有一个 Bundle 类型的参数用于保存数据，类似于 Intent，可以用 putString，putInt 等保存数据。
 
-onCreate()方法其实也有一个 Bundle 类型的参数。这个参数在一般情况下都是 null，但是如果在 Activity 被系统回收之前，你通过 onSaveInstanceState()方法保存数据，这个参数就会带有之前保存的全部数据，我们只需要再通过相应的取值方法将数据取出即可。
+onCreate() 方法其实也有一个 Bundle 类型的参数。这个参数在一般情况下都是 null，但是如果在 Activity 被系统回收之前，你通过 onSaveInstanceState() 方法保存数据，这个参数就会带有之前保存的全部数据，我们只需要再通过相应的取值方法将数据取出即可。
 
 ```kotlin
 override fun onSaveInstanceState(state: Bundle) {
@@ -304,8 +304,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 ## Activity 的启动模式
 
-启动模式一共有 4 种，分别是 standard、singleTop、
-singleTask 和 singleInstance ，可以在 AndroidManifest.xml 中通过给`<activity>`标签指定 android:launchMode 属性来选择启动模式。
+启动模式一共有 4 种，分别是 standard、singleTop、singleTask 和 singleInstance，可以在 AndroidManifest.xml 中通过给`<activity>`标签指定 android:launchMode 属性来选择启动模式。
 
 **standard** 模式，是 Activity 默认的启动模式，在不进行显式指定的情况下，所有 Activity 都会自动使用这种启动模式。在 standard 模式下，每当启动一个新的 Activity ，它就会在返回栈中入栈，并处于栈顶的位置。对于使用 standard 模式的 Activity ，系统不会在乎这个 Activity 是否已经在返回栈中存在，是否在栈顶，每次启动都会创建一个该 Activity 的新实例，放入栈顶。
 
@@ -376,7 +375,7 @@ open class BaseActivity : AppCompatActivity() {
 
 从此以后，不管你想在什么地方退出程序，只需要调用 ActivityCollector.finishAll() 方法就可以了。
 
-还可以在销毁所有 Activity 的代码后面再加上杀掉当前进程的代码，以保证程序完全退出。killProcess()方法用于杀掉一个进程，它接收一个进程 id 参数，可以通过 myPid()方法来获得当前程序的进程 id。需要注意的是，killProcess()方法只能用于杀掉当前程序的进程，不能用于杀掉其他程序。
+还可以在销毁所有 Activity 的代码后面再加上杀掉当前进程的代码，以保证程序完全退出。killProcess()方法用于杀掉一个进程，它接收一个进程 id 参数，可以通过 myPid() 方法来获得当前程序的进程 id。需要注意的是，killProcess() 方法只能用于杀掉当前程序的进程，不能用于杀掉其他程序。
 
 ```kotlin
 android.os.Process.killProcess(android.os.Process.myPid())

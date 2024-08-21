@@ -8,7 +8,9 @@ Service 并不是运行在一个独立的进程当中的，而是依赖于创建
 
 ## 多线程编程
 
-当我们需要执行一些耗时操作，比如发起一条网络请求时，考虑到网速等其他原因，服务器未必能够立刻响应我们的请求，如果不将这类操作放在子线程里运行，就会导致主线程被阻塞。定义一个线程只需要新建一个类继承自 Thread，然后重写父类的 run()方法，并在里面编写耗时逻辑即可。使用继承的方式耦合性有点高，所以我们更多会选择使用实现 Runnable 接口的方式来定义一个线程。更常用的是使用 Lambda 表达式，或者 Kotlin 提供的更简单的 thread 函数。
+当我们需要执行一些耗时操作，比如发起一条网络请求时，考虑到网速等其他原因，服务器未必能够立刻响应我们的请求，如果不将这类操作放在子线程里运行，就会导致主线程被阻塞。
+
+定义一个线程只需要新建一个类继承自 Thread，然后重写父类的 run()方法，并在里面编写耗时逻辑即可。使用继承的方式耦合性有点高，所以我们更多会选择使用实现 Runnable 接口的方式来定义一个线程。更常用的是使用 Lambda 表达式，或者 Kotlin 提供的更简单的 thread 函数。
 
 ```kotlin
 // 继承类
@@ -43,7 +45,7 @@ thread {
 
 ## 更新 UI
 
-Android 的 UI 也是线程不安全的。也就是说，如果想要更新应用程序里的 UI 元素，必须在主线程中进行。
+Android 的 UI 也是线程不安全的。也就是说，如果想要更新应用程序里的 UI 元素，必须在主线程中进行。只有主线程（也称为 UI 线程）能够安全地更新用户界面元素。如果你尝试从其他线程（如后台线程）更新 UI，可能会导致不可预测的行为、崩溃或应用程序异常。
 
 但是有些时候，我们必须在子线程里执行一些耗时任务，然后根据任务的执行结果来更新相应的 UI 控件，对于这种情况，Android 提供了一套异步消息处理机制 Handler。
 
@@ -134,7 +136,7 @@ thread {
 
 ## 创建 Service
 
-继承自系统的 Service 类，重写 onCreate()、onStartCommand()和 onDestroy()方法，实现 onBind() 抽象方法。
+继承自系统的 Service 类，重写 onCreate()、onStartCommand()和 onDestroy() 方法，实现 onBind() 抽象方法。
 
 onCreate() 方法是在 Service 第一次创建的时候调用的，onStartCommand() 方法在每次启动 Service 的时候都会调用。onDestroy() 方法会在 Service 销毁的时候调用，可以回收那些不再使用的资源。onBind()用来和 Activity 通信。
 
@@ -159,13 +161,15 @@ stopServiceBtn.setOnClickListener {
 }
 ```
 
-### 跟 Service 绑定
+### Activity 跟 Service 绑定
+
+绑定 Service 使 Activity 能够与 Service 进行交互，并在 Service 上执行同步或异步操作。
 
 首先创建一个 ServiceConnection 的匿名类实现，并在里面重写 onServiceConnected() 方法和 onServiceDisconnected() 方法。
 
 onServiceConnected() 方法会在 Activity 与 Service 成功绑定的时候调用，而 onServiceDisconnected() 方法只有在 Service 的创建进程崩溃或者被杀掉的时候才会调用。
 
-bindService()方法接收 3 个参数，第一个参数是 Intent 对象，第二个参数是前面创建出的 ServiceConnection 的实例，第三个参数则是一个标志位，这里传入 BIND_AUTO_CREATE 表示在 Activity 和 Service 进行绑定后自动创建 Service 。
+bindService() 方法接收 3 个参数，第一个参数是 Intent 对象，第二个参数是前面创建出的 ServiceConnection 的实例，第三个参数则是一个标志位，这里传入 BIND_AUTO_CREATE 表示在 Activity 和 Service 进行绑定后自动创建 Service 。
 
 这样 Activity 就能自由地和 Service 进行通信了。只要调用方和 Service 之间的连接没有断开， Service 就会一直保持运行状态，直到被系统回收。
 
@@ -195,9 +199,9 @@ unbindServiceBtn.setOnClickListener {
 
 1、startService() 的生命周期 ：onCreate() -> onStartCommand() -> onDestroy()。
 
-此方式的特征：与调起该服务的 context 没有任何关系，调起的 Context（Activity 等）销毁后，该服务也可以存活，但是无法与调起的 Context 进行通讯。每调用一次 startService()方法，onStartCommand()就会执行一次。
+此方式的特征：与调起该服务的 context 没有任何关系，调起的 Context（Activity 等）销毁后，该服务也可以存活，但是无法与调起的 Context 进行通讯。每调用一次 startService() 方法，onStartCommand() 就会执行一次。
 
-2、bindService()的生命周期：onCreate() -> onBind() -> onUnbind() -> onDestroy()
+2、bindService() 的生命周期：onCreate() -> onBind() -> onUnbind() -> onDestroy()
 
 此方式的特征：1. 与调起该服务的 Context（Activity 等）绑定在一起的，可以与调起 Context 进行通讯，且调起 Context 销魂时该服务会自动解绑。2. 绑定服务时不会调用 onstartcommand()方法。
 
@@ -207,7 +211,7 @@ unbindServiceBtn.setOnClickListener {
 
 前台 Service 和普通 Service 最大的区别就在于，它一直会有一个正在运行的图标在系统的状态栏显示。
 
-构建 Notification 对象，并且不使用 NotificationManager 的 notify 将通知显示出来，而是调用了 startForeground()方法。
+构建 Notification 对象，并且不使用 NotificationManager 的 notify 将通知显示出来，而是调用了 startForeground() 方法。
 
 另外，从 Android 9.0 系统开始，使用前台 Service 必须在 AndroidManifest.xml 文件中进行权限声明才行。`<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />`
 
@@ -232,9 +236,9 @@ startForeground(1, notification)
 
 ## Service 中处理耗时操作
 
-Service 中的代码都是默认运行在主线程当中的，如果直接在 Service 里处理一些耗时的逻辑，就很容易出现 ANR(Application Not Responding)的情况。
+Service 中的代码都是默认运行在主线程当中的，如果直接在 Service 里处理一些耗时的逻辑，就很容易出现 ANR(Application Not Responding) 的情况。
 
-所以我们应该在 Service 的每个具体的方法里开启一个子线程，然后在这里处理那些耗时的逻辑。这种 Service 一旦启动，就会一直处于运行状态，必须调用 stopService()或 stopSelf()方法，或者被系统回收，Service 才会停止。所以我们可以在执行完逻辑后自动停止。
+所以我们应该在 Service 的每个具体的方法里开启一个子线程，然后在这里处理那些耗时的逻辑。这种 Service 一旦启动，就会一直处于运行状态，必须调用 stopService() 或 stopSelf() 方法，或者被系统回收，Service 才会停止。所以我们可以在执行完逻辑后自动停止。
 
 ```kotlin
 override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -252,7 +256,7 @@ override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
 
 也可以用 IntentService 类，创建一个异步的、会自动停止的 Service。
 
-在子类中实现 onHandleIntent()这个抽象方法，这个方法中可以处理一些耗时的逻辑，而不用担心 ANR 的问题，因为这个方法已经是在子线程中运行的了。
+在子类中实现 onHandleIntent() 这个抽象方法，这个方法中可以处理一些耗时的逻辑，而不用担心 ANR 的问题，因为这个方法已经是在子线程中运行的了。
 
 ```kotlin
 class MyIntentService : IntentService("MyIntentService") {

@@ -41,11 +41,11 @@ manager.notify(1, notification)
 
 实现通知的点击效果，我们需要在代码中进行相应的设置，这就涉及了一个新的概念——PendingIntent。PendingIntent 倾向于在某个合适的时机执行某个动作。所以，也可以把 PendingIntent 简单地理解为延迟执行的 Intent。
 
-PendingIntent 类提供了几个静态方法用于获取 PendingIntent 的实例，可以根据需求来选择是使用 getActivity()方法、getBroadcast()方法，还是 getService()方法。这几个方法所接收的参数都是相同的：第一个参数依旧是 Context，第二个参数一般用不到，传入 0 即可，第三个参数是一个 Intent 对象，我们可以通过这个对象构建出 PendingIntent 的“意图”，第四个参数用于确定 PendingIntent 的行为，有 FLAG_ONE_SHOT、FLAG_NO_CREATE、FLAG_CANCEL_CURRENT 和 FLAG_UPDATE_CURRENT 这 4 种值可选，每种值的具体含义你可以查看文档，通常情况下这个参数传入 0 就可以了。
+PendingIntent 类提供了几个静态方法用于获取 PendingIntent 的实例，可以根据需求来选择是使用 getActivity() 方法、getBroadcast() 方法，还是 getService() 方法。这几个方法所接收的参数都是相同的：第一个参数依旧是 Context，第二个参数一般用不到，传入 0 即可，第三个参数是一个 Intent 对象，我们可以通过这个对象构建出 PendingIntent 的“意图”，第四个参数用于确定 PendingIntent 的行为，有 FLAG_ONE_SHOT、FLAG_NO_CREATE、FLAG_CANCEL_CURRENT 和 FLAG_UPDATE_CURRENT 这 4 种值可选，每种值的具体含义你可以查看文档，通常情况下这个参数传入 0 就可以了。
 
-NotificationCompat.Builder 通过 setContentIntent()方法接收这个意图。
+NotificationCompat.Builder 通过 setContentIntent() 方法接收这个意图。
 
-setAutoCancel()方法传入 true，就表示当点击这个通知的时候，通知会自动取消。也可以通过 manager.cancel(id)去取消，这个 id 就是创建通知的那个 id。
+setAutoCancel()方法传入 true，就表示当点击这个通知的时候，通知会自动取消。也可以通过 manager.cancel(id) 去取消，这个 id 就是创建通知的那个 id。
 
 ```kotlin
 // 打开特定的Activity

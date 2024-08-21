@@ -4,26 +4,26 @@
 
 Android 大致可以分为 4 层架构: Linux 内核层、系统运行库层、应用框架层和应用层。
 
-- Linux 内核层: 这一层为 Android 设备的各种硬件提供了底层的驱动， 如显示驱动、音频驱动、照相机驱动、蓝牙驱动、Wi-Fi 驱动、电源管理等。
+- Linux 内核层: 这一层为 Android 设备的各种硬件提供了底层的驱动，如显示驱动、音频驱动、照相机驱动、蓝牙驱动、Wi-Fi 驱动、电源管理等。
 
 - 系统运行库层: 这一层通过一些 C/C++ 库为 Android 系统提供了主要的特性支持。如 SQLite 库提供了数据库的支持，OpenGL|ES 库提供了 3D 绘图的支持，Webkit 库提供了浏览器内核的支持等。
-  在这一层还有 Android 运行时库，它主要提供了一些核心库，允许开发者使用 Java 语言来 编写 Android 应用。另外，Android 运行时库中还包含了 Dalvik 虚拟机(5.0 系统之后改为 Android Runtime(ART)运行环境)，它使得每一个 Android 应用都能运行在独立的进程中，并且拥有一个自己 的虚拟机实例。
+  在这一层还有 Android 运行时库，它主要提供了一些核心库，允许开发者使用 Java 语言来编写 Android 应用。另外，Android 运行时库中还包含了 Dalvik 虚拟机(5.0 系统之后改为 Android Runtime(ART)运行环境)，它使得每一个 Android 应用都能运行在独立的进程中，并且拥有一个自己的虚拟机实例。
 
 - 应用框架层: 这一层主要提供了构建应用程序时可能用到的各种 API，开发者可以使用这些 API 来构建自己的应用程序。如 Activity Manager，Package Manager，Location Manager 等等
 
-- 应用层：所有安装在手机上的应用程序都是属于这一层的，比如系统自带的联系人、短信等程序， 或者是你从 Google Play 上下载的小游戏，当然还包括你自己开发的程序。
+- 应用层：所有安装在手机上的应用程序都是属于这一层的，比如系统自带的联系人、短信等程序，或者是你从 Google Play 上下载的小游戏，当然还包括你自己开发的程序。
 
 ## 四大组件
 
-Android 系统四大组件分别是 Activity、Service 、BroadcastReceiver 和 ContentP rovider。
+Android 系统四大组件分别是 Activity、Service 、BroadcastReceiver 和 ContentProvider。
 
-- Activity 是所有 Android 应用程序的门面，凡是在应用中你看得到 的东西，都是放在 Activity 中的。
+- Activity 是所有 Android 应用程序的门面，凡是在应用中你看得到的东西，都是放在 Activity 中的。
 
 - Service 在后台默默地运行，即使用户退出了应用，Service 仍然是可以继续运行的。
 
-- BroadcastReceiver 允许你的应用接收来自各处的广播消息，比如电话、短信等，当然， 你的应用也可以向外发出广播消息。
+- BroadcastReceiver 允许你的应用接收来自各处的广播消息，比如电话、短信等，当然，你的应用也可以向外发出广播消息。
 
-- ContentProvider 则为应用程序之间共享数据提供了 可能，比如你想要读取系统通讯录中的联系人，就需要通过 ContentProvider 来实现。
+- ContentProvider 则为应用程序之间共享数据提供了可能，比如你想要读取系统通讯录中的联系人，就需要通过 ContentProvider 来实现。
 
 ## 目录结构
 
@@ -45,15 +45,18 @@ Android 系统四大组件分别是 Activity、Service 、BroadcastReceiver 和 
 
 - app/build：这个目录和外层的 build 目录类似，也包含了一些在编译时自动生成的文件，或者是手动生成的 apk。
 
-- app/libs：如果你的项目中使用到了第三方 jar 包，就需要把这些 jar 包都放在 libs 目录下，放在这个目 录下的 jar 包会被自动添加到项目的构建路径里。
+- app/libs：如果你的项目中使用到了第三方 jar 包，就需要把这些 jar 包都放在 libs 目录下，放在这个目录下的 jar 包会被自动添加到项目的构建路径里。
 
 - app/src: 主要的 android 代码和测试用例。
 
 - app/src/java：java 目录是放置我们所有 Java 代码的地方(Kotlin 代码也放在这里)
 
-- app/src/res：项目中使用到的所有图片、布局、字符串，应用图标等资源都要存放在这个目录下。所有 以“drawable” 开头的目录都是用来放图片的，所有以“mipmap” 开头的目录都是用来放应用图 标的，所有以“values” 开头的目录都是用来放字符串、样式、颜色等配置的，所有以“layout” 开头的目录都是用来放布局文件的。
+- app/src/res：项目中使用到的所有图片、布局、字符串，应用图标等资源都要存放在这个目录下。所有 以“drawable” 开头的目录都是用来放图片的，所有以 “mipmap” 开头的目录都是用来放应用图标的，所有以 “values” 开头的目录都是用来放字符串、样式、颜色等配置的，所有以 “layout” 开头的目录都是用来放布局文件的。
+- app/src/res/raw：用于存放原始的资源文件，如音频和视频文件。
 
-- app/src/AndroidManifest.xml：Android 应用的配置文件，你在程序中定义的所有四大组件都需要在这个文件里注册，另外还可以在这个文件中给应用程序添加权限声明。没有在 AndroidManifest.xml 里注册的 Activity 是不 能使用的。
+- app/src/assets：用于存放原始资源文件的目录。它的主要特点是能够保存原始文件的结构和格式，不会在编译时进行压缩或转换。
+
+- app/src/AndroidManifest.xml：Android 应用的配置文件，你在程序中定义的所有四大组件都需要在这个文件里注册，另外还可以在这个文件中给应用程序添加权限声明。没有在 AndroidManifest.xml 里注册的 Activity 是不能使用的。
 
 - app/build.gradle：这是 app 模块的 gradle 构建脚本，这个文件中会指定很多项目构建相关的配置
 
@@ -61,7 +64,7 @@ Android 系统四大组件分别是 Activity、Service 、BroadcastReceiver 和 
 
 ### AndroidManifest.xml
 
-AndroidManifest.xml 中 声明了 MainActivity 是这个 项目的主 Activity ，在手机上点击应用图标，首先启动的就是这个 Activity 。
+AndroidManifest.xml 中声明了 MainActivity 是这个项目的主 Activity，在手机上点击应用图标，首先启动的就是这个 Activity 。
 
 ```xml
 <activity
@@ -76,11 +79,11 @@ AndroidManifest.xml 中 声明了 MainActivity 是这个 项目的主 Activity �
 
 ### MainActivity
 
-MainActivity 是继承自 AppCompatActivity 的。AppCompatActivity 是 AndroidX 中提供的一种向下兼容的 Activity ，可以使 Activity 在不同系统版本中的功能保持一致性。Activity 类是 Android 系统提供的一个基类，我们项目中所有自定义的 Activity 都必须 继承它或者它的子类才能拥有 Activity 的特性(AppCompatActivity 是 Activity 的子类)。
+MainActivity 是继承自 AppCompatActivity 的。AppCompatActivity 是 AndroidX 中提供的一种向下兼容的 Activity ，可以使 Activity 在不同系统版本中的功能保持一致性。Activity 类是 Android 系统提供的一个基类，我们项目中所有自定义的 Activity 都必须继承它或者它的子类才能拥有 Activity 的特性(AppCompatActivity 是 Activity 的子类)。
 
 ### res
 
-Android 程序的设计讲究逻辑和视图分离，因此是不推荐在 Activity 中直接编写界面的。更加通用的做法是，在布局文件中编写界面，然后在 Activity 中引入进来。 比如在 onCreate 方法中执行 `setContentView(R.layout.activity_main)`
+Android 程序的设计讲究逻辑和视图分离，因此是不推荐在 Activity 中直接编写界面的。更加通用的做法是，在布局文件中编写界面，然后在 Activity 中引入进来。比如在 onCreate 方法中执行 `setContentView(R.layout.activity_main)`
 
 res 中定义的资源，我们有以下两种方式来引用它。
 
@@ -88,7 +91,7 @@ res 中定义的资源，我们有以下两种方式来引用它。
 
 - 在 XML 中通过@string/app_name 可以获得该字符串的引用。
 
-基本的语法就是上面这两种方式，其中 string 部分是可以替换的，如果是引用的图片资源就可 以替换成 drawable，如果是引用的应用图标就可以替换成 mipmap，如果是引用的布局文件就 可以替换成 layout，以此类推。
+基本的语法就是上面这两种方式，其中 string 部分是可以替换的，如果是引用的图片资源就可以替换成 drawable，如果是引用的应用图标就可以替换成 mipmap，如果是引用的布局文件就可以替换成 layout，以此类推。
 
 ## 日志
 
@@ -100,8 +103,8 @@ Android 中的日志工具类是 Log(android.util.Log)，可以用来打印一�
 
 在运行程序的时候，以调试模式运行，这种调试方式虽然完全可以正常工作，但在调试模式下，程序的运行效率将会大大降低，如果你的断点加在一个比较靠后的位置，需要执行很多操作才能运行到这个断点，那么前面这些操作就会有一些卡顿的感觉。
 
-使用正常的方式启动，需要调试的时候，点击 Android Studio 顶部工具栏 的“Attach Debugger to Android Process” 按钮。
+使用正常的方式启动，需要调试的时候，点击 Android Studio 顶部工具栏的 “Attach Debugger to Android Process” 按钮。
 
 ## 其他
 
-Mac 上是 Ctrl + Shift + R 重新运行 main()函数，Ctrl + R 可以重新运行 Android 程序。
+Mac 上是 Ctrl + Shift + R 重新运行 main() 函数，Ctrl + R 可以重新运行 Android 程序。

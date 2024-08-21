@@ -18,7 +18,7 @@ Android 内置了很多系统级别的广播，我们可以在应用程序中通
 
 比如手机开机完成后会发出一条广播，电池的电量发生变化会发出一条广播，系统时间发生改变也会发出一条广播，亮屏熄屏、网络变化等场景下也会发出广播。等等。我们可以根据自己感兴趣的广播，自由地注册 BroadcastReceiver。
 
-注册 BroadcastReceiver 的方式一般有两种：在代码中注册和在 AndroidManifest.xml 中注册。其 中前者也被称为动态注册，后者也被称为静态注册。
+注册 BroadcastReceiver 的方式一般有两种：在代码中注册和在 AndroidManifest.xml 中注册。其中前者被称为动态注册，后者被称为静态注册。
 
 具体的系统广播列表在：
 
@@ -28,7 +28,7 @@ Android 内置了很多系统级别的广播，我们可以在应用程序中通
 
 ### 动态注册
 
-新建一个类，让它继承自 BroadcastReceiver ，并重写父类的 onReceive()方法就行了。然后再 MainActivity 的 onCreate 方法中，调用 registerReceiver()注册。
+新建一个类，让它继承自 BroadcastReceiver ，并重写父类的 onReceive() 方法就行了。然后再 MainActivity 的 onCreate 方法中，调用 registerReceiver() 注册。
 
 系统每隔一分钟就会发出一条 android.intent.action.TIME_TICK 的广播，可以监听时间变化。
 
@@ -39,7 +39,7 @@ inner class TimeChangeReceiver : BroadcastReceiver() {
     }
 }
 
-// onCreate中
+// onCreate中，注册广播接收器，接收的是 android.intent.action.TIME_TICK
 val intentFilter = IntentFilter()
 intentFilter.addAction("android.intent.action.TIME_TICK")
 timeChangeReceiver = TimeChangeReceiver()
@@ -50,11 +50,11 @@ registerReceiver(timeChangeReceiver, intentFilter)
 
 动态注册的 BroadcastReceiver 可以自由地控制注册与注销，在灵活性方面有很大的优势。但是它必须在程序启动之后才能接收广播，让程序在未启动的情况下也能接收广播需要使用静态注册的方式，静态注册需要在 AndroidManifest.xml 中用 receiver 标签注册。
 
-从理论上来说，动态注册能监听到的系统广播，静态注册也应该能监听到，在过去的 Android 系统中确实是这样的。但是由于大量恶意的应用程序利用这个机制在程序未启动的情况下监听系统广播，从而使任何应用都可以频繁地从后台被唤醒，严重影响了用户手机的电量和 性能，因此 Android 系统几乎每个版本都在削减静态注册 BroadcastReceiver 的功能。
+从理论上来说，动态注册能监听到的系统广播，静态注册也应该能监听到，在过去的 Android 系统中确实是这样的。但是由于大量恶意的应用程序利用这个机制在程序未启动的情况下监听系统广播，从而使任何应用都可以频繁地从后台被唤醒，严重影响了用户手机的电量和性能，因此 Android 系统几乎每个版本都在削减静态注册 BroadcastReceiver 的功能。
 
 在 Android 8.0（API level 26） 系统之后，所有隐式广播都不允许使用静态注册的方式来接收了。隐式广播指的是那些没有具体指定发送给哪个应用程序的广播，大多数系统广播属于隐式广播，但是少数特殊的系统广播目前仍然允许使用静态注册的方式来接收。这些特殊的系统广播列表详见 <https://developer.android.google.cn/guide/components/broadcast-exceptions.html> 。
 
-开机自启动可以使用静态注册的方式来接收开机广播，然后在 onReceive()方法里执行相应的逻辑。
+开机自启动可以使用静态注册的方式来接收开机广播，然后在 onReceive() 方法里执行相应的逻辑。
 
 ```xml
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -81,7 +81,7 @@ class BootCompleteReceiver : BroadcastReceiver() {
 
 使用 intent 发送一个自定义的 action。intent 中也可以携带自定义数据。
 
-默认情况下我们发出的自定义广播恰恰都是隐式广播。因此这里一定要调用 setPackage()方法，指定这条广播是发送给哪个应用程序的，从而让它变成一条显式广播。
+默认情况下我们发出的自定义广播恰恰都是隐式广播。因此这里一定要调用 setPackage() 方法，指定这条广播是发送给哪个应用程序的，从而让它变成一条显式广播。
 
 通过 `sendBroadcast(intent)` 发送一条标准广播。
 

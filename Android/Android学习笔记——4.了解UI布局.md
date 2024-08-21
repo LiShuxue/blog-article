@@ -21,7 +21,7 @@ android:background 用于为布局或控件指定一个背景。android:padding 
 
 ### Button
 
-Android 系统默认会将按钮上的英文字母全部转换成大写，如果不想要，可以添加`android:textAllCaps="false"`这个属性。
+Android 系统默认会将按钮上的英文字母全部转换成大写，如果不想要，可以添加 `android:textAllCaps="false"` 这个属性。
 
 ```xml
 <Button
@@ -45,11 +45,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         button.setOnClickListener(this)
-}
-override fun onClick(v: View?) {
-    when (v?.id) {
-        R.id.button -> {
-            // 在此处添加逻辑 }
+    }
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.button -> {
+                // 在此处添加逻辑
+            }
         }
     }
 }
@@ -90,7 +91,7 @@ xml 中通过 src 指定图片，也可以通过代码动态地更改 ImageView 
 
 ### ProgressBar
 
-ProgressBar 用于在界面上显示一个进度条，表示我们的程序正在加载一些数据。默认是一个圆形的标志。通过 style 属性可以将它指定成水平进度条。通过 android:max 属性给进度条设置一个最大值，然后在代 码中动态地更改进度条的进度。
+ProgressBar 用于在界面上显示一个进度条，表示我们的程序正在加载一些数据。默认是一个圆形的标志。通过 style 属性可以将它指定成水平进度条。通过 android:max 属性给进度条设置一个最大值，然后在代码中动态地更改进度条的进度。
 
 ```xml
 <ProgressBar
@@ -105,9 +106,9 @@ ProgressBar 用于在界面上显示一个进度条，表示我们的程序正�
 
 AlertDialog 可以在当前的界面上显示一个对话框，这个对话框是置顶于所有界面元素之上的，能够屏蔽掉其他控件的交互能力，因此 AlertDialog 一般是用于提示一些非常重要的内容或者警告信息。
 
-AlertDialog 并不需要到布局文件中创建，而是在代码中通过构造器（AlertDialog.Builder）来构造标题 setTitle、内容 setMessage、图标 setIcon 和按钮 setPositiveButton/setNegativeButton 等内容。通过 show 来展示，dismiss()来关闭对话框。
+AlertDialog 并不需要到布局文件中创建，而是在代码中通过构造器（AlertDialog.Builder）来构造标题 setTitle、内容 setMessage、图标 setIcon 和按钮 setPositiveButton/setNegativeButton 等内容。通过 show 来展示，dismiss() 来关闭对话框。
 
-内容区域可以是消息，可以是列表，也可以是自定义布局。如果是列表，用 setItems()来设置数组。如果是自定义布局，通过 setView()设置布局文件。
+内容区域可以是消息，可以是列表，也可以是自定义布局。如果是列表，用 setItems() 来设置数组。如果是自定义布局，通过 setView() 设置布局文件。
 
 ```kotlin
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -135,7 +136,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 Android 控件的可见属性通过 android:visibility 控制，可选值有 3 种: visible、invisible 和 gone，默认可见 visible。invisible 表示控件不可见，但是它仍然占据着原来的位置和大小。gone 则表示控件不仅不可见，而且不再占用任何屏幕空间。
 
-我们可以通过代码来设置控件的可见性，使用的是 setVisibility()方法，允许传入 View.VISIBLE、 View.INVISIBLE 和 View.GONE 这 3 种值。
+我们可以通过代码来设置控件的可见性，使用的是 setVisibility() 方法，允许传入 View.VISIBLE、View.INVISIBLE 和 View.GONE 这 3 种值。
 
 ```kotlin
 if (progressBar.visibility == View.VISIBLE) {
@@ -275,9 +276,9 @@ android:maxHeight=""  设置view的最大高度
 
 ### 单独布局
 
-比如：在 layout 目录下新建一个 title.xml 布局，在其他布局中 include 这个文件即可。`<include layout="@layout/title" />`。（别忘了 supportActionBar?.hide()隐藏当前系统自带的标题栏）。
+比如我们需要实现页面的标题栏，正常需要在每个 Activity 中为这些控件单独编写一次事件注册的代码，比如标题栏中的返回按钮。比较繁琐，代码重复度高，所以我们用自定义控件。
 
-但是需要在每个 Activity 中为这些控件单独编写一次事件注册的代码，比如标题栏中的返回按钮。比较繁琐，代码重复度高，所以我们用自定义控件。
+在 layout 目录下新建一个 title.xml 布局，在其他布局中 include 这个文件即可。`<include layout="@layout/title" />`。（别忘了 supportActionBar?.hide()隐藏当前系统自带的标题栏）。
 
 ### 自定义
 
@@ -319,8 +320,7 @@ ListView 可以显示列表数据，超出屏幕可以滚动。
 
 指定数据，需要构建 adapter 对象，赋值给 listView 的 adapter。可以使用 ArrayAdapter 来构建。
 
-android.R.layout.simple_list_item_1 作为 ListView 子项布局的 id，这是一个
-Android 内置的布局文件，里面只有一个 TextView ，可用于简单地显示一段文本。
+android.R.layout.simple_list_item_1 作为 ListView 子项布局的 id，这是一个 Android 内置的布局文件，里面只有一个 TextView ，可用于简单地显示一段文本。
 
 ```xml
 class MainActivity : AppCompatActivity() {
@@ -329,7 +329,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val adapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,data)
+        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data)
         listView.adapter = adapter
     }
 }
@@ -408,9 +408,9 @@ class MainActivity : AppCompatActivity() {
 
 ### 优化 ListView
 
-目前我们 ListView 的运行效率是很低的，因为在 FruitAdapter 的 getView()方法 中，每次都将布局重新加载了一遍，当 ListView 快速滚动的时候，这就会成为性能的瓶颈。
+目前我们 ListView 的运行效率是很低的，因为在 FruitAdapter 的 getView() 方法中，每次都将布局重新加载了一遍，当 ListView 快速滚动的时候，这就会成为性能的瓶颈。
 
-getView()方法中还有一个 convertView 参数，这个参数用于将之前加载好的布局进行缓存，以便之后进行重用，我们可以借助这个参数来进行性能优化。
+getView() 方法中还有一个 convertView 参数，这个参数用于将之前加载好的布局进行缓存，以便之后进行重用，我们可以借助这个参数来进行性能优化。
 
 ```kotlin
 val view: View
@@ -421,9 +421,9 @@ if (convertView == null) {
 }
 ```
 
-虽然现在已经不会再重复去加载布局，但是每次在 getView()方法中仍然会调用 View 的 findViewById()方法来获取一次控件的实例。 我们可以借助一个 ViewHolder 来对这部分性能进行优化。
+虽然现在已经不会再重复去加载布局，但是每次在 getView() 方法中仍然会调用 View 的 findViewById() 方法来获取一次控件的实例。 我们可以借助一个 ViewHolder 来对这部分性能进行优化。
 
-我们新增一个内部类 ViewHolder，用于对 ImageView 和 TextView 的控件实例进行缓存。当 convertView 为 null 的时候，创建一个 ViewHolder 对象，并将控件的实例存放在 ViewHolder 里，然后调用 View 的 setTag()方法，将 ViewHolder 对象存储在 View 中。当 convertView 不为 null 的时候，则调用 View 的 getTag()方法，把 ViewHolder 重新取出。这样所有控件的实例都缓存在了 ViewHolder 里，就没有必要每次都通过 findViewById()方法来获取控件实例了。
+我们新增一个内部类 ViewHolder，用于对 ImageView 和 TextView 的控件实例进行缓存。当 convertView 为 null 的时候，创建一个 ViewHolder 对象，并将控件的实例存放在 ViewHolder 里，然后调用 View 的 setTag()方法，将 ViewHolder 对象存储在 View 中。当 convertView 不为 null 的时候，则调用 View 的 getTag()方法，把 ViewHolder 重新取出。这样所有控件的实例都缓存在了 ViewHolder 里，就没有必要每次都通过 findViewById() 方法来获取控件实例了。
 
 ```kotlin
 class FruitAdapter(activity: Activity, val resourceId: Int, data: List<Fruit>) :
@@ -457,7 +457,7 @@ class FruitAdapter(activity: Activity, val resourceId: Int, data: List<Fruit>) :
 
 ### ListView 的点击事件
 
-使用 setOnItemClickListener()方法为任何子项添加点击监听。
+使用 setOnItemClickListener() 方法为任何子项添加点击监听。
 
 ```kotlin
 val adapter = FruitAdapter(this, R.layout.fruit_item, fruitList)

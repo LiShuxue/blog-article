@@ -49,13 +49,13 @@ Fragment 真正的强大之处在于，它可以在程序运行时动态地添�
 
 - 创建待添加 Fragment 的实例。
 
-- 获取 FragmentManager ，在 Activity 中可以直接调用 getSupportFragmentManager()
-  方法获取。
+- 获取 FragmentManager ，在 Activity 中可以直接调用 getSupportFragmentManager() 方法获取。
+
 - 开启一个事务，通过调用 beginTransaction() 方法开启。
 
-- 向容器内添加或替换 Fragment ，一般使用 replace()方法实现，需要传入容器的 id 和待添加的 Fragment 实例。
+- 向容器内添加或替换 Fragment ，一般使用 replace() 方法实现，需要传入容器的 id 和待添加的 Fragment 实例。
 
-- 提交事务，调用 commit()方法来完成。
+- 提交事务，调用 commit() 方法来完成。
 
   ```kotlin
   val fg = LeftFragment()
@@ -71,7 +71,7 @@ FragmentTransaction 中提供了一个 addToBackStack()方法，可以用于将�
 
 ## Fragment 和 Activity 之间的交互
 
-FragmentManager 提供了一个类似于 findViewById()的方法 findFragmentById，专门用于从布局文件中获取 Fragment 的实例，然后就能轻松地调用 Fragment 里的方法了。
+FragmentManager 提供了一个类似于 findViewById() 的方法 findFragmentById，专门用于从布局文件中获取 Fragment 的实例，然后就能轻松地调用 Fragment 里的方法了。
 
 使用 viewBinding 的话得用 androidx.fragment.app.FragmentContainerView
 
@@ -79,7 +79,7 @@ FragmentManager 提供了一个类似于 findViewById()的方法 findFragmentByI
 val fragment = supportFragmentManager.findFragmentById(R.id.leftFrag) as LeftFragment
 ```
 
-在每个 Fragment 中都可以通过调用 getActivity()方法来得到和当前 Fragment 相关联的 Activity 实例。由于 getActivity()方法有可能返回 null，因此我们需要先进行一个判空处理。
+在每个 Fragment 中都可以通过调用 getActivity() 方法来得到和当前 Fragment 相关联的 Activity 实例。由于 getActivity()方法有可能返回 null，因此我们需要先进行一个判空处理。
 
 ```kotlin
 if (activity != null) {
@@ -97,9 +97,9 @@ Fragment 也有自己的生命周期，并且它和 Activity 的生命周期很�
 
 暂停状态：当一个 Activity 进入暂停状态时(由于另一个未占满屏幕的 Activity 被添加到了栈顶)，与它相关联的 Fragment 就会进入暂停状态。
 
-停止状态：当一个 Activity 进入停止状态时，与它相关联的 Fragment 就会进入停止状态，或者通过调用 FragmentTransaction 的 remove()、replace()方法将 Fragment 从 Activity 中移除，但在事务提交之前调用了 addToBackStack()方法，这时的 Fragment 也会进入停止状态。总的来说，进入停止状态的 Fragment 对用户来说是完全不可见的，有可能会被系统回收。
+停止状态：当一个 Activity 进入停止状态时，与它相关联的 Fragment 就会进入停止状态，或者通过调用 FragmentTransaction 的 remove()、replace() 方法将 Fragment 从 Activity 中移除，但在事务提交之前调用了 addToBackStack() 方法，这时的 Fragment 也会进入停止状态。总的来说，进入停止状态的 Fragment 对用户来说是完全不可见的，有可能会被系统回收。
 
-销毁状态：Fragment 总是依附于 Activity 而存在，因此当 Activity 被销毁时，与它相关联的 Fragment 就会进入销毁状态。或者通过调用 FragmentTransaction 的 remove()、 replace()方法将 Fragment 从 Activity 中移除，但在事务提交之前并没有调用 addToBackStack()方法，这时的 Fragment 也会进入销毁状态。
+销毁状态：Fragment 总是依附于 Activity 而存在，因此当 Activity 被销毁时，与它相关联的 Fragment 就会进入销毁状态。或者通过调用 FragmentTransaction 的 remove()、 replace() 方法将 Fragment 从 Activity 中移除，但在事务提交之前并没有调用 addToBackStack() 方法，这时的 Fragment 也会进入销毁状态。
 
 ### 生命周期函数
 
@@ -115,13 +115,13 @@ onDestroyView()：当与 Fragment 关联的视图被移除时调用。 onDetach(
 
 ### Fragment 被回收后保存数据
 
-也可以通过 onSaveInstanceState()方法来保存数据，因为进入停止状态的 Fragment 有可能在系统内存不足的时候被回收。保存下来的数据在 onCreate()、onCreateView()和 onActivityCreated()这 3 个方法中你都可以重新得到，它们都含有一个 Bundle 类型的 savedInstanceState 参数。
+也可以通过 onSaveInstanceState() 方法来保存数据，因为进入停止状态的 Fragment 有可能在系统内存不足的时候被回收。保存下来的数据在 onCreate()、onCreateView() 和 onActivityCreated() 这 3 个方法中你都可以重新得到，它们都含有一个 Bundle 类型的 savedInstanceState 参数。
 
 ## 动态加载布局的技巧
 
 ### 限定符
 
-平板一般采用双页模式，左侧显示列表，右侧显示内容。怎样才能在运行时判断程序应该是使用双页模式还是单页模式呢?这就需要借助限定符 (qualifier )来实现了。
+平板一般采用双页模式，左侧显示列表，右侧显示内容。怎样才能在运行时判断程序应该是使用双页模式还是单页模式呢?这就需要借助限定符 (qualifier) 来实现了。
 
 新建一个 layout-large 文件夹，同样创建一个 activity_main.xml 布局，里面采用平板的左右设计，包含两个 fragment。而 layout/activity_main.xml 中就是普通的手机布局，只包含一个 fragment。
 

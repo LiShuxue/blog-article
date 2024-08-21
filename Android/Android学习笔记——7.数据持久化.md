@@ -4,11 +4,13 @@ Android 系统中主要提供了 3 种方式用于简单地实现数据持久化
 
 ## 文件存储
 
-比较适合存储一些简单的文本数据或二进制数据，所有的文件都默认存储到`/data/data/<packagename>/files/` 目录下。
+比较适合存储一些简单的文本数据或二进制数据，所有的文件都默认存储到 `/data/data/<packagename>/files/` 目录下。
 
 ### 存
 
-openFileOutput()方法，可以用于将数据存储到指定的文件中。第一个参数是文件名，第二个参数是文件的操作模式，主要有 MODE_PRIVATE 和 MODE_APPEND 两种模式可选，默认是 MODE_PRIVATE，表示当指定相同文件名的时候，所写入的内容将会覆盖原文件中的内容，而 MODE_APPEND 则表示如果该文件已存在，就往文件里面追加内容，不存在就创建新文件。
+openFileOutput() 方法，可以用于将数据存储到指定的文件中。
+
+第一个参数是文件名，第二个参数是文件的操作模式，主要有 MODE_PRIVATE 和 MODE_APPEND 两种模式可选，默认是 MODE_PRIVATE，表示当指定相同文件名的时候，所写入的内容将会覆盖原文件中的内容，而 MODE_APPEND 则表示如果该文件已存在，就往文件里面追加内容，不存在就创建新文件。
 
 use 函数，会保证在 Lambda 表达式中的代码全部执行完之后自动将外层的流关闭。
 
@@ -22,11 +24,11 @@ fun save(inputText: String) {
 }
 ```
 
-借助 Device File Explorer 工具查看一下`/data/data/<packagename>/files/`目录，在右下角。
+借助 Device File Explorer 工具查看一下 `/data/data/<packagename>/files/` 目录，在右下角。
 
 ### 取
 
-openFileInput()方法，用于从文件中读取数据。它只接收一个参数，即要读取的文件名。
+openFileInput() 方法，用于从文件中读取数据。它只接收一个参数，即要读取的文件名。
 
 ```kotlin
 fun load(): String {
@@ -35,9 +37,10 @@ fun load(): String {
     val reader = BufferedReader(InputStreamReader(input))
     reader.use {
         reader.forEachLine {
-        content.append(it)
+            content.append(it)
+        }
+        return content.toString()
     }
-    return content.toString()
 }
 ```
 
@@ -49,23 +52,23 @@ SharedPreferences 是使用键值对的方式来存储数据的。当保存一�
 
 SharedPreferences 支持多种不同的数据类型存储，Boolean, String, Int 等
 
-SharedPreferences 文件都是存放在`/data/data/<packagename>/shared_prefs/` 目录下的。
+SharedPreferences 文件都是存放在 `/data/data/<packagename>/shared_prefs/` 目录下的。
 
 ### 存
 
 首先需要获取 SharedPreferences 对象，Android 中主要提供了以下两种方法用于得到 SharedPreferences 对象：
 
-- 在 Context 类中的调用 getSharedPreferences()方法，需要传两个参数，第一个参数是文件名称，第二个是操作模式，目前只有默认的 MODE_PRIVATE 这一种模式。
+- 在 Context 类中的调用 getSharedPreferences() 方法，需要传两个参数，第一个参数是文件名称，第二个是操作模式，目前只有默认的 MODE_PRIVATE 这一种模式。
 
-- 在 Activity 类中的 getPreferences()方法，它只接收一个操作模式参数，因为使用这个方法时会自动将当前 Activity 的类名作为 SharedPreferences 的文件名。
+- 在 Activity 类中的 getPreferences() 方法，它只接收一个操作模式参数，因为使用这个方法时会自动将当前 Activity 的类名作为 SharedPreferences 的文件名。
 
 存储数据，主要可以分为 3 步实现。
 
-调用 SharedPreferences 对象的 edit()方法获取一个 SharedPreferences.Editor 对象。
+调用 SharedPreferences 对象的 edit() 方法获取一个 SharedPreferences.Editor 对象。
 
-向 SharedPreferences.Editor 对象中添加数据，比如添加一个布尔型数据就使用 putBoolean()方法，添加一个字符串则使用 putString()方法，以此类推。
+向 SharedPreferences.Editor 对象中添加数据，比如添加一个布尔型数据就使用 putBoolean() 方法，添加一个字符串则使用 putString() 方法，以此类推。
 
-调用 apply()方法将添加的数据提交，从而完成数据存储操作。
+调用 apply() 方法将添加的数据提交，从而完成数据存储操作。
 
 ```kotlin
 val editor = getSharedPreferences("data", Context.MODE_PRIVATE).edit()
@@ -75,7 +78,7 @@ editor.putBoolean("married", false)
 editor.apply()
 ```
 
-借助 Device File Explorer 来进行查看`/data/data/<packagename>/shared_prefs/`目录，这个文件是个 xml 文件。不能在实际的项目中直接存储敏感信息，因为会以明文的形式存储在 SharedPreferences 文件中。
+借助 Device File Explorer 来进行查看 `/data/data/<packagename>/shared_prefs/` 目录，这个文件是个 xml 文件。不能在实际的项目中直接存储敏感信息，因为会以明文的形式存储在 SharedPreferences 文件中。
 
 ### 取
 
@@ -86,9 +89,14 @@ val age = prefs.getInt("age", 0)
 val married = prefs.getBoolean("married", false)
 ```
 
-### KTX 扩展库简化书写 edit
+### 使用 KTX 库简化 edit
+
+KTX 扩展库中通过函数式 api edit，简化了上述的操作。首先需要引入 ktx 库。
 
 ```kotlin
+implementation 'androidx.core:core-ktx:1.8.0'
+
+
 getSharedPreferences("data", Context.MODE_PRIVATE).edit {
     putString("name", "Tom")
     putInt("age", 28)
@@ -106,9 +114,9 @@ Android 为了让我们能够更加方便地管理数据库，专门提供了一
 
 SQLiteOpenHelper 是一个抽象类，如果我们想要使用它，就需要创建一个自己的帮助类去继承它。SQLiteOpenHelper 中有两个抽象方法：onCreate() 和 onUpgrade()。我们必须在自己的帮助类里重写这两个方法，然后分别在这两个方法中实现创建和升级数据库的逻辑。
 
-SQLiteOpenHelper 中还有两个非常重要的实例方法：getReadableDatabase()和 getWritableDatabase()。这两个方法都可以创建或打开一个现有的数据库(如果数据库已存在则直接打开，否则要创建一个新的数据库)，并返回一个可对数据库进行读写操作的对象。不同的是，当数据库不可写入的时候(如磁盘空间已满)，getReadableDatabase()方 法返回的对象将以只读的方式打开数据库，而 getWritableDatabase()方法则将出现异常。
+SQLiteOpenHelper 中还有两个非常重要的实例方法：getReadableDatabase()和 getWritableDatabase()。这两个方法都可以创建或打开一个现有的数据库(如果数据库已存在则直接打开，否则要创建一个新的数据库)，并返回一个可对数据库进行读写操作的对象。不同的是，当数据库不可写入的时候(如磁盘空间已满)，getReadableDatabase() 方法返回的对象将以只读的方式打开数据库，而 getWritableDatabase() 方法则将出现异常。
 
-数据库文件会存放在`/data/data/<packagename>/databases/` 目录下。
+数据库文件会存放在 `/data/data/<packagename>/databases/` 目录下。
 
 ```kotlin
 class MyDatabaseHelper(val context: Context, name: String, version: Int) : SQLiteOpenHelper(context, name, null, version) {
@@ -149,7 +157,7 @@ version 表示当前数据库的版本号，之前我们传入的是 1 ，现在
 
 添加数据时可以使用 insert 语句，也可以用 SQLiteDatabase 中提供的 insert()方法，专门用于添加数据。
 
-它接收 3 个参数：第一个参数是表名，第二个参数用于在未指定添加数据的情况下给某些可为空的列自动赋值 NULL，一般我们用不到这个功能，直接传入 null 即可，第三个参数是一个 ContentValues 对象，它提供了一系列的 put()方法重载，用于向 ContentValues 中添加数据，只需要将表中的每个列名以及相应的待添加数据传入即可。
+它接收 3 个参数：第一个参数是表名，第二个参数用于在未指定添加数据的情况下给某些可为空的列自动赋值 NULL，一般我们用不到这个功能，直接传入 null 即可，第三个参数是一个 ContentValues 对象，它提供了一系列的 put() 方法重载，用于向 ContentValues 中添加数据，只需要将表中的每个列名以及相应的待添加数据传入即可。
 
 ```kotlin
 val db = dbHelper.writableDatabase
@@ -169,7 +177,7 @@ id 那一列并没给它赋值，这是因为在前面创建表的时候，我�
 
 SQLiteDatabase 中提供了一个非常好用的 update()方法，用于对数据进行更新。
 
-这个方法 接收 4 个参数：第一个参数和 insert()方法一样，也是表名，第二 个参数是 ContentValues 对象，要把更新数据在这里组装进去，第三、第四个参数用于约束更新某一行或某几行中的数据，不指定的话默认会更新所有行。
+这个方法 接收 4 个参数：第一个参数和 insert() 方法一样，也是表名，第二个参数是 ContentValues 对象，要把更新数据在这里组装进去，第三、第四个参数用于约束更新某一行或某几行中的数据，不指定的话默认会更新所有行。
 
 ```kotlin
 val db = dbHelper.writableDatabase
@@ -277,7 +285,7 @@ try {
 
 ### 升级数据库
 
-每一个数据库版本都会对应一个版本号，当指定的数据库版本号大于当前数据库版本号的时候，就会进入 onUpgrade()方法中执行更新操作。这里需要为每一个版本号赋予其所对应的数据库变动，然后在 onUpgrade()方法中对当前数据库的版本号进行判断，再执行相应的改变就可以了。
+每一个数据库版本都会对应一个版本号，当指定的数据库版本号大于当前数据库版本号的时候，就会进入 onUpgrade() 方法中执行更新操作。这里需要为每一个版本号赋予其所对应的数据库版本，然后在 onUpgrade() 方法中对当前数据库的版本号进行判断，再执行相应的改变就可以了。
 
 ```kotlin
 override fun onCreate(db: SQLiteDatabase) {
@@ -293,7 +301,7 @@ override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 
 这样当用户直接安装第 2 版的程序时，就会进入 onCreate()方法，将两张表一起创建。而当用户使用第 2 版的程序覆盖安装第 1 版的程序时，就会进入升级数据库的操作中。
 
-### 使用 KTX 库简化书写 ContentValues
+### 使用 KTX 库简化 ContentValues
 
 ```kotlin
 val values = contentValuesOf("name" to "Game of Thrones", "author" to "George Martin", "pages" to 720, "price" to 20.85)
@@ -374,4 +382,4 @@ abstract class AppDatabase : RoomDatabase() {
 
 ### 数据库升级
 
-Room 在数据库升级方面设计得非常烦琐，基本上没有 比使用原生的 SQLiteDatabase 简单到哪儿去，每一次升级都需要手动编写升级逻辑才行。
+Room 在数据库升级方面设计得非常烦琐，基本上没有比使用原生的 SQLiteDatabase 简单到哪儿去，每一次升级都需要手动编写升级逻辑才行。
