@@ -1,3 +1,5 @@
+<https://juejin.cn/post/7258071726227849277>
+
 ## 什么是虚拟 DOM
 
 虚拟 dom 就是一个普通的 javascript 对象，一般包含 tag，props，children 三个属性。
