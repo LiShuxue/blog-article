@@ -99,7 +99,8 @@ npx ESbuild main.js --bundle --outfile=bundle.js
 还有个 `buildSync()` 是 build 的同步版本。
 
 ```js
-const { build } = require('ESbuild');
+// esbuild.config.js
+const { build } = require('esbuild');
 
 build({
   entryPoints: ['src/index.js'],
@@ -111,6 +112,8 @@ build({
 }).catch(() => process.exit(1));
 ```
 
+运行：`node esbuild.config.js`
+
 #### transform
 
 这个方法允许你单独转换一串 js 代码字符串，而不需要构建整个项目。它返回一个包含转换结果的对象，包括转换后的代码串和映射。
@@ -118,6 +121,7 @@ build({
 也有个同步版本：`transformSync()`
 
 ```js
+// esbuild.config.js
 const { transformSync } = require('esbuild');
 const code = `
 // JavaScript 代码
