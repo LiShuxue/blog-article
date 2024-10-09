@@ -78,7 +78,7 @@ security:
 
 ```sh
 # docker 启动
-docker run -d --rm --name journey-mongodb -p 27017:27017 -v /root/mongodb/data/db:/data/db -v /root/mongodb/backup:/backup -v /root/project/journey/journey-docker/mongodb:/data/configdb -e MONGO_INITDB_ROOT_USERNAME=lishuxue -e MONGO_INITDB_ROOT_PASSWORD=lishuxue mongo:7.0.7-jammy --config /data/configdb/mongod.conf
+docker run -d --rm --name journey-mongodb -p 27017:27017 -v /root/mongodb/data/db:/data/db -v /root/mongodb/backup:/backup -v /root/project/journey/journey-docker/mongodb:/data/configdb -e MONGO_INITDB_ROOT_USERNAME=lishuxue -e MONGO_INITDB_ROOT_PASSWORD=lishuxue mongo:7-jammy --config /data/configdb/mongod.conf
 ```
 
 ## 使用用户名密码登陆数据库
