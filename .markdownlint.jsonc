@@ -10,5 +10,6 @@
   "MD010": {
     // Number of spaces for each hard tab
     "spaces_per_tab": 2
-  }
+  },
+  "MD051": false
 }
